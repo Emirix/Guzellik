@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../screens/home_screen.dart';
-import '../screens/explore_screen.dart';
-import '../screens/search_screen.dart';
-import '../screens/favorites_screen.dart';
-import '../screens/notifications_screen.dart';
-import '../screens/profile_screen.dart';
-import '../screens/auth/login_screen.dart';
-import '../screens/auth/register_screen.dart';
-import '../screens/splash_screen.dart';
+import '../../presentation/screens/home_screen.dart';
+import '../../presentation/screens/explore_screen.dart';
+import '../../presentation/screens/search_screen.dart';
+import '../../presentation/screens/favorites_screen.dart';
+import '../../presentation/screens/notifications_screen.dart';
+import '../../presentation/screens/profile_screen.dart';
+import '../../presentation/screens/auth/login_screen.dart';
+import '../../presentation/screens/auth/register_screen.dart';
+import '../../presentation/screens/splash_screen.dart';
 
 /// App router configuration using go_router
 class AppRouter {
