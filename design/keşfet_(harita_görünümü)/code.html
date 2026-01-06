@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Keşfet - Harita</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ee2b5b",
+                        "secondary": "#9a4c5f",
+                        "nude-light": "#fcf8f9",
+                        "nude-dark": "#f3e7ea",
+                        "gold": "#d4af37",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221015",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .map-pin {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .map-pin:hover {
+            transform: scale(1.1) translateY(-5px);
+            z-index: 50;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display text-slate-900 bg-background-light overflow-hidden">
+<div class="relative w-full h-screen flex flex-col overflow-hidden bg-gray-100">
+<!-- MAP BACKGROUND LAYER -->
+<!-- Using a placeholder image to simulate a map interface -->
+<div class="absolute inset-0 z-0 w-full h-full">
+<img alt="Light minimalist city map background texture" class="w-full h-full object-cover opacity-80 brightness-110 contrast-75" data-location="Istanbul" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_LXA2QcTKc4MGHGLmUzv1k6VCjjt2Ortr-Qc-PbyCEd9vXHL7d4SdUEvFqiHzm8-PuDW1LUF47zUaoaophtI8hMD7K3cJDQkJF2w7qz4lHc6O9ybtiXFRA3o5qZ3rTYoA4X2g4bqdc-hOldj89iaMQM7g8u7JtcNKEV6ynXfUiKGRiLZAS8v3fVMTzSSF-d553147ZbbAsOrqM6Y89bqFxa1CugeidOPV-sHWXkwrU1X56vwzZLKSoIup81ccdWHLdvvHtt61ig"/>
+<!-- Overlay to soften the map for the nude/pink theme -->
+<div class="absolute inset-0 bg-[#fcf8f9]/20 mix-blend-overlay"></div>
+</div>
+<!-- INTERACTIVE MAP PINS (Simulated) -->
+<div class="absolute inset-0 z-10 pointer-events-none">
+<!-- Pin 1: Active -->
+<div class="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer map-pin group">
+<div class="relative flex flex-col items-center">
+<div class="bg-primary text-white px-3 py-1.5 rounded-xl shadow-lg shadow-primary/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="text-sm font-bold">4.9</span>
+</div>
+<div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-primary"></div>
+<div class="absolute -bottom-1 w-8 h-1 bg-black/20 blur-sm rounded-full"></div>
+</div>
+</div>
+<!-- Pin 2 -->
+<div class="absolute top-[30%] left-[20%] pointer-events-auto cursor-pointer map-pin">
+<div class="relative flex flex-col items-center opacity-90 hover:opacity-100">
+<div class="bg-white text-secondary px-2.5 py-1 rounded-lg shadow-md border border-nude-dark flex items-center gap-1">
+<span class="text-xs font-bold font-display">Kuaför</span>
+</div>
+<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-white"></div>
+</div>
+</div>
+<!-- Pin 3 -->
+<div class="absolute top-[55%] left-[75%] pointer-events-auto cursor-pointer map-pin">
+<div class="relative flex flex-col items-center opacity-90 hover:opacity-100">
+<div class="bg-white text-secondary px-2.5 py-1 rounded-lg shadow-md border border-nude-dark flex items-center gap-1">
+<span class="text-xs font-bold font-display">Estetik</span>
+</div>
+<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-white"></div>
+</div>
+</div>
+<!-- Pin 4 -->
+<div class="absolute top-[25%] left-[65%] pointer-events-auto cursor-pointer map-pin">
+<div class="relative flex flex-col items-center opacity-90 hover:opacity-100">
+<div class="bg-white text-secondary px-2.5 py-1 rounded-lg shadow-md border border-nude-dark flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">spa</span>
+</div>
+<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-white"></div>
+</div>
+</div>
+</div>
+<!-- TOP OVERLAY: Search & Filters -->
+<div class="absolute top-0 left-0 w-full z-30 flex flex-col pt-12 pb-4 bg-gradient-to-b from-white/90 via-white/50 to-transparent backdrop-blur-[2px]">
+<!-- Search Bar -->
+<div class="px-4 mb-3">
+<div class="flex w-full items-center rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.05)] h-12 border border-white">
+<div class="text-secondary flex items-center justify-center pl-4 pr-2">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 bg-transparent border-none focus:ring-0 placeholder:text-secondary/60 text-slate-800 text-base font-medium h-full" placeholder="Mekan, hizmet veya bölge ara..." value=""/>
+<button class="flex items-center justify-center px-4 border-l border-nude-dark h-3/5 my-auto text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</div>
+<!-- Chips -->
+<div class="flex gap-2.5 px-4 overflow-x-auto hide-scrollbar pb-2">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary text-white pl-4 pr-4 shadow-sm">
+<span class="text-sm font-semibold">Tümü</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white border border-nude-dark pl-4 pr-4 shadow-sm hover:bg-nude-light transition-colors">
+<span class="text-slate-700 text-sm font-medium">Kuaför</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white border border-nude-dark pl-4 pr-4 shadow-sm hover:bg-nude-light transition-colors">
+<span class="text-slate-700 text-sm font-medium">Tırnak</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white border border-nude-dark pl-4 pr-4 shadow-sm hover:bg-nude-light transition-colors">
+<span class="text-slate-700 text-sm font-medium">Cilt Bakımı</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white border border-nude-dark pl-4 pr-4 shadow-sm hover:bg-nude-light transition-colors">
+<span class="text-slate-700 text-sm font-medium">Estetik</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white border border-nude-dark pl-4 pr-4 shadow-sm hover:bg-nude-light transition-colors">
+<span class="text-slate-700 text-sm font-medium">Solaryum</span>
+</button>
+</div>
+</div>
+<!-- RIGHT SIDE CONTROLS -->
+<div class="absolute right-4 top-[25%] flex flex-col gap-3 z-30">
+<button class="size-10 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-700 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+<button class="size-10 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-700 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">layers</span>
+</button>
+</div>
+<!-- FLOATING ACTION BUTTON (Re-search) -->
+<div class="absolute bottom-[280px] left-1/2 -translate-x-1/2 z-30 w-max pointer-events-none">
+<button class="pointer-events-auto flex items-center gap-2 bg-white/95 backdrop-blur shadow-[0_4px_15px_rgba(0,0,0,0.1)] hover:shadow-lg rounded-full px-5 py-2.5 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-primary text-[20px] group-hover:rotate-12 transition-transform">refresh</span>
+<span class="text-slate-800 text-sm font-bold">Bu alanda ara</span>
+</button>
+</div>
+<!-- BOTTOM CAROUSEL -->
+<div class="absolute bottom-[80px] w-full z-30 flex flex-col gap-2">
+<div class="flex overflow-x-auto hide-scrollbar px-4 pb-4 gap-4 snap-x snap-mandatory">
+<!-- Card 1 (Active) -->
+<div class="snap-center shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-nude-dark/50">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden mb-3 bg-nude-light">
+<img alt="Interior of a modern chic beauty salon with pink chairs" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3IEpJj5H2FWvurrAqRF8LfjMHXQAmtsWmvyYU5vax4CzB6Uq_IsJ7xLt62B0EkzPfVopxg_URwM1MiG5i6Nkz1hSY4QHW9KVgTmrq5KaziKTn-07LeyCceyiwC0N6DwtPhJFS02V9KBlGooeRgpL2BQC1w73oOsJpjSkDGjcvYiCiUvA-LJZUZvffSJo41sf75EKLlhUjzHGNpVwtqJRR6tHexiySb54fhr9oL5fDdO1R-gVD3BPD2KVjQpCxMIMVfpkxwSTB6g"/>
+<div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-gold text-[14px] fill-current">star</span>
+<span class="text-xs font-bold text-slate-800">4.9</span>
+</div>
+<div class="absolute top-2 left-2 bg-primary/90 backdrop-blur px-2 py-0.5 rounded-full shadow-sm">
+<span class="text-[10px] uppercase font-bold text-white tracking-wide">Popüler</span>
+</div>
+</div>
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="text-slate-900 font-bold text-lg leading-tight">Rose Güzellik Salonu</h3>
+<p class="text-secondary text-sm font-medium mt-0.5">Şişli, İstanbul • 1.2 km</p>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-3">
+<span class="px-2 py-1 rounded-md bg-nude-light text-secondary text-xs font-medium">Saç</span>
+<span class="px-2 py-1 rounded-md bg-nude-light text-secondary text-xs font-medium">Makyaj</span>
+<span class="text-xs text-gray-400 font-medium ml-auto">+3</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="snap-center shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-nude-dark/50 opacity-90 scale-95 origin-left">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden mb-3 bg-nude-light">
+<img alt="Close up of manicure service in a bright salon" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABQoL1hHUewnwl_I92DYIHel_7HTGmiFOsFXfMPPTI_hUUbZ-5DW3GznqhqcXHi_5bqNSZdBlE3-M07x-Ev2DZahPttDekOLA5TEg_3jA4VFJ2BABXSGniwU1_KS1NUMH56xu-oxP6j4EhQz2ZLifwZ7aeefHMb1nUCYL5bCo_P1sUwCFNIY4v79RftX_SUjVnDZr76K2YwSF8jMLZx7UfMOWCmNPp7IlMuk3W_RgoyuFU4TwDKe8iYsr19mtwcaudGn3s0piObg"/>
+<div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-gold text-[14px] fill-current">star</span>
+<span class="text-xs font-bold text-slate-800">4.7</span>
+</div>
+</div>
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="text-slate-900 font-bold text-lg leading-tight">Gold Touch Estetik</h3>
+<p class="text-secondary text-sm font-medium mt-0.5">Nişantaşı • 0.5 km</p>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-3">
+<span class="px-2 py-1 rounded-md bg-nude-light text-secondary text-xs font-medium">Tırnak</span>
+<span class="px-2 py-1 rounded-md bg-nude-light text-secondary text-xs font-medium">Lazer</span>
+</div>
+</div>
+</div>
+</div>
+<!-- BOTTOM NAVIGATION BAR -->
+<div class="absolute bottom-0 left-0 w-full z-40 bg-white border-t border-nude-dark pb-5 pt-3 px-6 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+<div class="flex justify-between items-end">
+<button class="flex flex-col items-center gap-1 text-primary w-12 group">
+<span class="material-symbols-outlined text-[26px] fill-current group-hover:scale-110 transition-transform">map</span>
+<span class="text-[10px] font-bold">Keşfet</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-secondary w-12 transition-colors group">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">grid_view</span>
+<span class="text-[10px] font-medium">Kategoriler</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-secondary w-12 transition-colors group">
+<div class="relative">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">calendar_month</span>
+<div class="absolute -top-1 -right-1 size-2.5 bg-primary rounded-full border-2 border-white"></div>
+</div>
+<span class="text-[10px] font-medium">Randevular</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-secondary w-12 transition-colors group">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">favorite</span>
+<span class="text-[10px] font-medium">Favoriler</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-secondary w-12 transition-colors group">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">person</span>
+<span class="text-[10px] font-medium">Profil</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

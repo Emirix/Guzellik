@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hizmet Detay Sayfası</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+            extend: {
+                colors: {
+                "primary": "#ee2b5b",
+                "background-light": "#fdfbfb", /* Creamy white for nude feel */
+                "background-dark": "#221015",
+                "gold": "#D4AF37",
+                "gold-light": "#FFF9E6",
+                "cream": "#F9F4F2",
+                },
+                fontFamily: {
+                "display": ["Manrope", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+            },
+            },
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b0d11] dark:text-gray-100 antialiased overflow-x-hidden">
+<!-- Sticky Header -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md p-4 justify-between border-b border-gray-100 dark:border-white/5">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center opacity-0 transition-opacity duration-300" id="scroll-title">Protez Tırnak</h2>
+<div class="flex items-center justify-end gap-2">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">favorite</span>
+</button>
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">share</span>
+</button>
+</div>
+</div>
+<!-- Hero Image & Service Title -->
+<div class="relative w-full">
+<!-- Main Image -->
+<div class="w-full h-72 md:h-96 bg-gray-200 overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center" data-alt="Close up of a woman's hands with beautifully manicured nails in a soft pink setting" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCpWxba8BQbxjoU9NA2hcoK_1oXG6KD2hqI2Rg0kemmxyCFcWhxvc1ONIYU7k0Rgs4Pdg4HvtVWstQ8o0awJ31QymayycK3kAD68Y07k_NLtKpibNRQ6pMPa3DgLEdN7Io9oX-1MH5emhbHpSBa-mVZTgT-oTGkg7eZ8IBieW8UG-nDsr0vosHwB_kokJ09d_6f8H1lREno0kB91YvAH4s1Mqs5DdPanPJOsGvRo7LQ1AqW_D3zKF_tEIVlsfbVtWoJzYk2Z4_irw');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-light dark:from-background-dark via-transparent to-transparent opacity-90"></div>
+</div>
+<!-- Overlapping Content -->
+<div class="-mt-20 px-4 relative z-10 pb-4">
+<div class="flex items-start justify-between">
+<div>
+<h1 class="text-3xl font-bold tracking-tight mb-1 text-gray-900 dark:text-white">Protez Tırnak</h1>
+<div class="flex items-center gap-2 text-primary dark:text-primary/90 font-semibold">
+<span>₺400 - ₺850</span>
+<span class="text-xs text-gray-400 dark:text-gray-500 font-normal">• Ortalama Fiyat</span>
+</div>
+</div>
+<div class="bg-white dark:bg-white/10 p-2 rounded-xl shadow-sm border border-gray-100 dark:border-white/5">
+<div class="flex flex-col items-center justify-center size-14">
+<span class="text-yellow-500 font-bold text-lg flex items-center gap-0.5">
+                            4.8 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+</span>
+<span class="text-[10px] text-gray-500 dark:text-gray-400">2.1k Yorum</span>
+</div>
+</div>
+</div>
+<p class="text-gray-600 dark:text-gray-300 text-base font-normal leading-relaxed mt-4">
+                Daha uzun, bakımlı ve dayanıklı tırnaklara sahip olmak isteyenler için ideal bir çözümdür. Jel veya akrilik materyaller kullanılarak tırnak ucuna ekleme yapılır ve yaklaşık 3-4 hafta kalıcılık sağlar.
+            </p>
+</div>
+</div>
+<!-- Gallery / Results -->
+<div class="px-4 py-2">
+<h3 class="text-base font-bold mb-3 text-gray-900 dark:text-white">Uygulama Örnekleri</h3>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+<!-- Item 1 -->
+<div class="flex flex-col gap-2 shrink-0 w-24">
+<div class="w-24 h-24 rounded-2xl bg-cover bg-center shadow-sm" data-alt="Nail art with glitter details" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAFENMFGbi5WqWpTMP-K7XAvtowkeHhuPWNvfu3CN7F_dtsFrdtvOJMIMBEeScKk8sTaiHSEzJata_kR9h_2mCpGhwfvlxyxaFI7QaIn6EhID4zTiHL3_AHzRXm8-vvSbPAZTD_uIE3Mq2GvluQL16q7_YGPMoatl7gMWMvzPv-uYymqnygeTPCjCBwZBx9J7WTDXtiAH7-hYDs4snC4AF5xNnvoir0nDpgj1mLO57rPLBIabX8QF8OWyReTWL3RFOfdErbE5TMMQ');"></div>
+<p class="text-xs text-center font-medium text-gray-600 dark:text-gray-400">Baby Boomer</p>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col gap-2 shrink-0 w-24">
+<div class="w-24 h-24 rounded-2xl bg-cover bg-center shadow-sm" data-alt="Elegant french manicure design" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuATtaYZEHd__Uit0d2hMhkeP2uSlL_tde8bCCl4wuuJPBrdsNH6UlNDJ3zNh0K6fkKDJ7Fff3MhNeM0Y8Cxbi5_SGLQjbjP_NJpGpRnbUy-zFDfsu0eLDxHcaKpCe15AYDndE-mPG6rJoxpXDMGWfkRuvCsZYtj0SglwZ_nzbGJlO_dLwzpQ1nzcMvYG4ZhYkY_2PKp7IecjvaQencfCi9RC-UpXL-pfDDqrj378a7ru7bLOCRozIUEByHQiUedSVdxBlBWZBoALw');"></div>
+<p class="text-xs text-center font-medium text-gray-600 dark:text-gray-400">French</p>
+</div>
+<!-- Item 3 -->
+<div class="flex flex-col gap-2 shrink-0 w-24">
+<div class="w-24 h-24 rounded-2xl bg-cover bg-center shadow-sm" data-alt="Bold red nail polish application" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAM1huO9N3KmzQg9N-fK7f1U066-ieKWCpYh-j9qMsF69hBP4QZKWynnlDYWvstjlbiVt1JYb1TSI77Z0BSc7LcBUKb2v_nC6SAO5OLS9nEW2HfcCg6SiUpLO8B9HLF1fm39-j1jI_0B7H8E7RxxpLwKwHPh0Qf-95xGHsypuFuGLnqyTqzfYqCOnc8DJ0QINlCsfk9QeQt1jw46K632e50W-HAT9XmT3CkRsQFuQ3pxzDi-FEYGc1qnUSyzSXLYUcXgqd7cJJPJQ');"></div>
+<p class="text-xs text-center font-medium text-gray-600 dark:text-gray-400">Stiletto</p>
+</div>
+<!-- Item 4 -->
+<div class="flex flex-col gap-2 shrink-0 w-24">
+<div class="w-24 h-24 rounded-2xl bg-cover bg-center shadow-sm" data-alt="Pastel colored nail art design" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB742eknrLHCNYZee4HVKy9_LedLYIhoz39x8sj44AuHaC-taDYistHroq_0GwnEDmC93TZlA6Kofp63JvyUb6CgucbP5TaQj4ycCfP4Y7LAH5oSa6veWI9yF2998g0RFr6X33s6cvNRnqZfqgBJFLbB-Lxh_dI_RZn5XGLWtmMH288MdFWMzlVXd90C11x3mOpR4pmwNrcpO3XqXvxWu2Y0-xeHA3y6atvEXjuQWLPrxhfnKv4h6oW7JDE_PGXleU2Woaq0vODug');"></div>
+<p class="text-xs text-center font-medium text-gray-600 dark:text-gray-400">Nail Art</p>
+</div>
+</div>
+</div>
+<div class="h-px w-full bg-gray-200 dark:bg-white/5 my-4"></div>
+<!-- Filters & Sorting -->
+<div class="px-4 sticky top-[72px] z-40 bg-background-light dark:bg-background-dark py-2 -mx-1">
+<div class="flex gap-2 overflow-x-auto hide-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-900 dark:bg-white text-white dark:text-black px-4 shadow-md">
+<span class="material-symbols-outlined text-lg">tune</span>
+<span class="text-sm font-semibold">Filtrele</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 px-4 whitespace-nowrap">
+<span class="text-sm font-medium">En Yakın</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 px-4 whitespace-nowrap">
+<span class="text-sm font-medium">En Yüksek Puanlı</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 px-4 whitespace-nowrap">
+<span class="text-sm font-medium">Fırsatlar</span>
+</button>
+</div>
+</div>
+<!-- Venue List -->
+<div class="px-4 pb-24 flex flex-col gap-6 pt-4">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">Önerilen Mekanlar</h3>
+<a class="text-primary text-sm font-semibold" href="#">Tümünü Gör</a>
+</div>
+<!-- Card 1: Premium / Gold -->
+<div class="bg-white dark:bg-[#2d1b20] rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden group">
+<div class="relative h-48">
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Luxury beauty clinic interior with modern furniture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuApZavnNn45_mef0T9EbKSArbT1W1Ph2Mq2oqAzNH7t_a4LTcZjdZ_H-t9WAeQ5YL5I454LQaDUx2FKIyjaYQd1Znm54SU3QOpFFUnJSgVF_RahYGSioC4kFdp9VT6KInOd5uOF4_xPhVNDsUBIfj7B46fWibvhQlqWS17_H3DdndZ0xrjmR4MiKI--jexpFqvF3zmDhKad8biniCOpHeCIOULA8xzkHzxHb2zlwWg9ki_bxvkrljm3lLGjUzb-tyMEH7tfmR13-g');"></div>
+<!-- Badges -->
+<div class="absolute top-3 left-3 flex flex-col gap-2 items-start">
+<div class="bg-gold/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-sm">verified</span>
+                        Onaylı Mekan
+                    </div>
+<div class="bg-white/90 dark:bg-black/60 backdrop-blur-sm text-[#1b0d11] dark:text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-sm text-primary">favorite</span>
+                        En Çok Tercih Edilen
+                    </div>
+</div>
+<!-- Like Button -->
+<div class="absolute top-3 right-3">
+<div class="size-8 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center text-white cursor-pointer hover:bg-white hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</div>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-lg font-bold text-gray-900 dark:text-white">Estetik Park Nişantaşı</h4>
+<div class="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md">
+<span class="text-green-700 dark:text-green-400 font-bold text-sm">5.0</span>
+<span class="material-symbols-outlined text-green-700 dark:text-green-400 text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-gray-500 text-sm mb-3">
+<span class="material-symbols-outlined text-base">location_on</span>
+<span class="truncate">Şişli, İstanbul • 0.5 km</span>
+</div>
+<div class="h-px bg-gray-100 dark:bg-white/5 w-full my-3"></div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs text-gray-400 font-medium">Başlangıç</span>
+<span class="text-primary font-bold text-lg">₺650</span>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-lg shadow-primary/20">
+                        Randevu Al
+                    </button>
+</div>
+</div>
+</div>
+<!-- Card 2: Hygiene Approved -->
+<div class="bg-white dark:bg-[#2d1b20] rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden group">
+<div class="relative h-48">
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Clean and bright beauty salon reception area" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAy469Lb0jl2_rbeHfA-a4ebROkvr2Kcx6h1iGR1obdu15S1mNgNIEc7u4rn17hIK-RMppZ4QjuW-ZA5Tz9UrLuxdapgzXrnw8ybuLHIb6y1UUVi80Te6xaTySlPlCwlsCjoFtfs8NUD8Zx-kcCifT-iRyilvHKRZV_j2gigbKmVczVytpguybqXoIj1fav6_F566oMyhuzHdzne9SIvCg55WZL2wJjGSosnfj_HLPWUCYGaniQoHsQ8fZF8TDILKfy-qD0pWseQA');"></div>
+<div class="absolute top-3 left-3">
+<div class="bg-teal-500/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-sm">sanitizer</span>
+                        Hijyen Onaylı
+                    </div>
+</div>
+<div class="absolute top-3 right-3">
+<div class="size-8 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center text-white cursor-pointer hover:bg-white hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</div>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-lg font-bold text-gray-900 dark:text-white">Lina Beauty Center</h4>
+<div class="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 py-0.5 rounded-md">
+<span class="text-yellow-600 dark:text-yellow-400 font-bold text-sm">4.8</span>
+<span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-gray-500 text-sm mb-3">
+<span class="material-symbols-outlined text-base">location_on</span>
+<span class="truncate">Beşiktaş, İstanbul • 1.2 km</span>
+</div>
+<div class="h-px bg-gray-100 dark:bg-white/5 w-full my-3"></div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs text-gray-400 font-medium">Başlangıç</span>
+<span class="text-primary font-bold text-lg">₺500</span>
+</div>
+<button class="bg-cream dark:bg-white/10 text-primary dark:text-white border border-primary/20 hover:bg-primary/5 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors">
+                        Profili Gör
+                    </button>
+</div>
+</div>
+</div>
+<!-- Card 3: Standard -->
+<div class="bg-white dark:bg-[#2d1b20] rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden group">
+<div class="relative h-48">
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Close up of beauty products and spa setup" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCpvI79l6omGQ0rKXr3qJ9gGwtsowAEuoPoCXpdtkuS--lXuh9TW3TEdybvQy4ODBEP0GwgLLlWxKmvXPm4FuYZIaFqXON2GA5j7qHtIHLo4K3KW2Qu4ypOzMi1ok7fJnnXQRVFV4biVUwss3CLay34QHQQGB1RmztkGN6af5_j9lcBAO_lSR5DTFx4Qeihq6f0Mx5QOtFmcbdeAVlaX8k-aDxO8iJEWmlnPhwq1aUu9tvCxJE_KAXWBs5032xfCyfgj5_8cN1GCQ');"></div>
+<div class="absolute top-3 right-3">
+<div class="size-8 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center text-white cursor-pointer hover:bg-white hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</div>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-lg font-bold text-gray-900 dark:text-white">Gold Tırnak Stüdyosu</h4>
+<div class="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 py-0.5 rounded-md">
+<span class="text-yellow-600 dark:text-yellow-400 font-bold text-sm">4.5</span>
+<span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-gray-500 text-sm mb-3">
+<span class="material-symbols-outlined text-base">location_on</span>
+<span class="truncate">Kadıköy, İstanbul • 4.5 km</span>
+</div>
+<div class="h-px bg-gray-100 dark:bg-white/5 w-full my-3"></div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs text-gray-400 font-medium">Başlangıç</span>
+<span class="text-primary font-bold text-lg">₺450</span>
+</div>
+<button class="bg-cream dark:bg-white/10 text-primary dark:text-white border border-primary/20 hover:bg-primary/5 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors">
+                        Profili Gör
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Map/Filter Button (Optional, adding for mobile UX) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+<button class="bg-[#1b0d11] dark:bg-white text-white dark:text-[#1b0d11] px-5 py-3 rounded-full shadow-xl flex items-center gap-2 font-bold text-sm hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-lg">map</span>
+             Haritada Göster
+        </button>
+</div>
+<script>
+        // Simple script to show title on scroll
+        const scrollTitle = document.getElementById('scroll-title');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                scrollTitle.classList.remove('opacity-0');
+            } else {
+                scrollTitle.classList.add('opacity-0');
+            }
+        });
+    </script>
+</body></html>

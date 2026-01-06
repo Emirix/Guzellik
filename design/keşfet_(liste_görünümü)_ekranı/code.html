@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Güzellik Salonu Keşfet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#F53F85", // The specific pink from the design
+                        "primary-soft": "#FFEAF3", // Soft pink for button backgrounds
+                        "background-light": "#FAFAFA",
+                        "background-dark": "#121212",
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#1E1E1E",
+                        "text-main-light": "#1F2937",
+                        "text-main-dark": "#F3F4F6",
+                        "text-sub-light": "#6B7280",
+                        "text-sub-dark": "#9CA3AF",
+                    },
+                    fontFamily: {
+                        display: ["Poppins", "sans-serif"],
+                        sans: ["Poppins", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                        'xl': '1rem',
+                        '2xl': '1.25rem',
+                        '3xl': '1.5rem',
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-300">
+<div class="max-w-md mx-auto relative min-h-screen pb-24">
+<header class="px-5 pt-6 pb-2 flex items-center justify-between sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-icons text-xl">location_on</span>
+</div>
+<div>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark font-medium">Konum</p>
+<div class="flex items-center gap-1 cursor-pointer group">
+<h2 class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Beşiktaş, İstanbul</h2>
+<span class="material-icons text-sm text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">expand_more</span>
+</div>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-card-light dark:bg-card-dark shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-center text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors relative">
+<span class="material-icons-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border border-white dark:border-gray-900"></span>
+</button>
+</header>
+<div class="px-5 py-3 flex gap-3">
+<div class="flex-1 relative">
+<span class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-text-sub-light dark:text-text-sub-dark">search</span>
+<input class="w-full pl-11 pr-4 py-3 bg-card-light dark:bg-card-dark rounded-2xl border-none shadow-sm text-sm focus:ring-2 focus:ring-primary placeholder-text-sub-light dark:placeholder-text-sub-dark text-text-main-light dark:text-text-main-dark transition-all" placeholder="Salon, hizmet veya mekan ara..." type="text"/>
+</div>
+<button class="w-12 h-12 flex-shrink-0 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/30 active:scale-95 transition-transform">
+<span class="material-icons">tune</span>
+</button>
+</div>
+<div class="px-5 py-2 overflow-x-auto hide-scrollbar flex gap-3">
+<button class="px-6 py-2 bg-primary text-white rounded-full text-sm font-medium whitespace-nowrap shadow-md shadow-primary/20">
+                Tümü
+            </button>
+<button class="px-6 py-2 bg-card-light dark:bg-card-dark text-text-main-light dark:text-text-main-dark border border-gray-100 dark:border-gray-800 rounded-full text-sm font-medium whitespace-nowrap hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                Saç
+            </button>
+<button class="px-6 py-2 bg-card-light dark:bg-card-dark text-text-main-light dark:text-text-main-dark border border-gray-100 dark:border-gray-800 rounded-full text-sm font-medium whitespace-nowrap hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                Makyaj
+            </button>
+<button class="px-6 py-2 bg-card-light dark:bg-card-dark text-text-main-light dark:text-text-main-dark border border-gray-100 dark:border-gray-800 rounded-full text-sm font-medium whitespace-nowrap hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                Tırnak
+            </button>
+<button class="px-6 py-2 bg-card-light dark:bg-card-dark text-text-main-light dark:text-text-main-dark border border-gray-100 dark:border-gray-800 rounded-full text-sm font-medium whitespace-nowrap hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                Masaj
+            </button>
+</div>
+<section class="mt-6">
+<div class="px-5 flex justify-between items-center mb-4">
+<h2 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Öne Çıkanlar</h2>
+<a class="text-sm font-medium text-primary hover:text-pink-600 transition-colors" href="#">Tümünü gör</a>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar gap-4 px-5 pb-4">
+<div class="w-72 flex-shrink-0 relative rounded-3xl overflow-hidden aspect-[4/3] group shadow-md dark:shadow-none">
+<img alt="Modern beauty salon interior" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwnLpTk4Qqzi4b102OTtJyc-6NWu12y0LgKjdeq68wI5a1bmufEmylE786U2IMMVqBbDzlUpwHiFwCHnTe3GWVyTonHK36uO1OzMN0rKJhkggMtWVfrkFgAgHOi4o4phhPehXeaX9ozwnx-Mq_k0Sio9b1X0eObrJ8Wmj1Dt_Tdq2PLKF1cvPGDqcsBRz1eea-XFyqUqI_LEEB-mf5HF8ccTV6N2xJgjxMs9ntAdVnASZYfK6KAYj0bvCd-uIY2lvVOk7DE2HsxA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<div class="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-lg shadow-lg">
+                        %20 İndirim
+                    </div>
+<div class="absolute bottom-4 left-4 right-4 text-white">
+<h3 class="text-lg font-bold mb-1">Aura Güzellik Merkezi</h3>
+<div class="flex items-center text-xs text-gray-200">
+<span class="material-icons text-yellow-400 text-sm mr-1">star</span>
+<span class="font-bold mr-1">4.9</span>
+<span class="mr-2">(124)</span>
+<span class="w-1 h-1 bg-gray-300 rounded-full mx-1"></span>
+<span>1.2 km</span>
+</div>
+</div>
+</div>
+<div class="w-72 flex-shrink-0 relative rounded-3xl overflow-hidden aspect-[4/3] group shadow-md dark:shadow-none">
+<img alt="Nail polish closeup" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAEcs9KYMffnNgdjnU6BXSJjN8wJOp00FaMai3kDlUMTMQ78gXObTnhAniQjRfh_KNwwJax798thgeyWE4WYZddnQ2Me4qEffPYHBcpRX2CASIAq8Yr3TiJEKgisJjd_wdN9cdgvasR4pATth42IYbdg0oNeHBtB64X9Cb_BC0hYyGBqwggP-u0AkIxIHrXJNSgpjKKERT5Gbu2My2ppVzkkrO-OXQb7CmyVL6HNrFgVLvvyCW7-twAJqHX5XLC_nfBJl8S9k7_A"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<div class="absolute top-4 left-4 bg-white/20 backdrop-blur-md text-white border border-white/30 text-xs font-bold px-3 py-1 rounded-lg">
+                        Popüler
+                    </div>
+<div class="absolute bottom-4 left-4 right-4 text-white">
+<h3 class="text-lg font-bold mb-1">Pera Nail Art Studio</h3>
+<div class="flex items-center text-xs text-gray-200">
+<span class="material-icons text-yellow-400 text-sm mr-1">star</span>
+<span class="font-bold mr-1">4.7</span>
+<span class="mr-2">(85)</span>
+<span class="w-1 h-1 bg-gray-300 rounded-full mx-1"></span>
+<span>0.5 km</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="mt-4">
+<div class="px-5 mb-4">
+<h2 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Kategorilere Göz At</h2>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar gap-6 px-5 pb-2">
+<div class="flex flex-col items-center gap-2 min-w-[64px] cursor-pointer group">
+<div class="w-16 h-16 rounded-full overflow-hidden p-0.5 border-2 border-primary group-hover:scale-105 transition-transform">
+<div class="w-full h-full rounded-full overflow-hidden relative">
+<img alt="Saç" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpHOVKdUDCJAjyxOnwDtmM5ln8JPe5ys0PfAHDFY0oUJkkt_LdDjc6wzF_LfAKTt6mMlIbwnFdnfYvuuXxONxFEzYEf4QB1qPwD4tcZBdWzPev9MQwm_wLyJMPEfo5-JCpOFcfLP_BKSDgFB7huHgWUL1STVfEpDcavdRPaiApaiGF8hwzVOpaVOzs271Zd52aPbj2MNsxw72Lh9UYt-rZk1PTllI8pNxa0OwlPZwqNC0CIRkBRXrl57G3dPMe9e4qPy-tcC62Ow"/>
+</div>
+</div>
+<span class="text-xs font-medium text-text-main-light dark:text-text-main-dark">Saç</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[64px] cursor-pointer group">
+<div class="w-16 h-16 rounded-full overflow-hidden p-0.5 border-2 border-transparent group-hover:border-primary transition-colors">
+<div class="w-full h-full rounded-full overflow-hidden relative">
+<img alt="Makyaj" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkS7Lky6qdX_HAPmezXmnXvAJ7PxFiTGVCM0xcvh8e_e5lBEZP4mGp_kVLTHITdNVNmjOwiFIgpee97Ou5h-Xyxg5uAiWwRyYn30moQTbvhqAjcpANJcXGMEtbBWmIp63-5q3NVZtxfCJB4VJJNl72kdPl93Ugf8mb-uQ2xgmAUDYXJdVWm0cwKCk65YFsCLMZv6DVu6tB4S4eGCXhkqoT1x1n7o4jFO1A8iE7gFFrFEYh_d0-jPrssM8X_nNKBdmQX1n4ySqN0Q"/>
+</div>
+</div>
+<span class="text-xs font-medium text-text-main-light dark:text-text-main-dark">Makyaj</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[64px] cursor-pointer group">
+<div class="w-16 h-16 rounded-full overflow-hidden p-0.5 border-2 border-transparent group-hover:border-primary transition-colors">
+<div class="w-full h-full rounded-full overflow-hidden relative">
+<img alt="Tırnak" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDofV9Imqn3TgCxyswrzGNEIOCjFNDVWdrw9RSa7QFZrNe6UAh5wcE-RaAkVuoRuG5pPDKpjbrDv3bZYvNMjaYMR2aJduENiQ7yA0bZ8u880R9jhSsv5vHh8Tdqe9-V6rd3MCrk1b8Dt4C7W-KR5bjKp269CMamneUIljmq_VYQnNbutg5Sch8Kwsww_Ck4SbfmUTLO646jVC1ZfTjNEhmJsCRoYdz7oMgF1LxUuRU4JhiENLU4DfvMVEMvwydHudl1NZ5La0KrJw"/>
+</div>
+</div>
+<span class="text-xs font-medium text-text-main-light dark:text-text-main-dark">Tırnak</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[64px] cursor-pointer group">
+<div class="w-16 h-16 rounded-full overflow-hidden p-0.5 border-2 border-transparent group-hover:border-primary transition-colors">
+<div class="w-full h-full rounded-full overflow-hidden relative">
+<img alt="Cilt" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY5OVZ8zENIrLlDf49L2Tgy9AAAddT5dE6EGqLjVe1yvy2OjKd88KlXX29kwXWMgfLQxTnAJVgNk7Vf11M8QrgXjS7zX-8YuRoDzp2zLjuK9ARh_fSn01sirM_cGXxUlcrzTU-m8c7QO50IRWbHic5o4aPyuHyIg2iKNy-9H34xAqXCAPqx6Z7Aug2N3W0KgpKJz0qmxB3n22ZoCXqyNe929liJfM3X3KYCI7uJsJo9FD_O-5u5p8CrvCyiIlbMDVgg_eHTIQhfQ"/>
+</div>
+</div>
+<span class="text-xs font-medium text-text-main-light dark:text-text-main-dark">Cilt</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[64px] cursor-pointer group">
+<div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-text-sub-light dark:text-text-sub-dark group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-icons text-3xl">grid_view</span>
+</div>
+<span class="text-xs font-medium text-text-main-light dark:text-text-main-dark">Diğer</span>
+</div>
+</div>
+</section>
+<section class="mt-8 px-5">
+<h2 class="text-lg font-bold text-text-main-light dark:text-text-main-dark mb-4">Yakınınızdaki Salonlar</h2>
+<div class="flex flex-col gap-4">
+<div class="bg-card-light dark:bg-card-dark rounded-2xl p-3 shadow-sm flex gap-4 transition-colors">
+<div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-gray-200">
+<img alt="Elit Güzellik Salonu" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQJYG2flINKc5CfEqB2XJ_FHUhXDKwCjnRYwa87kGj8QlCBTt9vM2S1u-qORJ63pT-GHr9gzBS6Wwspxoe6IoyoyzQAAoqEl2tMo0ubawINNUmfa64uq_uxOmy_O_Zdayv2CyPVOFca-SLkG3ScH8DdCdIgoHprBVxLWb4RjMwByyLYhd7rzPSs0VmgubuEynnHY1lIur4v6_ua2_1-9erkb-MWhWafNP07Z-3BkCI5ZEEs_oUBdfrkVACgStViV2W4N4ZdgKKjg"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-bold text-text-main-light dark:text-text-main-dark leading-tight">Elit Güzellik Salonu</h3>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark mt-1">Saç • Makyaj • Manikür</p>
+</div>
+<button class="text-gray-300 hover:text-primary transition-colors">
+<span class="material-icons">favorite</span>
+</button>
+</div>
+<div class="flex items-center text-xs mt-1">
+<span class="material-icons text-yellow-400 text-sm mr-1">star</span>
+<span class="font-bold text-text-main-light dark:text-text-main-dark mr-1">4.8</span>
+<span class="text-text-sub-light dark:text-text-sub-dark">(120 Yorum)</span>
+</div>
+<div class="flex justify-between items-center mt-2">
+<div class="flex items-center text-xs text-text-sub-light dark:text-text-sub-dark">
+<span class="material-icons-outlined text-sm mr-1">near_me</span>
+                                0.8 km
+                            </div>
+<button class="bg-primary-soft dark:bg-primary/20 text-primary text-xs font-bold px-4 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors">
+                                Randevu Al
+                            </button>
+</div>
+</div>
+</div>
+<div class="bg-card-light dark:bg-card-dark rounded-2xl p-3 shadow-sm flex gap-4 transition-colors">
+<div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-gray-200">
+<img alt="Glow Studio" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrGyRfAIonN_mWFZuyzZTX-HQfoQ8idkhIJcO_29ihyg96f71u6xsqNKFnxLN_gmil6J2NntggOmWDATgYbLx4Wvx9vodlxpDXKslNtBTy53n5PXKSqhzB3qDeJ_B6fakteY-nSZwxzkvkGZ4SYMvEGn89giclTYNPTRZtJdjPfr8EL606qaA2bDoakuug0TB7WYtqxF1WMVwhQaERjJJrbkMRQ2gI7itaMvmUe5jv-pheUSWCtFwEtCVZQyMF3iw-aWwlZ60o5w"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-bold text-text-main-light dark:text-text-main-dark leading-tight">Glow Studio</h3>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark mt-1">Cilt Bakımı • Lazer</p>
+</div>
+<button class="text-gray-300 hover:text-primary transition-colors">
+<span class="material-icons">favorite</span>
+</button>
+</div>
+<div class="flex items-center text-xs mt-1">
+<span class="material-icons text-yellow-400 text-sm mr-1">star</span>
+<span class="font-bold text-text-main-light dark:text-text-main-dark mr-1">4.6</span>
+<span class="text-text-sub-light dark:text-text-sub-dark">(94 Yorum)</span>
+</div>
+<div class="flex justify-between items-center mt-2">
+<div class="flex items-center text-xs text-text-sub-light dark:text-text-sub-dark">
+<span class="material-icons-outlined text-sm mr-1">near_me</span>
+                                1.5 km
+                            </div>
+<button class="bg-primary-soft dark:bg-primary/20 text-primary text-xs font-bold px-4 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors">
+                                Randevu Al
+                            </button>
+</div>
+</div>
+</div>
+<div class="bg-card-light dark:bg-card-dark rounded-2xl p-3 shadow-sm flex gap-4 transition-colors">
+<div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-gray-200">
+<img alt="Lotus Masaj" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI-P2RcnDwg-yew8SjQqTO6cLYMiwkRraTjkNpzJtCrlTlSJgd0BDarFYH7MbENTLc750J9WtLM6qo0k_ZsovMgXFYJ8gN-nVWyag1-fVL1tkrcZyFiUuzMqcoGQvPVzPDwD9rUI2NfLPA_pgc99FOHXOmUk68wn5LgvTkPrOwa3AOqVqWBKIrSRE-v0Yo8atNvKxyLYbBZcbGz1ROLXPyZ6kUMyid8UQHgiSGzAHkCpoogbmiW87Il7dHv7FaE7opTHUbe0hLQw"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-bold text-text-main-light dark:text-text-main-dark leading-tight">Lotus Masaj</h3>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark mt-1">Masaj • Spa • Sauna</p>
+</div>
+<button class="text-gray-300 hover:text-primary transition-colors">
+<span class="material-icons">favorite</span>
+</button>
+</div>
+<div class="flex items-center text-xs mt-1">
+<span class="material-icons text-yellow-400 text-sm mr-1">star</span>
+<span class="font-bold text-text-main-light dark:text-text-main-dark mr-1">4.9</span>
+<span class="text-text-sub-light dark:text-text-sub-dark">(210 Yorum)</span>
+</div>
+<div class="flex justify-between items-center mt-2">
+<div class="flex items-center text-xs text-text-sub-light dark:text-text-sub-dark">
+<span class="material-icons-outlined text-sm mr-1">near_me</span>
+                                2.4 km
+                            </div>
+<button class="bg-primary-soft dark:bg-primary/20 text-primary text-xs font-bold px-4 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors">
+                                Randevu Al
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-card-dark border-t border-gray-100 dark:border-gray-800 pb-safe pt-2 px-6 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+<button class="flex flex-col items-center gap-1 w-16 group">
+<span class="material-icons text-primary text-2xl group-hover:scale-110 transition-transform">home</span>
+<span class="text-[10px] font-medium text-primary">Keşfet</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 group">
+<span class="material-icons-outlined text-text-sub-light dark:text-text-sub-dark text-2xl group-hover:text-primary transition-colors">map</span>
+<span class="text-[10px] font-medium text-text-sub-light dark:text-text-sub-dark group-hover:text-primary">Harita</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 group">
+<span class="material-icons-outlined text-text-sub-light dark:text-text-sub-dark text-2xl group-hover:text-primary transition-colors">calendar_today</span>
+<span class="text-[10px] font-medium text-text-sub-light dark:text-text-sub-dark group-hover:text-primary">Randevular</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 group">
+<span class="material-icons-outlined text-text-sub-light dark:text-text-sub-dark text-2xl group-hover:text-primary transition-colors">person</span>
+<span class="text-[10px] font-medium text-text-sub-light dark:text-text-sub-dark group-hover:text-primary">Profil</span>
+</button>
+</nav>
+</div>
+
+</body></html>
