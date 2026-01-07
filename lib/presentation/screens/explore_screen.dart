@@ -54,10 +54,8 @@ class ExploreScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    if (provider.viewMode == DiscoveryViewMode.list) ...[
-                      _buildLocationHeader(context, provider),
-                      const SizedBox(height: 16),
-                    ],
+                    _buildLocationHeader(context, provider),
+                    const SizedBox(height: 16),
                     const DiscoverySearchBar(),
                   ],
                 ),
@@ -87,7 +85,9 @@ class ExploreScreen extends StatelessWidget {
     BuildContext context,
     DiscoveryProvider provider,
   ) {
-    return Row(
+    final isMapView = provider.viewMode == DiscoveryViewMode.map;
+
+    final content = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
@@ -185,5 +185,25 @@ class ExploreScreen extends StatelessWidget {
         ),
       ],
     );
+
+    if (isMapView) {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: content,
+      );
+    }
+
+    return content;
   }
 }
