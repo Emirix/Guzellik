@@ -68,14 +68,21 @@ class _DiscoveryMapViewState extends State<DiscoveryMapView> {
                     () => _goToCurrentLocation(provider),
                   ),
                   const SizedBox(height: 12),
-                  _buildMapAction(Icons.layers, () {}),
+                  _buildMapAction(
+                    provider.isMapCarouselVisible
+                        ? Icons.keyboard_arrow_down
+                        : Icons.keyboard_arrow_up,
+                    () => provider.toggleMapCarousel(),
+                  ),
                 ],
               ),
             ),
 
-            // 3. Bottom Carousel
-            Positioned(
-              bottom: 100,
+            // 3. Bottom Carousel (Animated)
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              bottom: provider.isMapCarouselVisible ? 100 : -280,
               left: 0,
               right: 0,
               child: SizedBox(

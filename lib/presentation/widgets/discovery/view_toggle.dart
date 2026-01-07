@@ -10,8 +10,13 @@ class ViewToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
+        // Don't show toggle on home view
+        if (provider.viewMode == DiscoveryViewMode.home) {
+          return const SizedBox.shrink();
+        }
+
         final isMap = provider.viewMode == DiscoveryViewMode.map;
-        
+
         return GestureDetector(
           onTap: () => provider.toggleViewMode(),
           child: Container(

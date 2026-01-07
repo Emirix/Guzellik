@@ -6,6 +6,7 @@ import '../widgets/discovery/venue_list_view.dart';
 import '../widgets/discovery/search_bar.dart';
 import '../widgets/discovery/view_toggle.dart';
 import '../widgets/discovery/location_selection_bottom_sheet.dart';
+import '../widgets/discovery/featured_venues.dart';
 import '../../core/theme/app_colors.dart';
 
 class ExploreScreen extends StatelessWidget {
@@ -15,6 +16,12 @@ class ExploreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
+        // Show home view
+        if (provider.viewMode == DiscoveryViewMode.home) {
+          return _buildHomeView(context, provider);
+        }
+
+        // Show map or list view
         return Stack(
           children: [
             // 1. Content (Map or List)
@@ -205,5 +212,40 @@ class ExploreScreen extends StatelessWidget {
     }
 
     return content;
+  }
+
+  Widget _buildHomeView(BuildContext context, DiscoveryProvider provider) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Header with location
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Column(
+                  children: [
+                    _buildLocationHeader(context, provider),
+                    const SizedBox(height: 16),
+                    const DiscoverySearchBar(),
+                  ],
+                ),
+              ),
+            ),
+
+            // Featured Venues
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(top: 24, bottom: 16),
+                child: FeaturedVenues(),
+              ),
+            ),
+
+            // Add more sections here as needed
+          ],
+        ),
+      ),
+    );
   }
 }

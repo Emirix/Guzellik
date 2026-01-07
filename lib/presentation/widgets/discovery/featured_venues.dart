@@ -98,10 +98,13 @@ class FeaturedVenueCard extends StatelessWidget {
         width: 280,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
-          image: DecorationImage(
-            image: NetworkImage(venue.imageUrl),
-            fit: BoxFit.cover,
-          ),
+          image: venue.heroImages.isNotEmpty
+              ? DecorationImage(
+                  image: NetworkImage(venue.heroImages.first),
+                  fit: BoxFit.cover,
+                )
+              : null,
+          color: venue.heroImages.isEmpty ? AppColors.gray200 : null,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -182,7 +185,7 @@ class FeaturedVenueCard extends StatelessWidget {
                       const Icon(Icons.star, color: Colors.yellow, size: 16),
                       const SizedBox(width: 4),
                       Text(
-                        '${venue.rating.toStringAsFixed(1)} (${venue.reviewCount})',
+                        '${venue.rating.toStringAsFixed(1)} (${venue.ratingCount})',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -192,7 +195,9 @@ class FeaturedVenueCard extends StatelessWidget {
                       const Text('•', style: TextStyle(color: Colors.white)),
                       const SizedBox(width: 8),
                       Text(
-                        '${venue.distanceKm?.toStringAsFixed(1) ?? "1.2"} km',
+                        venue.distance != null
+                            ? '${(venue.distance! / 1000).toStringAsFixed(1)} km'
+                            : '1.2 km',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
