@@ -28,6 +28,9 @@ class DiscoveryProvider extends ChangeNotifier {
   String? _manualDistrict;
   bool _isUsingManualLocation = false;
 
+  // Map view state
+  bool _isMapCarouselVisible = true;
+
   DiscoveryViewMode get viewMode => _viewMode;
   List<Venue> get venues => _filteredVenues;
   List<Venue> get featuredVenues => _featuredVenues;
@@ -40,6 +43,12 @@ class DiscoveryProvider extends ChangeNotifier {
   bool get isUsingManualLocation => _isUsingManualLocation;
   String? get manualCity => _manualCity;
   String? get manualDistrict => _manualDistrict;
+  bool get isMapCarouselVisible => _isMapCarouselVisible;
+
+  void toggleMapCarousel() {
+    _isMapCarouselVisible = !_isMapCarouselVisible;
+    notifyListeners();
+  }
 
   DiscoveryProvider() {
     _initialize();
