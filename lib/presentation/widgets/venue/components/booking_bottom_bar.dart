@@ -24,15 +24,15 @@ class BookingBottomBar extends StatelessWidget {
         border: Border(top: BorderSide(color: AppColors.gray100, width: 1)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowMedium,
-            blurRadius: 16,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
             offset: const Offset(0, -4),
           ),
         ],
       ),
       padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
+        left: 20,
+        right: 20,
         top: 16,
         bottom: 16 + MediaQuery.of(context).padding.bottom,
       ),
@@ -48,6 +48,7 @@ class BookingBottomBar extends StatelessWidget {
                   priceLabel ?? 'Hizmet Başlangıç',
                   style: AppTextStyles.caption.copyWith(
                     color: AppColors.gray500,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -59,47 +60,64 @@ class BookingBottomBar extends StatelessWidget {
                       '₺${totalPrice!.toStringAsFixed(0)}',
                       style: AppTextStyles.heading2.copyWith(
                         color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
                       ),
                     ),
                     Text(
                       '/seans',
                       style: AppTextStyles.caption.copyWith(
                         color: AppColors.gray400,
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 20),
           ],
 
           // Booking Button
           Expanded(
-            child: ElevatedButton(
-              onPressed: onBookingTap,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-                shadowColor: AppColors.primary.withOpacity(0.3),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.calendar_month, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Randevu Oluştur',
-                    style: AppTextStyles.buttonLarge.copyWith(
-                      color: AppColors.white,
-                    ),
+            child: Container(
+              height: 52,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
                 ],
+              ),
+              child: ElevatedButton(
+                onPressed: onBookingTap,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.calendar_month, size: 20, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text(
+                      'Randevu Oluştur',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

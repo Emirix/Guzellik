@@ -20,6 +20,7 @@ class Venue {
   final Map<String, dynamic> accessibility;
   final List<dynamic> faq;
   final Map<String, dynamic> socialLinks;
+  final List<String> features;
 
   final String? ownerId;
   final DateTime createdAt;
@@ -42,6 +43,7 @@ class Venue {
     this.accessibility = const {},
     this.faq = const [],
     this.socialLinks = const {},
+    this.features = const [],
     this.ownerId,
     required this.createdAt,
   });
@@ -51,10 +53,10 @@ class Venue {
     // If it's standard ST_AsGeoJSON, it will be different. Assuming a processed format or simple extraction.
 
     return Venue(
-      id: json['id'] as String,
-      name: json['name'] as String,
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? 'İsimsiz Mekan',
       description: json['description'] as String?,
-      address: json['address'] as String,
+      address: json['address'] as String? ?? '',
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
       imageUrl: json['image_url'] as String?,
@@ -72,8 +74,15 @@ class Venue {
       accessibility: json['accessibility'] as Map<String, dynamic>? ?? {},
       faq: json['faq'] as List<dynamic>? ?? [],
       socialLinks: json['social_links'] as Map<String, dynamic>? ?? {},
+      features:
+          (json['features'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       ownerId: json['owner_id'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
     );
   }
 
@@ -96,6 +105,7 @@ class Venue {
       'accessibility': accessibility,
       'faq': faq,
       'social_links': socialLinks,
+      'features': features,
       'owner_id': ownerId,
       'created_at': createdAt.toIso8601String(),
     };

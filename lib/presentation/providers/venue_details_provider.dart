@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/models/venue.dart';
 import '../../data/models/service.dart';
+import '../../data/models/review.dart';
 import '../../data/repositories/venue_repository.dart';
 
 class VenueDetailsProvider extends ChangeNotifier {
@@ -8,11 +9,13 @@ class VenueDetailsProvider extends ChangeNotifier {
 
   Venue? _venue;
   List<Service> _services = [];
+  List<Review> _reviews = [];
   bool _isLoading = false;
   String? _error;
 
   Venue? get venue => _venue;
   List<Service> get services => _services;
+  List<Review> get reviews => _reviews;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -42,6 +45,9 @@ class VenueDetailsProvider extends ChangeNotifier {
 
       // Fetch services for this venue
       _services = await _repository.getServicesByVenueId(venueId);
+
+      // Fetch reviews
+      _reviews = await _repository.getReviewsByVenueId(venueId);
 
       _isLoading = false;
       notifyListeners();

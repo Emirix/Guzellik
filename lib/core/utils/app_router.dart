@@ -8,9 +8,11 @@ import '../../presentation/screens/notifications_screen.dart';
 import '../../presentation/screens/profile_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
+import '../../presentation/screens/auth/password_reset_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
 import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../data/models/venue.dart';
+import '../widgets/auth_guard.dart';
 
 /// App router configuration using go_router
 class AppRouter {
@@ -28,15 +30,23 @@ class AppRouter {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) {
+          final redirect = state.uri.queryParameters['redirect'];
+          return LoginScreen(redirectPath: redirect);
+        },
       ),
       GoRoute(
         path: '/register',
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
       ),
+      GoRoute(
+        path: '/password-reset',
+        name: 'password-reset',
+        builder: (context, state) => const PasswordResetScreen(),
+      ),
 
-      // Main App Routes
+      // Main App Routes (Public)
       GoRoute(
         path: '/',
         name: 'home',
@@ -52,23 +62,37 @@ class AppRouter {
         name: 'search',
         builder: (context, state) => const SearchScreen(),
       ),
+
+      // Protected Routes (Require Authentication)
       GoRoute(
         path: '/favorites',
         name: 'favorites',
-        builder: (context, state) => const FavoritesScreen(),
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Favoriler',
+          redirectPath: '/favorites',
+          child: FavoritesScreen(),
+        ),
       ),
       GoRoute(
         path: '/notifications',
         name: 'notifications',
-        builder: (context, state) => const NotificationsScreen(),
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Bildirimler',
+          redirectPath: '/notifications',
+          child: NotificationsScreen(),
+        ),
       ),
       GoRoute(
         path: '/profile',
         name: 'profile',
-        builder: (context, state) => const ProfileScreen(),
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Profilim',
+          redirectPath: '/profile',
+          child: ProfileScreen(),
+        ),
       ),
 
-      // Venue Details
+      // Venue Details (Public)
       GoRoute(
         path: '/venue/:id',
         name: 'venue-details',

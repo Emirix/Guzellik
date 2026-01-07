@@ -1,6 +1,7 @@
 import '../models/venue.dart';
 import '../models/service.dart';
 import '../models/venue_filter.dart';
+import '../models/review.dart';
 import '../services/supabase_service.dart';
 
 class VenueRepository {
@@ -61,6 +62,16 @@ class VenueRepository {
         .order('category', ascending: true);
 
     return (response as List).map((json) => Service.fromJson(json)).toList();
+  }
+
+  Future<List<Review>> getReviewsByVenueId(String venueId) async {
+    final response = await _supabase
+        .from('reviews')
+        .select('*, profiles(full_name, avatar_url)')
+        .eq('venue_id', venueId)
+        .order('created_at', ascending: false);
+
+    return (response as List).map((json) => Review.fromJson(json)).toList();
   }
 
   Future<List<Venue>> searchVenues({

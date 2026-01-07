@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/venue_details_provider.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../widgets/venue/venue_hero.dart';
+import '../../widgets/venue/v2/venue_hero_v2.dart';
+import '../../widgets/venue/v2/venue_overview_v2.dart';
 import '../../widgets/venue/venue_tab_switcher.dart';
-import '../../widgets/venue/venue_quick_actions.dart';
 import '../../widgets/venue/components/booking_bottom_bar.dart';
 import '../../widgets/venue/tabs/services_tab.dart';
-import '../../widgets/venue/tabs/about_tab.dart';
 import '../../widgets/venue/tabs/experts_tab.dart';
+import '../../widgets/venue/tabs/reviews_tab.dart';
 import '../../../data/models/venue.dart';
 
 class VenueDetailsScreen extends StatefulWidget {
@@ -51,7 +51,7 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundLight,
       body: Consumer<VenueDetailsProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.venue == null) {
@@ -73,27 +73,34 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
               NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
-                    VenueHero(venue: venue),
-                    // Quick Actions Section
+                    VenueHeroV2(venue: venue),
                     SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          VenueQuickActions(venue: venue),
-                          const Divider(height: 1),
-                        ],
+                      child: Container(
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: AppColors.backgroundLight,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(32),
+                          ),
+                        ),
                       ),
                     ),
                     VenueTabSwitcher(tabController: _tabController),
                   ];
                 },
-                body: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    ServicesTab(venueId: venue.id),
-                    AboutTab(venue: venue),
-                    const Center(child: Text('Yorumlar Çok Yakında')),
-                    ExpertsTab(venue: venue),
-                  ],
+                body: Container(
+                  color: AppColors.backgroundLight,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      VenueOverviewV2(venue: venue),
+                      ServicesTab(venueId: venue.id),
+                      venue.id.isNotEmpty
+                          ? ReviewsTab(venueId: venue.id)
+                          : const SizedBox(),
+                      ExpertsTab(venue: venue),
+                    ],
+                  ),
                 ),
               ),
 
@@ -105,15 +112,8 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
                 child: BookingBottomBar(
                   totalPrice: 750, // TODO: Calculate from selected services
                   onBookingTap: () {
-                    // TODO: Navigate to booking screen
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Randevu oluşturma ekranı yakında eklenecek',
-                        ),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    // Navigate to services tab or booking process
+                    _tabController.animateTo(1);
                   },
                 ),
               ),

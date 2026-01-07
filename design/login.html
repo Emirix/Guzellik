@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Kullanıcı Giriş Sayfası</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e23661",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211115",
+                        "gold": "#C5A059", // Adding a gold accent color inline usage
+                        "nude": "#E8DCD5",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom scrollbar hide for cleaner UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b0e11] dark:text-white antialiased">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <!-- Top App Bar -->
+        <div class="flex items-center p-4 justify-between z-10">
+            <button aria-label="Geri"
+                class="flex size-10 items-center justify-center rounded-full bg-white/50 dark:bg-black/20 hover:bg-white dark:hover:bg-black/40 transition-colors">
+                <span class="material-symbols-outlined text-[#1b0e11] dark:text-white"
+                    style="font-size: 24px;">arrow_back</span>
+            </button>
+            <!-- Hidden placeholder for balance -->
+            <div class="size-10"></div>
+        </div>
+        <!-- Scrollable Content -->
+        <div class="flex-1 flex flex-col items-center justify-center w-full px-6 pb-8 -mt-16">
+            <!-- Logo / Branding Area -->
+            <div class="mb-8 flex flex-col items-center">
+                <div
+                    class="size-24 rounded-full bg-white dark:bg-white/10 shadow-lg flex items-center justify-center mb-4 overflow-hidden border border-[#e6d1d6]">
+                    <!-- Placeholder for Logo -->
+                    <img class="w-full h-full object-cover p-2"
+                        data-alt="Minimalist pink beauty brand logo on white background"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbmVX39A42kvGBtVv_K52XQ0OHrTPNQeADY5hmyIQDZBoTnMG2Ij92QAQr9EF1hT89_iCZY8w4Ks_twpOY_lsUc37TbExPiVtAGzkP265oZJrouBaVHiI9qKUkWj0TNBSw1r4DFVygJvQcbdNaMLAtgBmobl9X7tD4Yd0VWva-dQMwr6pyE9JoaHdSlG3cGnqEjxLV5657ODzB1AVD4Oex_DHYV1ujRgXSKP1sHwYaFh8ODEKppS5hoU1JEjoRflvrRnA46AXeAg" />
+                </div>
+                <h1 class="text-[#1b0e11] dark:text-white text-3xl font-bold tracking-tight text-center">Giriş Yap</h1>
+                <p class="text-[#955062] dark:text-[#e6d1d6] text-sm mt-2 font-medium">Güzellik dünyasına tekrar hoş
+                    geldiniz</p>
+            </div>
+            <!-- Login Form -->
+            <div class="w-full max-w-sm space-y-5">
+                <!-- Email/Phone Input -->
+                <div class="relative group">
+                    <label class="block text-sm font-medium text-[#1b0e11] dark:text-gray-200 mb-2 pl-1">
+                        E-posta veya Telefon Numarası
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-[#955062]">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">mail</span>
+                        </span>
+                        <input
+                            class="form-input block w-full rounded-full border border-[#e6d1d6] dark:border-gray-600 bg-white dark:bg-white/5 pl-11 pr-4 py-3.5 text-base text-[#1b0e11] dark:text-white placeholder:text-[#955062]/60 focus:border-primary focus:ring-primary focus:outline-none transition-all shadow-sm"
+                            placeholder="isim@ornek.com" type="text" />
+                    </div>
+                </div>
+                <!-- Password Input -->
+                <div class="relative group">
+                    <label class="block text-sm font-medium text-[#1b0e11] dark:text-gray-200 mb-2 pl-1">
+                        Şifre
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-[#955062]">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">lock</span>
+                        </span>
+                        <input
+                            class="form-input block w-full rounded-full border border-[#e6d1d6] dark:border-gray-600 bg-white dark:bg-white/5 pl-11 pr-12 py-3.5 text-base text-[#1b0e11] dark:text-white placeholder:text-[#955062]/60 focus:border-primary focus:ring-primary focus:outline-none transition-all shadow-sm"
+                            placeholder="••••••••" type="password" />
+                        <button
+                            class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#955062] hover:text-primary transition-colors"
+                            type="button">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">visibility_off</span>
+                        </button>
+                    </div>
+                    <!-- Forgot Password Link -->
+                    <div class="flex justify-end mt-2 px-1">
+                        <a class="text-sm font-medium text-[#C5A059] hover:text-primary transition-colors" href="#">
+                            Şifremi Unuttum?
+                        </a>
+                    </div>
+                </div>
+                <!-- Login Button -->
+                <button
+                    class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-full shadow-md shadow-primary/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 mt-4">
+                    <span>Giriş Yap</span>
+                    <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
+                </button>
+                <!-- Social Login Divider -->
+                <div class="relative py-2">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-[#e6d1d6] dark:border-gray-700"></div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <span
+                            class="bg-background-light dark:bg-background-dark px-4 text-xs uppercase tracking-wider text-[#955062]">
+                            veya şununla devam et
+                        </span>
+                    </div>
+                </div>
+                <!-- Social Buttons -->
+                <div class="flex gap-4 justify-center">
+                    <button
+                        class="flex items-center justify-center size-14 rounded-full bg-white border border-[#e6d1d6] shadow-sm hover:bg-gray-50 transition-colors">
+                        <!-- Google Icon (Simplified SVG representation) -->
+                        <div class="w-6 h-6 bg-[url('https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg')] bg-cover"
+                            data-alt="Google logo icon"></div>
+                    </button>
+                    <button
+                        class="flex items-center justify-center size-14 rounded-full bg-white border border-[#e6d1d6] shadow-sm hover:bg-gray-50 transition-colors">
+                        <!-- Apple Icon (Simplified Material Icon as placeholder for Apple logo) -->
+                        <div class="w-6 h-6 bg-[url('https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg')] bg-cover"
+                            data-alt="Apple logo icon"></div>
+                    </button>
+                    <button
+                        class="flex items-center justify-center size-14 rounded-full bg-white border border-[#e6d1d6] shadow-sm hover:bg-gray-50 transition-colors">
+                        <div class="w-6 h-6 bg-[url('https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg')] bg-cover"
+                            data-alt="Facebook logo icon"></div>
+                    </button>
+                </div>
+            </div>
+            <!-- Footer Link -->
+            <div class="mt-8 text-center">
+                <p class="text-[#1b0e11] dark:text-gray-300 text-sm">
+                    Hesabın yok mu?
+                    <a class="font-bold text-primary hover:text-primary/80 transition-colors ml-1" href="#">
+                        Kayıt Ol
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

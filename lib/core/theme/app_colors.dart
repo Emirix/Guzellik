@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 /// Color palette for the beauty services platform
 /// Updated based on design specifications
 class AppColors {
-  // Primary Color (Vibrant Pink/Rouge)
-  static const Color primary = Color(0xFFF53F85);
+  // Primary Color (Vibrant Pink/Rouge) - From Design V2
+  static const Color primary = Color(0xFFEE2B5B);
   static const Color primaryLight = Color(0xFFFFEAF3);
   static const Color primaryDark = Color(0xFFD4316D);
 
   // Secondary (Muted Rose/Sand)
   static const Color secondary = Color(0xFF9A4C5F);
 
-  // Nude Palette
+  // Nude Palette - From Design V2
+  static const Color nude = Color(0xFFF3E7EA);
+  static const Color nudeDark = Color(0xFFF3E7EA); // Keep for compatibility
   static const Color nudeLight = Color(0xFFFCF8F9);
-  static const Color nudeDark = Color(0xFFF3E7EA);
+  static const Color backgroundLight = Color(0xFFFFF9FA);
+  static const Color backgroundDark = Color(0xFF221015);
 
   // Gold Accent (Premium)
   static const Color gold = Color(0xFFD4AF37);
@@ -49,7 +52,6 @@ class AppColors {
   static const Color shadowDark = Color(0x33000000);
 
   // Design Palette (from design files)
-  static const Color nude = Color(0xFFF5E6D3);
   static const Color softPink = Color(0xFFFFB6C1);
   static const Color lightGray = Color(0xFFFAFAFA);
 

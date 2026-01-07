@@ -6,46 +6,47 @@ import '../../data/services/auth_service.dart';
 /// Manages user authentication state and provides auth-related functionality
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
-  
+
   User? _currentUser;
   bool _isLoading = false;
   String? _errorMessage;
-  
+
   AuthProvider() {
     _init();
   }
-  
+
   // Getters
   User? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _currentUser != null;
-  
+
   /// Initialize auth provider
   void _init() {
     _currentUser = _authService.currentUser;
-    
+    print(
+      '🔐 AuthProvider initialized - Current user: ${_currentUser?.email ?? "null"}',
+    );
+
     // Listen to auth state changes
     _authService.authStateChanges.listen((AuthState state) {
       _currentUser = state.session?.user;
+      print('🔐 Auth state changed - User: ${_currentUser?.email ?? "null"}');
       notifyListeners();
     });
   }
-  
+
   /// Sign in with email and password
-  Future<bool> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool> signIn({required String email, required String password}) async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       final response = await _authService.signIn(
         email: email,
         password: password,
       );
-      
+
       _currentUser = response.user;
       _setLoading(false);
       return true;
@@ -55,7 +56,7 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
-  
+
   /// Sign up with email and password
   Future<bool> signUp({
     required String email,
@@ -65,7 +66,7 @@ class AuthProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       final response = await _authService.signUp(
         email: email,
@@ -73,7 +74,7 @@ class AuthProvider with ChangeNotifier {
         fullName: fullName,
         phone: phone,
       );
-      
+
       _currentUser = response.user;
       _setLoading(false);
       return true;
@@ -83,12 +84,12 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
-  
+
   /// Sign out
   Future<void> signOut() async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       await _authService.signOut();
       _currentUser = null;
@@ -98,12 +99,12 @@ class AuthProvider with ChangeNotifier {
       _setLoading(false);
     }
   }
-  
+
   /// Reset password
   Future<bool> resetPassword(String email) async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       await _authService.resetPassword(email);
       _setLoading(false);
@@ -114,7 +115,7 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
-  
+
   /// Update user profile
   Future<bool> updateProfile({
     String? fullName,
@@ -123,7 +124,7 @@ class AuthProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       await _authService.updateProfile(
         fullName: fullName,
@@ -138,19 +139,19 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
-  
+
   /// Set loading state
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
   }
-  
+
   /// Set error message
   void _setError(String message) {
     _errorMessage = message;
     notifyListeners();
   }
-  
+
   /// Clear error message
   void _clearError() {
     _errorMessage = null;

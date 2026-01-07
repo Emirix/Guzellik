@@ -1,0 +1,26 @@
+# Tasks: Redesign Venue Details to V2
+
+- [x] **Infrastructure & Models**
+    - [x] Update `Venue` model to include `certificates`, `features`, and `instagramUsername` if missing.
+    - [x] Update `AppColors` and `AppTheme` with the new design tokens (Nude color, specific shadows, glassmorphism styles).
+- [x] **Core Layout Redesign**
+    - [x] Modify `VenueDetailsScreen` to transition from 4 tabs to a more overview-centric layout.
+    - [x] Implement the new `NestedScrollView` header with updated `VenueHero`.
+- [x] **Component Development (V2)**
+    - [x] Create/Update `VenueHeroV2`: pagination, glass buttons, rounded transition.
+    - [x] Create `VenueIdentityV2`: Title, Location, category, and the floating logo card.
+    - [x] Create `VenueQuickActionsV2`: 4-column grid with updated icons and labels.
+    - [x] Create `ExpertsSection`: Horizontal scrollable list as shown in the design.
+    - [x] Create `WorkingHoursCardV2`: List format matching the design, including the "currently open" badge.
+    - [x] Create `MapPreviewV2`: Integrated map image with "See on Map" overlay.
+    - [x] Create `TrustBadgesGrid`: Certificates and awards section.
+    - [x] Create `FeaturesGrid`: Amenities chips.
+    - [x] Create `ReviewsPreview`: Minimalist review card as shown in the design.
+- [x] **Integration & Polish**
+    - [x] Update `AboutTab` to use all the new components in a single column.
+    - [x] Update `BookingBottomBar` to include the starting price and match the button style.
+    - [x] Ensure dark mode compatibility for all new components.
+    - [x] Verify 1:1 visual alignment with `mekan_detay_sayfası_2`.
+- [x] **Validation**
+    - [x] Run `openspec validate redesign-venue-details-v2 --strict`.
+    - [x] Verification on device/emulator.

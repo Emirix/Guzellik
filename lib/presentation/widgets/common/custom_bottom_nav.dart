@@ -10,6 +10,8 @@ class CustomBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notificationCount = context.watch<NotificationProvider>().unreadCount;
+
     return Consumer<AppStateProvider>(
       builder: (context, appState, _) {
         return BottomNavigationBar(
@@ -17,41 +19,37 @@ class CustomBottomNav extends StatelessWidget {
           onTap: (index) => appState.setBottomNavIndex(index),
           type: BottomNavigationBarType.fixed,
           items: [
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.explore_outlined),
               activeIcon: Icon(Icons.explore),
               label: 'Keşfet',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.search_outlined),
               activeIcon: Icon(Icons.search),
               label: 'Ara',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.favorite_outline),
               activeIcon: Icon(Icons.favorite),
               label: 'Favoriler',
             ),
             BottomNavigationBarItem(
-              icon: Consumer<NotificationProvider>(
-                builder: (context, provider, _) => Badge(
-                  label: Text(provider.unreadCount.toString()),
-                  isLabelVisible: provider.unreadCount > 0,
-                  backgroundColor: Colors.red,
-                  child: const Icon(Icons.notifications_outlined),
-                ),
+              icon: Badge(
+                label: Text(notificationCount.toString()),
+                isLabelVisible: notificationCount > 0,
+                backgroundColor: Colors.red,
+                child: const Icon(Icons.notifications_outlined),
               ),
-              activeIcon: Consumer<NotificationProvider>(
-                builder: (context, provider, _) => Badge(
-                  label: Text(provider.unreadCount.toString()),
-                  isLabelVisible: provider.unreadCount > 0,
-                  backgroundColor: Colors.red,
-                  child: const Icon(Icons.notifications),
-                ),
+              activeIcon: Badge(
+                label: Text(notificationCount.toString()),
+                isLabelVisible: notificationCount > 0,
+                backgroundColor: Colors.red,
+                child: const Icon(Icons.notifications),
               ),
               label: 'Bildirimler',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
               activeIcon: Icon(Icons.person),
               label: 'Profil',

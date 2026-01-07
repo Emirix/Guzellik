@@ -3,7 +3,7 @@
 ## Purpose
 Defines the user interface and interaction requirements for the comprehensive venue details screen, ensuring a premium "one-stop" information hub for users.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Premium Hero Experience
 The system SHALL provide a high-impact visual header with integrated navigation and actions.

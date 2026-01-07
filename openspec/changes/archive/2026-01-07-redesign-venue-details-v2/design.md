@@ -32,3 +32,6 @@ The "Services" will remain a tab for easy access to booking, or we will implemen
     - Glassmorphism for header buttons (`bg-white/30 backdrop-blur-md`).
     - Specific shadows for cards (`shadow-[0_-4px_20px_rgba(0,0,0,0.05)]`).
     - Pagination dots for hero.
+    - **First Expert Highlight**: The first expert in the horizontal list should have a `border-2 border-primary/20` decoration as seen in `code.html`.
+    - **Booking Bar Price**: The price should be formatted as `₺750` in primary color, with `/seans` or similar suffix in grey.
+

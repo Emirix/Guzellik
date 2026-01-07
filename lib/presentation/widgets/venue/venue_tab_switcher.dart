@@ -34,28 +34,57 @@ class _VenueTabSwitcherDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     return Container(
-      color: AppColors.background,
-      child: Column(
-        children: [
-          TabBar(
-            controller: tabController,
-            labelColor: AppColors.primary,
-            unselectedLabelColor: AppColors.gray500,
-            indicatorColor: AppColors.primary,
-            indicatorWeight: 3,
-            labelStyle: AppTextStyles.subtitle2.copyWith(
-              fontWeight: FontWeight.bold,
+      color: AppColors.backgroundLight,
+      alignment: Alignment.center,
+      child: Container(
+        height: 44,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.nude),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowLight,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-            unselectedLabelStyle: AppTextStyles.subtitle2,
-            tabs: const [
-              Tab(text: 'Hizmetler'),
-              Tab(text: 'Hakkında'),
-              Tab(text: 'Yorumlar'),
-              Tab(text: 'Uzmanlar'),
+          ],
+        ),
+        child: TabBar(
+          controller: tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: AppColors.gray600,
+          indicator: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            color: AppColors.primary,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
-          Divider(height: 1, color: AppColors.gray100),
-        ],
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: Colors.transparent,
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          labelPadding: EdgeInsets.zero,
+          labelStyle: AppTextStyles.subtitle2.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+          unselectedLabelStyle: AppTextStyles.subtitle2.copyWith(
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+          ),
+          tabs: const [
+            Tab(text: 'Hakkında'),
+            Tab(text: 'Hizmetler'),
+            Tab(text: 'Yorumlar'),
+            Tab(text: 'Uzmanlar'),
+          ],
+        ),
       ),
     );
   }
