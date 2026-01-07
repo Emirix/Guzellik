@@ -2,6 +2,7 @@ import '../models/venue.dart';
 import '../models/service.dart';
 import '../models/venue_filter.dart';
 import '../models/review.dart';
+import '../models/venue_photo.dart';
 import '../services/supabase_service.dart';
 
 class VenueRepository {
@@ -34,24 +35,56 @@ class VenueRepository {
     return response.map((json) => Venue.fromJson(json)).toList();
   }
 
-  Future<void> followVenue(String venueId) async {
-    final userId = _supabase.currentUser?.id;
-    if (userId == null) throw Exception('User not authenticated');
+  /// Check if current user is following a venue
+  Future<bool> checkIfFollowing(String venueId) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) return false;
 
-    await _supabase.from('follows').insert({
-      'user_id': userId,
-      'venue_id': venueId,
-    });
+      final response = await _supabase
+          .from('follows')
+          .select()
+          .eq('user_id', userId)
+          .eq('venue_id', venueId)
+          .maybeSingle();
+
+      return response != null;
+    } catch (e) {
+      print('Error checking follow status: $e');
+      return false;
+    }
   }
 
-  Future<void> unfollowVenue(String venueId) async {
-    final userId = _supabase.currentUser?.id;
-    if (userId == null) throw Exception('User not authenticated');
+  /// Follow a venue
+  Future<void> followVenue(String venueId) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
 
-    await _supabase.from('follows').delete().match({
-      'user_id': userId,
-      'venue_id': venueId,
-    });
+      await _supabase.from('follows').insert({
+        'user_id': userId,
+        'venue_id': venueId,
+      });
+    } catch (e) {
+      print('Error following venue: $e');
+      rethrow;
+    }
+  }
+
+  /// Unfollow a venue
+  Future<void> unfollowVenue(String venueId) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
+
+      await _supabase.from('follows').delete().match({
+        'user_id': userId,
+        'venue_id': venueId,
+      });
+    } catch (e) {
+      print('Error unfollowing venue: $e');
+      rethrow;
+    }
   }
 
   Future<List<Service>> getServicesByVenueId(String venueId) async {
@@ -114,5 +147,43 @@ class VenueRepository {
 
       return true;
     }).toList();
+  }
+
+  // Gallery Photo Methods
+
+  /// Fetch all photos for a venue, ordered by sort_order
+  Future<List<VenuePhoto>> fetchVenuePhotos(String venueId) async {
+    final response = await _supabase
+        .from('venue_photos')
+        .select()
+        .eq('venue_id', venueId)
+        .order('sort_order', ascending: true);
+
+    return (response as List).map((json) => VenuePhoto.fromJson(json)).toList();
+  }
+
+  /// Fetch photos filtered by category
+  Future<List<VenuePhoto>> fetchPhotosByCategory(
+    String venueId,
+    PhotoCategory category,
+  ) async {
+    final response = await _supabase
+        .from('venue_photos')
+        .select()
+        .eq('venue_id', venueId)
+        .eq('category', category.toJson())
+        .order('sort_order', ascending: true);
+
+    return (response as List).map((json) => VenuePhoto.fromJson(json)).toList();
+  }
+
+  /// Like a photo (increment likes_count)
+  Future<void> likePhoto(String photoId) async {
+    await _supabase.rpc('increment_photo_likes', params: {'photo_id': photoId});
+  }
+
+  /// Unlike a photo (decrement likes_count)
+  Future<void> unlikePhoto(String photoId) async {
+    await _supabase.rpc('decrement_photo_likes', params: {'photo_id': photoId});
   }
 }

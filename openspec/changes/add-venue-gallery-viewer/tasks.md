@@ -3,47 +3,47 @@
 ## 1. Database & Schema Setup
 
 ### 1.1 Create venue_photos table migration
-- [ ] Create migration file: `supabase/migrations/YYYYMMDDHHMMSS_create_venue_photos_table.sql`
-- [ ] Define `venue_photos` table schema with all fields (id, venue_id, url, thumbnail_url, title, category, service_id, uploaded_at, sort_order, is_hero_image, likes_count)
-- [ ] Add foreign key constraints (venue_id → venues, service_id → services)
-- [ ] Add check constraints (category enum, valid URL format)
-- [ ] Create indexes (venue_id, category, sort_order)
+- [x] Create migration file: `supabase/migrations/YYYYMMDDHHMMSS_create_venue_photos_table.sql`
+- [x] Define `venue_photos` table schema with all fields (id, venue_id, url, thumbnail_url, title, category, service_id, uploaded_at, sort_order, is_hero_image, likes_count)
+- [x] Add foreign key constraints (venue_id → venues, service_id → services)
+- [x] Add check constraints (category enum, valid URL format)
+- [x] Create indexes (venue_id, category, sort_order)
 - [ ] Test migration locally with Supabase CLI
 
 ### 1.2 Update venues table schema
-- [ ] Create migration file: `supabase/migrations/YYYYMMDDHHMMSS_add_hero_images_to_venues.sql`
-- [ ] Add `hero_images` JSONB column with default empty array
-- [ ] Backfill existing `image_url` values into `hero_images[0]`
+- [x] Create migration file: `supabase/migrations/YYYYMMDDHHMMSS_add_hero_images_to_venues.sql`
+- [x] Add `hero_images` JSONB column with default empty array
+- [x] Backfill existing `image_url` values into `hero_images[0]`
 - [ ] Test migration locally
 
 ### 1.3 Verify RLS policies
-- [ ] Add RLS policies for `venue_photos` table (read: public, write: venue owners only)
+- [x] Add RLS policies for `venue_photos` table (read: public, write: venue owners only)
 - [ ] Test policies with different user roles
 
 ## 2. Data Layer Implementation
 
 ### 2.1 Create VenuePhoto model
-- [ ] Create `lib/data/models/venue_photo.dart`
-- [ ] Define `VenuePhoto` class with all properties
-- [ ] Implement `PhotoCategory` enum (interior, exterior, service_result, team, equipment)
-- [ ] Add `fromJson` and `toJson` methods
+- [x] Create `lib/data/models/venue_photo.dart`
+- [x] Define `VenuePhoto` class with all properties
+- [x] Implement `PhotoCategory` enum (interior, exterior, service_result, team, equipment)
+- [x] Add `fromJson` and `toJson` methods
 - [ ] Add unit tests for model serialization
 
 ### 2.2 Update Venue model
-- [ ] Edit `lib/data/models/venue.dart`
-- [ ] Add `heroImages` field (List<String>)
-- [ ] Add optional `galleryPhotos` field (List<VenuePhoto>?)
-- [ ] Update `fromJson` to handle new fields
-- [ ] Update `toJson` to serialize new fields
-- [ ] Add backward compatibility for `imageUrl` field
+- [x] Edit `lib/data/models/venue.dart`
+- [x] Add `heroImages` field (List<String>)
+- [x] Add optional `galleryPhotos` field (List<VenuePhoto>?)
+- [x] Update `fromJson` to handle new fields
+- [x] Update `toJson` to serialize new fields
+- [x] Add backward compatibility for `imageUrl` field
 - [ ] Update unit tests
 
 ### 2.3 Update VenueRepository
-- [ ] Edit `lib/data/repositories/venue_repository.dart`
-- [ ] Add `fetchVenuePhotos(String venueId)` method
-- [ ] Add `fetchPhotosByCategory(String venueId, PhotoCategory category)` method
-- [ ] Add `likePhoto(String photoId)` method
-- [ ] Add `unlikePhoto(String photoId)` method
+- [x] Edit `lib/data/repositories/venue_repository.dart`
+- [x] Add `fetchVenuePhotos(String venueId)` method
+- [x] Add `fetchPhotosByCategory(String venueId, PhotoCategory category)` method
+- [x] Add `likePhoto(String photoId)` method
+- [x] Add `unlikePhoto(String photoId)` method
 - [ ] Update `getVenueById` to optionally fetch gallery photos
 - [ ] Add integration tests
 
@@ -57,44 +57,44 @@
 ## 3. Core UI Components
 
 ### 3.1 Build VenueHeroCarousel widget
-- [ ] Create `lib/presentation/widgets/venue/venue_hero_carousel.dart`
-- [ ] Implement PageView.builder for image carousel
-- [ ] Add pagination dots indicator
-- [ ] Add photo count badge (e.g., "1/5")
-- [ ] Add tap gesture to open full-screen viewer
-- [ ] Integrate parallax scroll effect (if not already present)
-- [ ] Add loading and error states
+- [x] Create `lib/presentation/widgets/venue/venue_hero_carousel.dart`
+- [x] Implement PageView.builder for image carousel
+- [x] Add pagination dots indicator
+- [x] Add photo count badge (e.g., "1/5")
+- [x] Add tap gesture to open full-screen viewer
+- [x] Integrate parallax scroll effect (if not already present)
+- [x] Add loading and error states
 - [ ] Test with single and multiple images
 
 ### 3.2 Build PhotoThumbnailGrid widget
-- [ ] Create `lib/presentation/widgets/venue/components/photo_thumbnail_grid.dart`
-- [ ] Implement GridView with responsive column count
-- [ ] Add category filter chips
-- [ ] Use cached_network_image for thumbnails
+- [x] Create `lib/presentation/widgets/venue/components/photo_thumbnail_grid.dart`
+- [x] Implement GridView with responsive column count
+- [x] Add category filter chips
+- [x] Use cached_network_image for thumbnails
 - [ ] Add lazy loading with pagination
-- [ ] Add tap gesture to open full-screen viewer
-- [ ] Add empty state (no photos)
+- [x] Add tap gesture to open full-screen viewer
+- [x] Add empty state (no photos)
 - [ ] Test with various photo counts and categories
 
 ### 3.3 Build PhotoGalleryViewer (full-screen)
-- [ ] Create `lib/presentation/widgets/venue/photo_gallery_viewer.dart`
-- [ ] Add `photo_view` package to `pubspec.yaml`
-- [ ] Implement PhotoViewGallery for swipeable full-screen images
-- [ ] Add pinch-to-zoom functionality
-- [ ] Add bottom metadata sheet (title, date, category)
-- [ ] Add action bar (share, download, like, close)
-- [ ] Implement auto-hide metadata after 3 seconds
+- [x] Create `lib/presentation/widgets/venue/photo_gallery_viewer.dart`
+- [x] Add `photo_view` package to `pubspec.yaml`
+- [x] Implement PhotoViewGallery for swipeable full-screen images
+- [x] Add pinch-to-zoom functionality
+- [x] Add bottom metadata sheet (title, date, category)
+- [x] Add action bar (share, download, like, close)
+- [x] Implement auto-hide metadata after 3 seconds
 - [ ] Add smooth open/close transitions
 - [ ] Test zoom, swipe, and actions
 
 ### 3.4 Build BeforeAfterViewer widget
-- [ ] Create `lib/presentation/widgets/venue/before_after_viewer.dart`
-- [ ] Implement custom slider comparison widget (ClipRect + Stack)
-- [ ] Add draggable divider line with handle
-- [ ] Add horizontal/vertical orientation toggle
-- [ ] Add metadata display (service name, date, description)
-- [ ] Add action bar (share combined image, download, close)
-- [ ] Add smooth slider animations
+- [x] Create `lib/presentation/widgets/venue/before_after_viewer.dart`
+- [x] Implement custom slider comparison widget (ClipRect + Stack)
+- [x] Add draggable divider line with handle
+- [x] Add horizontal/vertical orientation toggle
+- [x] Add metadata display (service name, date, description)
+- [x] Add action bar (share combined image, download, close)
+- [x] Add smooth slider animations
 - [ ] Test with both orientations
 
 ## 4. Integration into Venue Details Screen

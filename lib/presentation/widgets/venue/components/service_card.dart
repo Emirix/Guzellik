@@ -209,7 +209,7 @@ class ServiceCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '₺${service.price.toStringAsFixed(0)}',
+                          '₺${service.price?.toStringAsFixed(0) ?? '0'}',
                           style: AppTextStyles.heading3.copyWith(
                             color: AppColors.primary,
                           ),

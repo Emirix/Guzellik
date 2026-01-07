@@ -9,6 +9,7 @@ class NotificationModel {
   final bool isRead;
   final DateTime createdAt;
   final Map<String, dynamic>? metadata;
+  final String? venueId; // Reference to venue that sent the notification
 
   NotificationModel({
     required this.id,
@@ -19,6 +20,7 @@ class NotificationModel {
     this.isRead = false,
     required this.createdAt,
     this.metadata,
+    this.venueId,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class NotificationModel {
       isRead: json['is_read'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
       metadata: json['metadata'] as Map<String, dynamic>?,
+      venueId: json['venue_id'] as String?,
     );
   }
 
@@ -47,6 +50,7 @@ class NotificationModel {
       'is_read': isRead,
       'created_at': createdAt.toIso8601String(),
       'metadata': metadata,
+      'venue_id': venueId,
     };
   }
 
@@ -59,6 +63,7 @@ class NotificationModel {
     bool? isRead,
     DateTime? createdAt,
     Map<String, dynamic>? metadata,
+    String? venueId,
   }) {
     return NotificationModel(
       id: id ?? this.id,
@@ -69,6 +74,7 @@ class NotificationModel {
       isRead: isRead ?? this.isRead,
       createdAt: createdAt ?? this.createdAt,
       metadata: metadata ?? this.metadata,
+      venueId: venueId ?? this.venueId,
     );
   }
 }

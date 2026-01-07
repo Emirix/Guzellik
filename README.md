@@ -98,8 +98,11 @@ lib/
 
 4. **Configure Firebase**
    
+   Follow the detailed setup guide in [`docs/firebase-setup.md`](docs/firebase-setup.md):
    - Add `google-services.json` to `android/app/`
    - Add `GoogleService-Info.plist` to `ios/Runner/`
+   - Configure FCM for push notifications
+   - Upload APNs key for iOS notifications
 
 5. **Run the app**
    ```bash
