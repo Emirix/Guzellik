@@ -98,7 +98,7 @@ class VenueCard extends StatelessWidget {
                         const Icon(Icons.star, color: AppColors.gold, size: 14),
                         const SizedBox(width: 4),
                         Text(
-                          '4.9', // Hardcoded rating for UI demo
+                          venue.rating.toStringAsFixed(1),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -150,7 +150,7 @@ class VenueCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${venue.address} • 1.2 km',
+                    '${venue.address} • ${venue.distance != null ? (venue.distance! / 1000).toStringAsFixed(1) : '1.2'} km',
                     style: const TextStyle(
                       color: AppColors.secondary,
                       fontSize: 13,
@@ -255,17 +255,17 @@ class VenueCard extends StatelessWidget {
                     children: [
                       const Icon(Icons.star, color: Colors.amber, size: 14),
                       const SizedBox(width: 4),
-                      const Text(
-                        '4.8',
-                        style: TextStyle(
+                      Text(
+                        venue.rating.toStringAsFixed(1),
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '(120 Yorum)',
-                        style: TextStyle(
+                        '(${venue.ratingCount} Yorum)',
+                        style: const TextStyle(
                           color: AppColors.gray500,
                           fontSize: 12,
                         ),
@@ -276,17 +276,17 @@ class VenueCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.near_me,
                             color: AppColors.gray400,
                             size: 14,
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            '0.8 km',
-                            style: TextStyle(
+                            '${venue.distance != null ? (venue.distance! / 1000).toStringAsFixed(1) : '0.8'} km',
+                            style: const TextStyle(
                               color: AppColors.gray400,
                               fontSize: 12,
                             ),
@@ -303,7 +303,7 @@ class VenueCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
-                          'Randevu Al',
+                          'İncele',
                           style: TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,

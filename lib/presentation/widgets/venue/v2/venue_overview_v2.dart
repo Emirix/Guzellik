@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../data/models/venue.dart';
+import '../../../../data/models/review.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import 'venue_identity_v2.dart';
@@ -10,11 +11,19 @@ import 'map_preview_v2.dart';
 import 'trust_badges_grid_v2.dart';
 import 'features_grid_v2.dart';
 import 'reviews_preview_v2.dart';
+import 'gallery_section_v2.dart';
 
 class VenueOverviewV2 extends StatelessWidget {
   final Venue venue;
+  final List<Review> reviews;
+  final VoidCallback onSeeAll;
 
-  const VenueOverviewV2({super.key, required this.venue});
+  const VenueOverviewV2({
+    super.key,
+    required this.venue,
+    required this.reviews,
+    required this.onSeeAll,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +91,10 @@ class VenueOverviewV2 extends StatelessWidget {
         ),
         const SizedBox(height: 32),
 
+        // 4. Gallery Section
+        GallerySectionV2(venue: venue),
+        const SizedBox(height: 32),
+
         // 4. Experts Section
         ExpertsSectionV2(venue: venue),
         const SizedBox(height: 24),
@@ -127,7 +140,11 @@ class VenueOverviewV2 extends StatelessWidget {
         // 7. Reviews Section
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: ReviewsPreviewV2(venue: venue),
+          child: ReviewsPreviewV2(
+            venue: venue,
+            reviews: reviews,
+            onSeeAll: onSeeAll,
+          ),
         ),
 
         // Adding bottom padding for the fixed bar

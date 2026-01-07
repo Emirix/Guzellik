@@ -57,4 +57,9 @@ class Review {
       'created_at': createdAt.toIso8601String(),
     };
   }
+
+  bool isOwnedBy(String? currentUserId) {
+    if (currentUserId == null) return false;
+    return userId == currentUserId;
+  }
 }

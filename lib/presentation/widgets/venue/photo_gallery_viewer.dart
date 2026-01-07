@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../../data/models/venue_photo.dart';
+import '../../../core/services/photo_actions_service.dart';
 
 class PhotoGalleryViewer extends StatefulWidget {
   final List<VenuePhoto> photos;
@@ -60,11 +60,33 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
   }
 
   void _sharePhoto() {
-    final photo = _currentPhoto;
-    Share.share(
-      'Mekan: ${widget.venueName}\n${photo.title ?? "Fotoğraf"}\n${photo.url}',
-      subject: '${widget.venueName} - ${photo.title ?? "Fotoğraf"}',
+    PhotoActionsService.sharePhoto(
+      _currentPhoto.url,
+      widget.venueName,
+      title: _currentPhoto.title,
     );
+  }
+
+  Future<void> _downloadPhoto() async {
+    final success = await PhotoActionsService.downloadPhoto(
+      _currentPhoto.url,
+      'photo_${_currentPhoto.id}.jpg',
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success ? 'Fotoğraf kaydedildi' : 'Kaydetme başarısız oldu',
+          ),
+          backgroundColor: success ? Colors.green : Colors.red,
+        ),
+      );
+    }
+
+    if (success && widget.onDownload != null) {
+      widget.onDownload?.call(_currentPhoto.id);
+    }
   }
 
   @override
@@ -213,13 +235,11 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                         label: 'Paylaş',
                         onTap: _sharePhoto,
                       ),
-                      if (widget.onDownload != null)
-                        _buildActionButton(
-                          icon: Icons.download,
-                          label: 'İndir',
-                          onTap: () =>
-                              widget.onDownload?.call(_currentPhoto.id),
-                        ),
+                      _buildActionButton(
+                        icon: Icons.download,
+                        label: 'İndir',
+                        onTap: _downloadPhoto,
+                      ),
                       if (widget.onLike != null)
                         _buildActionButton(
                           icon: Icons.favorite_border,

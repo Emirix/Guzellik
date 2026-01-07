@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../../providers/venue_details_provider.dart';
+import '../../../providers/review_submission_provider.dart';
+import '../../../../data/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../review/rating_distribution_chart.dart';
+import '../../review/review_submission_bottom_sheet.dart';
+import '../../review/edit_review_bottom_sheet.dart';
 import '../components/review_card.dart';
 
 class ReviewsTab extends StatelessWidget {
@@ -12,98 +18,235 @@ class ReviewsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<VenueDetailsProvider>(
-      builder: (context, provider, child) {
+    final currentUserId = SupabaseService.instance.currentUser?.id;
+
+    return Consumer2<VenueDetailsProvider, ReviewSubmissionProvider>(
+      builder: (context, provider, submissionProvider, child) {
         if (provider.isLoading && provider.reviews.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (provider.reviews.isEmpty) {
+        if (provider.error != null && provider.reviews.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.rate_review_outlined,
-                  size: 64,
-                  color: AppColors.gray300,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Henüz değerlendirme yok',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.gray500,
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Değerlendirmeler yüklenirken hata oluştu',
+                    style: AppTextStyles.bodyMedium,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    provider.error!,
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.gray500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () => provider.refreshReviews(),
+                    child: const Text('Tekrar Dene'),
+                  ),
+                ],
+              ),
             ),
           );
         }
 
-        // Calculate average rating
-        double avgRating = 0;
-        if (provider.reviews.isNotEmpty) {
-          avgRating =
-              provider.reviews.map((r) => r.rating).reduce((a, b) => a + b) /
-              provider.reviews.length;
-        }
+        final bool hasReviews = provider.reviews.isNotEmpty;
+        final bool userHasReview = provider.reviews.any(
+          (r) => r.userId == currentUserId,
+        );
 
         return ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            // Summary Header
+            // Rating Summary & Chart
             Container(
               padding: const EdgeInsets.all(20),
-              margin: const EdgeInsets.only(bottom: 24),
               decoration: BoxDecoration(
-                color: AppColors.backgroundLight,
-                borderRadius: BorderRadius.circular(16),
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(24),
                 border: Border.all(color: AppColors.gray200),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    avgRating.toStringAsFixed(1),
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.gray900,
-                    ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                ],
+              ),
+              child: Column(
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: List.generate(5, (index) {
-                          return Icon(
-                            index < avgRating.round()
-                                ? Icons.star
-                                : Icons.star_border,
-                            color: AppColors.primary,
-                            size: 20,
-                          );
-                        }),
+                      // Big Rating Number
+                      Column(
+                        children: [
+                          Text(
+                            provider.venue?.rating.toStringAsFixed(1) ?? '0.0',
+                            style: AppTextStyles.heading1.copyWith(
+                              fontSize: 48,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Row(
+                            children: List.generate(5, (index) {
+                              return Icon(
+                                index < (provider.venue?.rating ?? 0).round()
+                                    ? Icons.star_rounded
+                                    : Icons.star_outline_rounded,
+                                color: AppColors.gold,
+                                size: 16,
+                              );
+                            }),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${provider.venue?.ratingCount ?? 0} yorum',
+                            style: AppTextStyles.caption,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${provider.reviews.length} değerlendirme',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.gray500,
+                      const SizedBox(width: 32),
+                      // Distribution Chart
+                      Expanded(
+                        child: RatingDistributionChart(
+                          reviews: provider.reviews,
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 24),
+                  // CTA Button
+                  ElevatedButton(
+                    onPressed: () => _handleReviewAction(context, provider),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                      minimumSize: const Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      userHasReview
+                          ? 'Değerlendirmenizi Düzenleyin'
+                          : 'Değerlendirme Yap',
+                      style: AppTextStyles.button,
+                    ),
                   ),
                 ],
               ),
             ),
 
-            // Reviews List
-            ...provider.reviews.map((review) => ReviewCard(review: review)),
+            const SizedBox(height: 32),
+
+            if (!hasReviews)
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+                    Icon(
+                      Icons.rate_review_outlined,
+                      size: 64,
+                      color: AppColors.gray300,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Henüz değerlendirme yok',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.gray500,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else ...[
+              Text('Tüm Değerlendirmeler', style: AppTextStyles.heading4),
+              const SizedBox(height: 16),
+              // Reviews List (Own review first)
+              ..._buildReviewList(context, provider, currentUserId),
+            ],
           ],
         );
       },
     );
+  }
+
+  List<Widget> _buildReviewList(
+    BuildContext context,
+    VenueDetailsProvider provider,
+    String? currentUserId,
+  ) {
+    final List<Widget> list = [];
+
+    // Sort reviews to show own review first
+    final sortedReviews = List.of(provider.reviews);
+    sortedReviews.sort((a, b) {
+      if (a.userId == currentUserId) return -1;
+      if (b.userId == currentUserId) return 1;
+      return b.createdAt.compareTo(a.createdAt);
+    });
+
+    for (var review in sortedReviews) {
+      final isOwn = review.userId == currentUserId;
+      list.add(
+        ReviewCard(
+          review: review,
+          isOwnReview: isOwn,
+          onEdit: isOwn ? () => _handleReviewAction(context, provider) : null,
+        ),
+      );
+    }
+
+    return list;
+  }
+
+  void _handleReviewAction(
+    BuildContext context,
+    VenueDetailsProvider provider,
+  ) async {
+    final currentUserId = SupabaseService.instance.currentUser?.id;
+
+    if (currentUserId == null) {
+      final currentPath = GoRouterState.of(context).uri.toString();
+      context.push('/login?redirect=${Uri.encodeComponent(currentPath)}');
+      return;
+    }
+
+    final submissionProvider = context.read<ReviewSubmissionProvider>();
+    await submissionProvider.checkExistingReview(venueId);
+
+    if (context.mounted) {
+      if (submissionProvider.isEditing) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => EditReviewBottomSheet(
+            venueId: venueId,
+            venueName: provider.venue?.name ?? '',
+          ),
+        );
+      } else {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => ReviewSubmissionBottomSheet(
+            venueId: venueId,
+            venueName: provider.venue?.name ?? '',
+          ),
+        );
+      }
+    }
   }
 }

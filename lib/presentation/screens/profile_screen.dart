@@ -86,7 +86,7 @@ class ProfileScreen extends StatelessWidget {
 
                     // Stats Section
                     const ProfileStats(
-                      appointments: 12,
+                      appointments: 24, // Represents rewards/reviews now
                       favorites: 5,
                       points: 150,
                     ),
@@ -115,11 +115,11 @@ class ProfileScreen extends StatelessWidget {
                             child: Column(
                               children: [
                                 ProfileMenuItem(
-                                  icon: Icons.calendar_month,
-                                  title: 'Randevularım',
+                                  icon: Icons.rate_review_outlined,
+                                  title: 'İncelemelerim',
                                   isPrimary: true,
                                   onTap: () {
-                                    // TODO: Navigate to appointments
+                                    // TODO: Navigate to reviews
                                   },
                                 ),
                                 ProfileMenuItem(

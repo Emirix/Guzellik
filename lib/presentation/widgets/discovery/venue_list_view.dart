@@ -70,7 +70,17 @@ class VenueListView extends StatelessWidget {
   }
 
   Widget _buildCategories(BuildContext context) {
-    final categories = ['Tümü', 'Saç', 'Makyaj', 'Tırnak', 'Masaj'];
+    final provider = context.watch<DiscoveryProvider>();
+    final categories = [
+      'Tümü',
+      'Saç',
+      'Cilt Bakımı',
+      'Kaş-Kirpik',
+      'Makyaj',
+      'Tırnak',
+      'Masaj',
+    ];
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: SizedBox(
@@ -80,18 +90,41 @@ class VenueListView extends StatelessWidget {
           padding: const EdgeInsets.only(left: 16),
           itemCount: categories.length,
           itemBuilder: (context, index) {
-            final isFirst = index == 0;
+            final category = categories[index];
+            final isSelected = category == 'Tümü'
+                ? provider.filter.categories.isEmpty
+                : provider.filter.categories.contains(category);
+
             return Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: Chip(
-                label: Text(categories[index]),
-                backgroundColor: isFirst ? AppColors.primary : AppColors.white,
-                labelStyle: TextStyle(
-                  color: isFirst ? Colors.white : AppColors.gray900,
-                  fontWeight: FontWeight.w600,
-                ),
-                side: BorderSide(
-                  color: isFirst ? AppColors.primary : AppColors.gray100,
+              child: GestureDetector(
+                onTap: () {
+                  if (category == 'Tümü') {
+                    provider.updateFilter(
+                      provider.filter.copyWith(categories: []),
+                    );
+                  } else {
+                    provider.updateFilter(
+                      provider.filter.copyWith(
+                        categories: [
+                          category,
+                        ], // For now, single select for these quick chips
+                      ),
+                    );
+                  }
+                },
+                child: Chip(
+                  label: Text(category),
+                  backgroundColor: isSelected
+                      ? AppColors.primary
+                      : AppColors.white,
+                  labelStyle: TextStyle(
+                    color: isSelected ? Colors.white : AppColors.gray900,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  ),
+                  side: BorderSide(
+                    color: isSelected ? AppColors.primary : AppColors.gray100,
+                  ),
                 ),
               ),
             );

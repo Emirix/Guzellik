@@ -5,6 +5,7 @@ import '../widgets/discovery/map_view.dart';
 import '../widgets/discovery/venue_list_view.dart';
 import '../widgets/discovery/search_bar.dart';
 import '../widgets/discovery/view_toggle.dart';
+import '../widgets/discovery/location_selection_bottom_sheet.dart';
 import '../../core/theme/app_colors.dart';
 
 class ExploreScreen extends StatelessWidget {
@@ -91,7 +92,14 @@ class ExploreScreen extends StatelessWidget {
       children: [
         Expanded(
           child: InkWell(
-            onTap: () => provider.updateLocation(),
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const LocationSelectionBottomSheet(),
+              );
+            },
             child: Row(
               children: [
                 Container(

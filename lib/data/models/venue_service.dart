@@ -13,12 +13,15 @@ class VenueService {
   final String? serviceDescription;
   final int? serviceAverageDuration;
 
+  final String? customDescription;
+
   VenueService({
     required this.id,
     required this.venueId,
     required this.serviceCategoryId,
     this.customPrice,
     this.customDurationMinutes,
+    this.customDescription,
     this.isAvailable = true,
     required this.createdAt,
     this.serviceName,
@@ -34,6 +37,7 @@ class VenueService {
       serviceCategoryId: json['service_category_id'] as String? ?? '',
       customPrice: (json['custom_price'] as num?)?.toDouble(),
       customDurationMinutes: (json['custom_duration_minutes'] as num?)?.toInt(),
+      customDescription: json['custom_description'] as String?,
       isAvailable: json['is_available'] as bool? ?? true,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
@@ -41,7 +45,8 @@ class VenueService {
       serviceName: json['service_name'] as String?,
       serviceCategory: json['service_category'] as String?,
       serviceDescription: json['service_description'] as String?,
-      serviceAverageDuration: (json['service_average_duration'] as num?)?.toInt(),
+      serviceAverageDuration: (json['service_average_duration'] as num?)
+          ?.toInt(),
     );
   }
 
@@ -52,6 +57,7 @@ class VenueService {
       'service_category_id': serviceCategoryId,
       'custom_price': customPrice,
       'custom_duration_minutes': customDurationMinutes,
+      'custom_description': customDescription,
       'is_available': isAvailable,
       'created_at': createdAt.toIso8601String(),
     };
@@ -61,5 +67,6 @@ class VenueService {
   double getEffectivePrice() => customPrice ?? 0.0;
 
   // Helper method to get effective duration
-  int getEffectiveDuration() => customDurationMinutes ?? serviceAverageDuration ?? 0;
+  int getEffectiveDuration() =>
+      customDurationMinutes ?? serviceAverageDuration ?? 0;
 }

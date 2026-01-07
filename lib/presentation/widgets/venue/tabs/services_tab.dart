@@ -50,14 +50,9 @@ class ServicesTab extends StatelessWidget {
                 ...services.map(
                   (service) => ServiceCard(
                     service: service,
-                    onAddToBooking: () {
-                      // TODO: Add to booking logic
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${service.name} randevuya eklendi'),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
+                    onInquiry: () {
+                      // Navigate to overview or show contact options if we had a way to trigger them here
+                      // For now, we'll just scroll to top or similar, but the button is there for visual consistency
                     },
                   ),
                 ),

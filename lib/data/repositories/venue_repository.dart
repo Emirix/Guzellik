@@ -13,6 +13,11 @@ class VenueRepository {
     return (response as List).map((json) => Venue.fromJson(json)).toList();
   }
 
+  Future<List<Venue>> getFeaturedVenues() async {
+    final response = await _supabase.from('featured_venues').select();
+    return (response as List).map((json) => Venue.fromJson(json)).toList();
+  }
+
   Future<Venue?> getVenueById(String id) async {
     final response = await _supabase
         .from('venues_with_coords')
@@ -66,6 +71,10 @@ class VenueRepository {
         'venue_id': venueId,
       });
     } catch (e) {
+      if (e.toString().contains('23505') || e.toString().contains('conflict')) {
+        // Already following, treat as success
+        return;
+      }
       print('Error following venue: $e');
       rethrow;
     }
@@ -88,13 +97,12 @@ class VenueRepository {
   }
 
   Future<List<Service>> getServicesByVenueId(String venueId) async {
-    final response = await _supabase
-        .from('services')
-        .select()
-        .eq('venue_id', venueId)
-        .order('category', ascending: true);
+    final List<dynamic> response = await _supabase.rpc(
+      'get_venue_services',
+      params: {'p_venue_id': venueId},
+    );
 
-    return (response as List).map((json) => Service.fromJson(json)).toList();
+    return response.map((json) => Service.fromJson(json)).toList();
   }
 
   Future<List<Review>> getReviewsByVenueId(String venueId) async {
@@ -107,46 +115,55 @@ class VenueRepository {
     return (response as List).map((json) => Review.fromJson(json)).toList();
   }
 
+  static const Map<String, List<String>> _categoryMapping = {
+    'Saç': ['Kuaför - Kadın', 'Kuaför - Erkek'],
+    'Cilt Bakımı': ['Cilt Bakımı - Yüz', 'Cilt Bakımı - Vücut'],
+    'Kaş-Kirpik': ['Kaş & Kirpik'],
+    'Makyaj': ['Makyaj'],
+    'Tırnak': ['Tırnak - Manikür', 'Tırnak - Pedikür', 'El & Ayak Bakımı'],
+    'Estetik': ['Özel Tedavi'],
+    'Masaj': ['Masaj'],
+    'Spa': ['Hamam & Spa'],
+  };
+
   Future<List<Venue>> searchVenues({
     String? query,
     VenueFilter? filter,
     double? lat,
     double? lng,
   }) async {
-    // If RPC fails or is not available, we can fallback to local filtering
-    // For now, let's use the basic getVenues or getVenuesNearby and filter in Dart
-    // to ensure functionality even if Supabase RPC is not fully set up.
-    List<Venue> venues;
-    if (lat != null && lng != null && (filter?.maxDistanceKm != null)) {
-      venues = await getVenuesNearby(lat, lng, filter!.maxDistanceKm! * 1000);
-    } else {
-      venues = await getVenues();
+    // Map UI categories to database categories
+    List<String>? mappedCategories;
+    if (filter != null && filter.categories.isNotEmpty) {
+      mappedCategories = filter.categories
+          .expand((cat) => _categoryMapping[cat] ?? [cat])
+          .toList();
     }
 
-    if ((query == null || query.isEmpty) &&
-        (filter == null || !filter.hasFilters)) {
-      return venues;
+    try {
+      final List<dynamic> response = await _supabase.rpc(
+        'search_venues_advanced',
+        params: {
+          'p_query': query?.isEmpty ?? true ? null : query,
+          'p_categories': mappedCategories,
+          'p_lat': lat,
+          'p_lng': lng,
+          'p_max_dist_meters': (filter?.maxDistanceKm != null)
+              ? filter!.maxDistanceKm! * 1000
+              : null,
+          'p_only_verified': filter?.onlyVerified ?? false,
+          'p_only_preferred': filter?.onlyPreferred ?? false,
+          'p_only_hygienic': filter?.onlyHygienic ?? false,
+          'p_min_rating': filter?.minRating,
+        },
+      );
+
+      return response.map((json) => Venue.fromJson(json)).toList();
+    } catch (e) {
+      print('Error searching venues advanced: $e');
+      // Fallback or rethrow
+      rethrow;
     }
-
-    return venues.where((v) {
-      if (query != null && query.isNotEmpty) {
-        final lowerQuery = query.toLowerCase();
-        final matchesQuery =
-            v.name.toLowerCase().contains(lowerQuery) ||
-            (v.description?.toLowerCase().contains(lowerQuery) ?? false) ||
-            v.address.toLowerCase().contains(lowerQuery);
-        if (!matchesQuery) return false;
-      }
-
-      if (filter != null) {
-        if (filter.onlyVerified && !v.isVerified) return false;
-        if (filter.onlyPreferred && !v.isPreferred) return false;
-        if (filter.onlyHygienic && !v.isHygienic) return false;
-        // Pricing and rating would require additional data/joins if done locally
-      }
-
-      return true;
-    }).toList();
   }
 
   // Gallery Photo Methods
@@ -175,6 +192,88 @@ class VenueRepository {
         .order('sort_order', ascending: true);
 
     return (response as List).map((json) => VenuePhoto.fromJson(json)).toList();
+  }
+
+  /// Submit a new review for a venue
+  Future<void> submitReview({
+    required String venueId,
+    required double rating,
+    String? comment,
+  }) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
+
+      await _supabase.from('reviews').insert({
+        'venue_id': venueId,
+        'user_id': userId,
+        'rating': rating,
+        'comment': comment,
+      });
+    } catch (e) {
+      print('Error submitting review: $e');
+      rethrow;
+    }
+  }
+
+  /// Update an existing review
+  Future<void> updateReview({
+    required String reviewId,
+    required double rating,
+    String? comment,
+  }) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
+
+      await _supabase
+          .from('reviews')
+          .update({'rating': rating, 'comment': comment})
+          .match({
+            'id': reviewId,
+            'user_id': userId, // Ensure user owns the review
+          });
+    } catch (e) {
+      print('Error updating review: $e');
+      rethrow;
+    }
+  }
+
+  /// Delete a review
+  Future<void> deleteReview(String reviewId) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
+
+      await _supabase.from('reviews').delete().match({
+        'id': reviewId,
+        'user_id': userId, // Ensure user owns the review
+      });
+    } catch (e) {
+      print('Error deleting review: $e');
+      rethrow;
+    }
+  }
+
+  /// Get current user's review for a specific venue
+  Future<Review?> getUserReviewForVenue(String venueId) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) return null;
+
+      final response = await _supabase
+          .from('reviews')
+          .select('*, profiles(full_name, avatar_url)')
+          .eq('venue_id', venueId)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (response == null) return null;
+      return Review.fromJson(response);
+    } catch (e) {
+      print('Error fetching user review: $e');
+      return null;
+    }
   }
 
   /// Like a photo (increment likes_count)

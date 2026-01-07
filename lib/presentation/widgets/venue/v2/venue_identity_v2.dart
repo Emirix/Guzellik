@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../data/models/venue.dart';
 import '../../../../data/services/notification_service.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../../data/repositories/auth_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -17,20 +18,32 @@ class VenueIdentityV2 extends StatelessWidget {
 
   Future<void> _handleFollowTap(BuildContext context) async {
     final provider = context.read<VenueDetailsProvider>();
-    final authRepo = AuthRepository();
+    final authProvider = context.read<AuthProvider>();
     final notificationService = NotificationService.instance;
+    final authRepo = AuthRepository();
 
-    // Check if user is authenticated
-    if (!authRepo.isAuthenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mekanları takip etmek için giriş yapmalısınız'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      // TODO: Navigate to login screen
+    // Check if user is authenticated using AuthProvider
+    if (!authProvider.isAuthenticated) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Mekanları takip etmek için giriş yapmalısınız'),
+            backgroundColor: AppColors.error,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
       return;
     }
+
+    final currentUser = authProvider.currentUser;
+
+    // Debug: Check auth state
+    print('=== AUTH DEBUG ===');
+    print('Current user: ${currentUser?.id}');
+    print('User email: ${currentUser?.email}');
+    print('Is authenticated: ${authProvider.isAuthenticated}');
+    print('==================');
 
     final isFollowing = provider.isFollowing;
 
@@ -113,7 +126,7 @@ class VenueIdentityV2 extends StatelessWidget {
     return Consumer<VenueDetailsProvider>(
       builder: (context, provider, _) {
         final isFollowing = provider.isFollowing;
-        final isLoading = provider.isFollowLoading;
+        final isLoading = provider.isLoading || provider.isFollowLoading;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

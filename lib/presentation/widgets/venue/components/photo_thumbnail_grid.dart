@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../data/models/venue_photo.dart';
+import '../../../../data/models/venue_photo.dart';
 
 class PhotoThumbnailGrid extends StatefulWidget {
   final List<VenuePhoto> photos;

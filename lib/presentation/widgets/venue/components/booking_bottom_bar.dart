@@ -6,14 +6,14 @@ import '../../../../core/theme/app_text_styles.dart';
 /// Displays total price (if available) and booking action button
 class BookingBottomBar extends StatelessWidget {
   final VoidCallback onBookingTap;
-  final double? totalPrice;
-  final String? priceLabel;
+  final double? rating;
+  final int? reviewCount;
 
   const BookingBottomBar({
     super.key,
     required this.onBookingTap,
-    this.totalPrice,
-    this.priceLabel,
+    this.rating,
+    this.reviewCount,
   });
 
   @override
@@ -21,99 +21,117 @@ class BookingBottomBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        border: Border(top: BorderSide(color: AppColors.gray100, width: 1)),
+        border: Border(
+          top: BorderSide(color: AppColors.gray100.withOpacity(0.5), width: 1),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
       padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 16,
-        bottom: 16 + MediaQuery.of(context).padding.bottom,
+        left: 24,
+        right: 24,
+        top: 20,
+        bottom: 20 + MediaQuery.of(context).padding.bottom,
       ),
       child: Row(
         children: [
-          // Price Section (if available)
-          if (totalPrice != null) ...[
-            Column(
+          // Elegant Rating Section
+          Expanded(
+            flex: 2,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  priceLabel ?? 'Hizmet Başlangıç',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.gray500,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
                   children: [
-                    Text(
-                      '₺${totalPrice!.toStringAsFixed(0)}',
-                      style: AppTextStyles.heading2.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+                    const Icon(
+                      Icons.star_rounded,
+                      color: AppColors.gold,
+                      size: 24,
                     ),
+                    const SizedBox(width: 4),
                     Text(
-                      '/seans',
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.gray400,
-                        fontWeight: FontWeight.normal,
+                      (rating ?? 0.0).toStringAsFixed(1),
+                      style: AppTextStyles.heading2.copyWith(
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 22,
+                        letterSpacing: -0.5,
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 2),
+                Text(
+                  '${reviewCount ?? 0} Değerlendirme',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.gray500,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
+                  ),
+                ),
               ],
             ),
-            const SizedBox(width: 20),
-          ],
+          ),
 
-          // Booking Button
+          const SizedBox(width: 16),
+
+          // Action Button
           Expanded(
+            flex: 3,
             child: Container(
-              height: 52,
+              height: 56,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withOpacity(0.85),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.2),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
               child: ElevatedButton(
                 onPressed: onBookingTap,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: Colors.transparent,
                   foregroundColor: AppColors.white,
+                  shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
                   ),
                   elevation: 0,
+                  padding: EdgeInsets.zero,
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.calendar_month, size: 20, color: Colors.white),
-                    SizedBox(width: 8),
+                    Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      size: 22,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 10),
                     Text(
-                      'Randevu Oluştur',
+                      'İletişime Geç',
                       style: TextStyle(
                         color: AppColors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        letterSpacing: 0.2,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ],

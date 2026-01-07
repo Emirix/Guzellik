@@ -1,8 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../data/models/venue.dart';
+import '../../../../data/models/venue_photo.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/venue_details_provider.dart';
+import '../venue_hero_carousel.dart';
+import '../photo_gallery_viewer.dart';
 
 class VenueHeroV2 extends StatelessWidget {
   final Venue venue;
@@ -21,45 +26,37 @@ class VenueHeroV2 extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // Gallery / main image
-            Hero(
-              tag: 'venue_image_${venue.id}',
-              child: venue.imageUrl != null
-                  ? Image.network(venue.imageUrl!, fit: BoxFit.cover)
-                  : Container(
-                      color: AppColors.gray200,
-                      child: const Icon(
-                        Icons.image,
-                        size: 100,
-                        color: AppColors.gray400,
-                      ),
-                    ),
+            // Gallery Carousel
+            Builder(
+              builder: (BuildContext builderContext) {
+                return VenueHeroCarousel(
+                  imageUrls: venue.heroImages.isNotEmpty
+                      ? venue.heroImages
+                      : (venue.imageUrl != null ? [venue.imageUrl!] : []),
+                  height: 360,
+                  onTap: () {
+                    // Open full-screen gallery viewer if there are photos
+                    final hasPhotos =
+                        venue.heroImages.isNotEmpty || venue.imageUrl != null;
+                    if (hasPhotos) {
+                      _openGalleryViewer(builderContext);
+                    }
+                  },
+                );
+              },
             ),
 
-            // Gradient Overlay (Bottom to Top)
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Color(0x99000000), Colors.transparent],
-                  stops: [0.0, 0.4],
+            // Gradient Overlay (Bottom to Top) - Ignore pointer to allow taps
+            IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Color(0x99000000), Colors.transparent],
+                    stops: [0.0, 0.4],
+                  ),
                 ),
-              ),
-            ),
-
-            // Pagination Dots
-            Positioned(
-              bottom: 40,
-              left: 0,
-              right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildDot(isActive: true),
-                  _buildDot(isActive: false),
-                  _buildDot(isActive: false),
-                ],
               ),
             ),
 
@@ -102,23 +99,38 @@ class VenueHeroV2 extends StatelessWidget {
     );
   }
 
-  Widget _buildDot({required bool isActive}) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
-        shape: BoxShape.circle,
-        boxShadow: isActive
-            ? [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : null,
+  void _openGalleryViewer(BuildContext context) {
+    // Get image URLs (either from heroImages or fallback to imageUrl)
+    final imageUrls = venue.heroImages.isNotEmpty
+        ? venue.heroImages
+        : (venue.imageUrl != null ? [venue.imageUrl!] : []);
+
+    // Convert to VenuePhoto objects for the gallery viewer
+    final photos = imageUrls.asMap().entries.map((entry) {
+      return VenuePhoto(
+        id: '${venue.id}_hero_${entry.key}',
+        venueId: venue.id,
+        url: entry.value,
+        category: PhotoCategory.interior,
+        uploadedAt: DateTime.now(),
+        sortOrder: entry.key,
+        isHeroImage: true,
+      );
+    }).toList();
+
+    if (photos.isEmpty) return;
+
+    final provider = context.read<VenueDetailsProvider>();
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PhotoGalleryViewer(
+          photos: photos,
+          initialIndex: 0,
+          venueName: venue.name,
+          onLike: (photoId) => provider.likePhoto(photoId),
+        ),
+        fullscreenDialog: true,
       ),
     );
   }

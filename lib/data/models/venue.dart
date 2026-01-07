@@ -35,6 +35,13 @@ class Venue {
   final String? ownerId;
   final DateTime createdAt;
 
+  // Rating Info
+  final double rating;
+  final int ratingCount;
+
+  // Distance (transient field, populated by search RPC)
+  final double? distance;
+
   Venue({
     required this.id,
     required this.name,
@@ -60,6 +67,9 @@ class Venue {
     this.features = const [],
     this.ownerId,
     required this.createdAt,
+    this.rating = 0.0,
+    this.ratingCount = 0,
+    this.distance,
   });
 
   factory Venue.fromJson(Map<String, dynamic> json) {
@@ -126,6 +136,9 @@ class Venue {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      ratingCount: json['review_count'] as int? ?? 0,
+      distance: (json['distance_meters'] as num?)?.toDouble(),
     );
   }
 
@@ -155,6 +168,69 @@ class Venue {
       'features': features,
       'owner_id': ownerId,
       'created_at': createdAt.toIso8601String(),
+      'rating': rating,
+      'review_count': ratingCount,
+      'distance_meters': distance,
     };
+  }
+
+  Venue copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? address,
+    double? latitude,
+    double? longitude,
+    String? imageUrl,
+    List<String>? heroImages,
+    List<VenuePhoto>? galleryPhotos,
+    bool? isVerified,
+    bool? isPreferred,
+    bool? isHygienic,
+    bool? isFollowing,
+    int? followerCount,
+    Map<String, dynamic>? workingHours,
+    List<dynamic>? expertTeam,
+    List<dynamic>? certifications,
+    List<String>? paymentOptions,
+    Map<String, dynamic>? accessibility,
+    List<dynamic>? faq,
+    Map<String, dynamic>? socialLinks,
+    List<String>? features,
+    String? ownerId,
+    DateTime? createdAt,
+    double? rating,
+    int? ratingCount,
+    double? distance,
+  }) {
+    return Venue(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      address: address ?? this.address,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      imageUrl: imageUrl ?? this.imageUrl,
+      heroImages: heroImages ?? this.heroImages,
+      galleryPhotos: galleryPhotos ?? this.galleryPhotos,
+      isVerified: isVerified ?? this.isVerified,
+      isPreferred: isPreferred ?? this.isPreferred,
+      isHygienic: isHygienic ?? this.isHygienic,
+      isFollowing: isFollowing ?? this.isFollowing,
+      followerCount: followerCount ?? this.followerCount,
+      workingHours: workingHours ?? this.workingHours,
+      expertTeam: expertTeam ?? this.expertTeam,
+      certifications: certifications ?? this.certifications,
+      paymentOptions: paymentOptions ?? this.paymentOptions,
+      accessibility: accessibility ?? this.accessibility,
+      faq: faq ?? this.faq,
+      socialLinks: socialLinks ?? this.socialLinks,
+      features: features ?? this.features,
+      ownerId: ownerId ?? this.ownerId,
+      createdAt: createdAt ?? this.createdAt,
+      rating: rating ?? this.rating,
+      ratingCount: ratingCount ?? this.ratingCount,
+      distance: distance ?? this.distance,
+    );
   }
 }

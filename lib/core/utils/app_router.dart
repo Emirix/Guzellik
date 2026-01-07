@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/explore_screen.dart';
-import '../../presentation/screens/search_screen.dart';
 import '../../presentation/screens/favorites_screen.dart';
 import '../../presentation/screens/notifications_screen.dart';
 import '../../presentation/screens/profile_screen.dart';
@@ -56,11 +55,6 @@ class AppRouter {
         path: '/explore',
         name: 'explore',
         builder: (context, state) => const ExploreScreen(),
-      ),
-      GoRoute(
-        path: '/search',
-        name: 'search',
-        builder: (context, state) => const SearchScreen(),
       ),
 
       // Protected Routes (Require Authentication)

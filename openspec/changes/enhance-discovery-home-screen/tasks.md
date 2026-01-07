@@ -13,7 +13,7 @@
 - [ ] `popular_services` view'ını oluştur (en çok aranan hizmetler)
 - [ ] `featured_venues` view'ını oluştur (editörün seçtiği mekanlar)
 - [ ] Local storage için son aramalar tablosunu oluştur
-- [ ] Migration'ları test et
+- [ ] Migration' Washington test et
 
 **Validation**: Supabase query'leri doğru veri döndürüyor
 
@@ -183,6 +183,13 @@
 - [ ] Code review yap
 
 **Validation**: Kod temiz, dokümante ve lint-free
+
+---
+
+## 17. Revert: Yapılan Değişiklikler Geri Alındı
+- [x] Tüm yeni oluşturulan dosyalar silindi
+- [x] Mevcut dosyalardaki değişiklikler geri alındı
+- [x] Uygulama orijinal durumuna döndürüldü
 
 ---
 

@@ -5,38 +5,75 @@ import '../../data/models/venue_filter.dart';
 import '../../data/repositories/venue_repository.dart';
 import '../../data/services/location_service.dart';
 
-enum DiscoveryViewMode { map, list }
+enum DiscoveryViewMode { home, map, list }
 
 class DiscoveryProvider extends ChangeNotifier {
   final VenueRepository _venueRepository = VenueRepository();
   final LocationService _locationService = LocationService();
 
-  DiscoveryViewMode _viewMode = DiscoveryViewMode.map;
+  DiscoveryViewMode _viewMode = DiscoveryViewMode.home;
   List<Venue> _venues = [];
   List<Venue> _filteredVenues = [];
+  List<Venue> _featuredVenues = [];
   String _searchQuery = '';
   bool _isLoading = false;
+  bool _isLoadingHome = false;
 
   Position? _currentPosition;
   String _currentLocationName = 'Konum belirleniyor...';
   VenueFilter _filter = VenueFilter();
 
+  // Manual location state
+  String? _manualCity;
+  String? _manualDistrict;
+  bool _isUsingManualLocation = false;
+
   DiscoveryViewMode get viewMode => _viewMode;
   List<Venue> get venues => _filteredVenues;
+  List<Venue> get featuredVenues => _featuredVenues;
   String get searchQuery => _searchQuery;
   bool get isLoading => _isLoading;
+  bool get isLoadingHome => _isLoadingHome;
   String get currentLocationName => _currentLocationName;
   Position? get currentPosition => _currentPosition;
   VenueFilter get filter => _filter;
+  bool get isUsingManualLocation => _isUsingManualLocation;
+  String? get manualCity => _manualCity;
+  String? get manualDistrict => _manualDistrict;
 
   DiscoveryProvider() {
-    refresh();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await loadHomeData();
+    await refresh();
 
     // Ensure the app is ready to show the permission dialog
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await updateLocation();
       await refresh();
     });
+  }
+
+  Future<void> loadHomeData() async {
+    _isLoadingHome = true;
+    notifyListeners();
+
+    try {
+      // Fetch featured venues from repository
+      _featuredVenues = await _venueRepository.getFeaturedVenues();
+    } catch (e) {
+      debugPrint('Error loading home data: $e');
+    } finally {
+      _isLoadingHome = false;
+      notifyListeners();
+    }
+  }
+
+  void setViewMode(DiscoveryViewMode mode) {
+    _viewMode = mode;
+    notifyListeners();
   }
 
   Future<void> updateLocation() async {
@@ -54,6 +91,10 @@ class DiscoveryProvider extends ChangeNotifier {
         if (address != null) {
           _currentLocationName = _shortenAddress(address);
         }
+        // Clear manual location when GPS is used
+        _isUsingManualLocation = false;
+        _manualCity = null;
+        _manualDistrict = null;
       }
     } catch (e) {
       debugPrint('Error updating location: $e');
@@ -62,6 +103,15 @@ class DiscoveryProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void updateManualLocation(String city, String district) {
+    _manualCity = city;
+    _manualDistrict = district;
+    _isUsingManualLocation = true;
+    _currentLocationName = '$district, $city';
+    notifyListeners();
+    refresh();
   }
 
   String _shortenAddress(String address) {

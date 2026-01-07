@@ -23,7 +23,7 @@ class ProfileStats extends StatelessWidget {
           Expanded(
             child: _buildStatCard(
               value: appointments.toString(),
-              label: 'Randevu',
+              label: 'Yorum',
               valueColor: const Color(0xFF1B0E11),
             ),
           ),

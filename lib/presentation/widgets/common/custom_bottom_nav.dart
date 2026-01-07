@@ -25,11 +25,6 @@ class CustomBottomNav extends StatelessWidget {
               label: 'Keşfet',
             ),
             const BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              activeIcon: Icon(Icons.search),
-              label: 'Ara',
-            ),
-            const BottomNavigationBarItem(
               icon: Icon(Icons.favorite_outline),
               activeIcon: Icon(Icons.favorite),
               label: 'Favoriler',

@@ -3,6 +3,7 @@ class Service {
   final String venueServiceId;
   final String name;
   final String? description;
+  final String? imageUrl;
   final String? beforePhotoUrl;
   final String? afterPhotoUrl;
   final String? expertName;
@@ -19,6 +20,7 @@ class Service {
     required this.venueServiceId,
     required this.name,
     this.description,
+    this.imageUrl,
     this.beforePhotoUrl,
     this.afterPhotoUrl,
     this.expertName,
@@ -35,6 +37,7 @@ class Service {
       venueServiceId: json['venue_service_id'] as String? ?? '',
       name: json['name'] as String? ?? 'İsimsiz Hizmet',
       description: json['description'] as String?,
+      imageUrl: json['image_url'] as String?,
       beforePhotoUrl: json['before_photo_url'] as String?,
       afterPhotoUrl: json['after_photo_url'] as String?,
       expertName: json['expert_name'] as String?,
@@ -54,6 +57,7 @@ class Service {
       'venue_service_id': venueServiceId,
       'name': name,
       'description': description,
+      'image_url': imageUrl,
       'before_photo_url': beforePhotoUrl,
       'after_photo_url': afterPhotoUrl,
       'expert_name': expertName,

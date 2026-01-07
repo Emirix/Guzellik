@@ -5,8 +5,15 @@ import '../../../../core/theme/app_text_styles.dart';
 
 class ReviewCard extends StatelessWidget {
   final Review review;
+  final bool isOwnReview;
+  final VoidCallback? onEdit;
 
-  const ReviewCard({super.key, required this.review});
+  const ReviewCard({
+    super.key,
+    required this.review,
+    this.isOwnReview = false,
+    this.onEdit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,20 +21,73 @@ class ReviewCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.gray200),
-        boxShadow: const [
+        color: isOwnReview
+            ? AppColors.primary.withOpacity(0.04)
+            : AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isOwnReview
+              ? AppColors.primary.withOpacity(0.1)
+              : AppColors.gray200,
+        ),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x08000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (isOwnReview)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'Sizin değerlendirmeniz',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: onEdit,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.edit_outlined,
+                          size: 14,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Düzenle',
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Row(
             children: [
               // Avatar
@@ -38,7 +98,11 @@ class ReviewCard extends StatelessWidget {
                     : null,
                 backgroundColor: AppColors.gray100,
                 child: review.userAvatarUrl == null
-                    ? Icon(Icons.person, color: AppColors.gray400)
+                    ? const Icon(
+                        Icons.person,
+                        color: AppColors.gray400,
+                        size: 20,
+                      )
                     : null,
               ),
               const SizedBox(width: 12),
@@ -64,17 +128,21 @@ class ReviewCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.gold.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.star, size: 14, color: AppColors.primary),
+                    const Icon(
+                      Icons.star_rounded,
+                      size: 14,
+                      color: AppColors.gold,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       review.rating.toStringAsFixed(1),
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.primary,
+                        color: AppColors.gold,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -98,7 +166,6 @@ class ReviewCard extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    // Simple formatter, in production use intl package
     return '${date.day}.${date.month}.${date.year}';
   }
 }

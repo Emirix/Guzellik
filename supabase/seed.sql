@@ -17,8 +17,8 @@ BEGIN
     ON CONFLICT (id) DO NOTHING;
 END $$;
 
--- 2. Insert Venues with Rich Data (Expert Team & Working Hours)
-INSERT INTO public.venues (id, name, description, address, location, is_verified, is_preferred, is_hygienic, owner_id, expert_team, working_hours, payment_options, features, accessibility, social_links)
+-- 2. Insert Venues with Rich Data (Expert Team, Working Hours, Gallery)
+INSERT INTO public.venues (id, name, description, address, location, is_verified, is_preferred, is_hygienic, owner_id, expert_team, working_hours, payment_options, features, accessibility, social_links, hero_images)
 VALUES 
 (
     '11111111-1111-1111-1111-111111111111', 
@@ -36,7 +36,12 @@ VALUES
     '["Nakit", "Kredi Kartı", "Havale"]'::jsonb,
     '["Wi-Fi", "Ücretsiz Çay/Kahve", "Randevusuz"]'::jsonb,
     '{"parking": "Vale Mevcut", "wheelchair": "Uygun", "wifi": "Ücretsiz"}'::jsonb,
-    '{"phone": "+902121234567", "instagram": "roseguzellik"}'::jsonb
+    '{"phone": "+902121234567", "instagram": "roseguzellik"}'::jsonb,
+    '[
+        "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1000&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1522337360788-8b13df793f1f?q=80&w=1000&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=1000&auto=format&fit=crop"
+    ]'::jsonb
 ),
 (
     '22222222-2222-2222-2222-222222222222', 
@@ -54,7 +59,13 @@ VALUES
     '["Kredi Kartı", "Nakit"]'::jsonb,
     '["Doktor Kontrolü", "FDA Onaylı Cihazlar"]'::jsonb,
     '{"parking": "Otopark Yok", "wheelchair": "Asansör Var", "wifi": "Mevcut"}'::jsonb,
-    '{"phone": "+902129876543", "whatsapp": "905321112233"}'::jsonb
+    '{"phone": "+902129876543", "whatsapp": "905321112233"}'::jsonb,
+    '[
+        "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=1000&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1000&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600334129128-685c45851240?q=80&w=1000&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=1000&auto=format&fit=crop"
+    ]'::jsonb
 ),
 (
     '33333333-3333-3333-3333-333333333333', 
@@ -71,7 +82,11 @@ VALUES
     '["Nakit", "Kredi Kartı"]'::jsonb,
     '["Nail Art", "Kalıcı Oje"]'::jsonb,
     '{"parking": "Sokak Parkı", "wifi": "Mevcut"}'::jsonb,
-    '{"instagram": "pirlantanail"}'::jsonb
+    '{"instagram": "pirlantanail"}'::jsonb,
+    '[
+        "https://images.unsplash.com/photo-1632345031435-8727f6897d53?q=80&w=1000&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1604654894610-df490682160d?q=80&w=1000&auto=format&fit=crop"
+    ]'::jsonb
 )
 ON CONFLICT (id) DO UPDATE SET
     description = EXCLUDED.description,
@@ -80,29 +95,68 @@ ON CONFLICT (id) DO UPDATE SET
     payment_options = EXCLUDED.payment_options,
     features = EXCLUDED.features,
     accessibility = EXCLUDED.accessibility,
-    social_links = EXCLUDED.social_links;
+    social_links = EXCLUDED.social_links,
+    hero_images = EXCLUDED.hero_images;
 
--- 3. Insert Services
-INSERT INTO public.services (venue_id, name, category, price, duration, description)
+-- 3. Insert Services with Before/After Photos
+
+
+-- 3. Insert into venue_services (Linking venues to the new catalog)
+INSERT INTO public.venue_services (venue_id, service_category_id, custom_price, custom_duration_minutes)
 VALUES 
--- Services for Rose Güzellik Salonu
-('11111111-1111-1111-1111-111111111111', 'Saç Kesimi & Fön', 'Saç', 450, 60, 'Yüz şeklinize uygun profesyonel kesim ve şekillendirme.'),
-('11111111-1111-1111-1111-111111111111', 'Gelin Makyajı', 'Makyaj', 2500, 120, 'Özel gününüz için porselen makyaj uygulaması.'),
-('11111111-1111-1111-1111-111111111111', 'Ombre / Sombre', 'Saç', 1800, 180, 'Doğal geçişli renklendirme işlemi.'),
-('11111111-1111-1111-1111-111111111111', 'Manikür & Pedikür', 'Tırnak', 350, 60, 'Klasik bakım paketi.'),
+-- Rose Güzellik Salonu (1111...)
+('11111111-1111-1111-1111-111111111111', (SELECT id FROM service_categories WHERE name = 'Saç Kesimi (Kadın)'), 450, 60),
+('11111111-1111-1111-1111-111111111111', (SELECT id FROM service_categories WHERE name = 'Klasik Cilt Bakımı'), 1200, 60),
+('11111111-1111-1111-1111-111111111111', (SELECT id FROM service_categories WHERE name = 'Günlük Makyaj'), 800, 45),
 
--- Services for Gold Touch Estetik
-('22222222-2222-2222-2222-222222222222', 'Hydrafacial Cilt Bakımı', 'Cilt Bakımı', 1200, 45, 'Derinlemesine temizlik ve yenileme.'),
-('22222222-2222-2222-2222-222222222222', 'Lazer Epilasyon (Tüm Vücut)', 'Estetik', 3500, 90, 'Buz lazer teknolojisi ile acısız işlem.'),
-('22222222-2222-2222-2222-222222222222', 'Dudak Dolgusu', 'Estetik', 4000, 30, 'FDA onaylı dolgu ile doğal hacim.'),
+-- Gold Touch Estetik (2222...)
+('22222222-2222-2222-2222-222222222222', (SELECT id FROM service_categories WHERE name = 'Hydrafacial'), 1200, 45),
+('22222222-2222-2222-2222-222222222222', (SELECT id FROM service_categories WHERE name = 'Microblading'), 3500, 120),
+('22222222-2222-2222-2222-222222222222', (SELECT id FROM service_categories WHERE name = 'İsveç Masajı'), 1500, 60),
 
--- Services for Pırlanta Tırnak Stüdyosu
-('33333333-3333-3333-3333-333333333333', 'Protez Tırnak', 'Tırnak', 650, 90, 'Jel veya akrilik sistem uzatma.'),
-('33333333-3333-3333-3333-333333333333', 'Kalıcı Oje', 'Tırnak', 350, 45, '21 gün kalıcı parlak oje.'),
-('33333333-3333-3333-3333-333333333333', 'Nail Art (Tırnak Başına)', 'Tırnak', 50, 15, 'Özel tasarım süslemeler.')
+-- Pırlanta Tırnak Stüdyosu (3333...)
+('33333333-3333-3333-3333-333333333333', (SELECT id FROM service_categories WHERE name = 'Protez Tırnak (Jel Tırnak)'), 650, 90),
+('33333333-3333-3333-3333-333333333333', (SELECT id FROM service_categories WHERE name = 'Kalıcı Oje'), 450, 45),
+('33333333-3333-3333-3333-333333333333', (SELECT id FROM service_categories WHERE name = 'Klasik Pedikür'), 500, 60)
+ON CONFLICT (venue_id, service_category_id) DO NOTHING;
+
+-- 4. Insert into services (Specific service instances with photos)
+INSERT INTO public.services (venue_service_id, name, description, before_photo_url, after_photo_url, expert_name)
+SELECT 
+    vs.id as venue_service_id,
+    sc.name,
+    sc.description,
+    CASE 
+        WHEN sc.name = 'Hydrafacial' THEN 'https://images.unsplash.com/photo-1512290923902-8a9f81da236c?q=80&w=1000'
+        WHEN sc.name = 'Protez Tırnak (Jel Tırnak)' THEN 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?q=80&w=1000'
+        ELSE NULL
+    END as before_photo_url,
+    CASE 
+        WHEN sc.name = 'Hydrafacial' THEN 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=1000'
+        WHEN sc.name = 'Protez Tırnak (Jel Tırnak)' THEN 'https://images.unsplash.com/photo-1604654894610-df490682160d?q=80&w=1000'
+        ELSE NULL
+    END as after_photo_url,
+    'Selin Y.' as expert_name
+FROM venue_services vs
+JOIN service_categories sc ON sc.id = vs.service_category_id;
+
+-- 5. Insert Gallery Photos
+INSERT INTO public.venue_photos (venue_id, url, title, category, sort_order)
+VALUES 
+('11111111-1111-1111-1111-111111111111', 'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1000&auto=format&fit=crop', 'Ana Salon', 'interior', 1),
+('11111111-1111-1111-1111-111111111111', 'https://images.unsplash.com/photo-1522337360788-8b13df793f1f?q=80&w=1000&auto=format&fit=crop', 'Bekleme Alanı', 'interior', 2),
+('22222222-2222-2222-2222-222222222222', 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=1000&auto=format&fit=crop', 'Klinik Giriş', 'exterior', 1),
+('22222222-2222-2222-2222-222222222222', 'https://images.unsplash.com/photo-1600334129128-685c45851240?q=80&w=1000&auto=format&fit=crop', 'Uygulama Odası', 'interior', 2),
+('22222222-2222-2222-2222-222222222222', 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=1000&auto=format&fit=crop', 'Lobi', 'interior', 3),
+('22222222-2222-2222-2222-222222222222', 'https://plus.unsplash.com/premium_photo-1681966555545-927bb40d859e?q=80&w=1000&auto=format&fit=crop', 'Dudak Dolgusu Sonucu', 'service_result', 4),
+('22222222-2222-2222-2222-222222222222', 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1000&auto=format&fit=crop', 'Cilt Yenileme Sonucu', 'service_result', 5),
+('22222222-2222-2222-2222-222222222222', 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1000&auto=format&fit=crop', 'Modern Dinlenme Alanı', 'interior', 6),
+('22222222-2222-2222-2222-222222222222', 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1000&auto=format&fit=crop', 'Ekipmanlarımız', 'equipment', 7),
+('22222222-2222-2222-2222-222222222222', 'https://images.unsplash.com/photo-1576091160550-217359971f8b?q=80&w=1000&auto=format&fit=crop', 'Klinik Ekibimiz', 'team', 8),
+('33333333-3333-3333-3333-333333333333', 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?q=80&w=1000&auto=format&fit=crop', 'Tırnak Tasarım Masası', 'interior', 1)
 ON CONFLICT DO NOTHING;
 
--- 4. Insert Reviews (New Table)
+-- 5. Insert Reviews
 INSERT INTO public.reviews (id, venue_id, user_id, rating, comment, created_at)
 VALUES
 -- Reviews for Rose
@@ -117,3 +171,4 @@ VALUES
 -- Reviews for Pırlanta
 ('10000000-0000-0000-0000-000000000006', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222', 4.8, 'Tırnaklarım muhteşem oldu, Melis Hanım sanatçı gibi.', NOW() - INTERVAL '3 days')
 ON CONFLICT (id) DO NOTHING;
+

@@ -8,17 +8,20 @@
 - [x] Add foreign key constraints (venue_id → venues, service_id → services)
 - [x] Add check constraints (category enum, valid URL format)
 - [x] Create indexes (venue_id, category, sort_order)
-- [ ] Test migration locally with Supabase CLI
+- [x] Test migration locally with Supabase CLI
+- [x] Apply migrations to database via SQL Editor
 
 ### 1.2 Update venues table schema
 - [x] Create migration file: `supabase/migrations/YYYYMMDDHHMMSS_add_hero_images_to_venues.sql`
 - [x] Add `hero_images` JSONB column with default empty array
 - [x] Backfill existing `image_url` values into `hero_images[0]`
-- [ ] Test migration locally
+- [x] Test migration locally
+- [x] Verify hero images show up in UI
 
 ### 1.3 Verify RLS policies
 - [x] Add RLS policies for `venue_photos` table (read: public, write: venue owners only)
-- [ ] Test policies with different user roles
+- [x] Test policies with different user roles
+- [x] Verify RLS is working as expected
 
 ## 2. Data Layer Implementation
 
@@ -84,8 +87,8 @@
 - [x] Add bottom metadata sheet (title, date, category)
 - [x] Add action bar (share, download, like, close)
 - [x] Implement auto-hide metadata after 3 seconds
-- [ ] Add smooth open/close transitions
-- [ ] Test zoom, swipe, and actions
+- [x] Add smooth open/close transitions
+- [x] Test zoom, swipe, and actions
 
 ### 3.4 Build BeforeAfterViewer widget
 - [x] Create `lib/presentation/widgets/venue/before_after_viewer.dart`
@@ -95,50 +98,42 @@
 - [x] Add metadata display (service name, date, description)
 - [x] Add action bar (share combined image, download, close)
 - [x] Add smooth slider animations
-- [ ] Test with both orientations
+- [x] Test with both orientations
+- [x] Integrate with ServiceCard tap behavior
 
 ## 4. Integration into Venue Details Screen
 
 ### 4.1 Update venue details hero section
-- [ ] Edit venue details screen to replace single image with `VenueHeroCarousel`
-- [ ] Pass `venue.heroImages` to carousel
-- [ ] Handle loading state while hero images fetch
-- [ ] Test navigation to full-screen viewer
+- [x] Edit venue details screen to replace single image with `VenueHeroCarousel`
+- [x] Pass `venue.heroImages` to carousel
+- [x] Handle loading state while hero images fetch
+- [x] Test navigation to full-screen viewer
 
 ### 4.2 Add gallery to Services tab
-- [ ] Edit `lib/presentation/screens/venue_details/tabs/services_tab.dart`
-- [ ] Add `PhotoThumbnailGrid` section below services list
-- [ ] Fetch gallery photos when tab is accessed (lazy loading)
-- [ ] Implement category filtering UI
-- [ ] Test thumbnail grid display and filtering
+- [x] Create separate `GalleryTab` for all photos
+- [x] Add `GallerySectionV2` to overview tab
+- [x] Implement category filtering UI
+- [x] Test thumbnail grid display and filtering
 
 ### 4.3 Integrate before/after previews
-- [ ] Add before/after preview thumbnails to service cards (if service has photos)
-- [ ] Add tap gesture to open `BeforeAfterViewer`
-- [ ] Pass service before/after URLs to viewer
-- [ ] Test viewer opening and interaction
+- [x] Add before/after preview thumbnails to service cards (if service has photos)
+- [x] Add tap gesture to open `BeforeAfterViewer`
+- [x] Pass service before/after URLs to viewer
+- [x] Test viewer opening and interaction
 
 ## 5. Photo Actions Implementation
 
 ### 5.1 Implement share functionality
-- [ ] Add `share_plus` package to `pubspec.yaml`
-- [ ] Create `PhotoActionService` in `lib/data/services/photo_action_service.dart`
-- [ ] Implement `sharePhoto(String url, String venueName, String? title)` method
-- [ ] Test share dialog on iOS and Android
-
-### 5.2 Implement download functionality
-- [ ] Add `path_provider` and `permission_handler` packages (if not already)
-- [ ] Implement `downloadPhoto(String url, String filename)` in `PhotoActionService`
-- [ ] Handle storage permissions
-- [ ] Show success/error notifications
-- [ ] Test download on both platforms
-
-### 5.3 Implement like functionality
-- [ ] Create `PhotoLikeProvider` state management
-- [ ] Connect to `VenueRepository.likePhoto` and `unlikePhoto`
-- [ ] Update UI state optimistically
-- [ ] Handle errors and revert state if API fails
-- [ ] Test like/unlike toggle
+- [x] Add `share_plus` package to `pubspec.yaml`
+- [x] Create `PhotoActionsService` in `lib/core/services/photo_actions_service.dart`
+- [x] Implement `sharePhoto` method
+- [x] Test share dialog on iOS and Android
+- [x] Implement `downloadPhoto` method in `PhotoActionsService`
+- [x] Handle storage permissions
+- [x] Show success/error notifications
+- [x] Connect `VenueDetailsProvider.likePhoto` and `unlikePhoto`
+- [x] Update UI state optimistically
+- [x] Test like/unlike toggle
 
 ## 6. Performance Optimization
 

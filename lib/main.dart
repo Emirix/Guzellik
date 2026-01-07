@@ -4,17 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'config/app_config.dart';
-import 'config/environment_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/app_router.dart';
 import 'data/services/supabase_service.dart';
 import 'data/services/notification_service.dart';
 import 'data/services/location_service.dart';
+import 'data/repositories/venue_repository.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/app_state_provider.dart';
 import 'presentation/providers/discovery_provider.dart';
 import 'presentation/providers/venue_details_provider.dart';
 import 'presentation/providers/notification_provider.dart';
+import 'presentation/providers/review_submission_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,6 +69,9 @@ class GuzellikApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DiscoveryProvider()),
         ChangeNotifierProvider(create: (_) => VenueDetailsProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(
+          create: (_) => ReviewSubmissionProvider(VenueRepository()),
+        ),
       ],
       child: Consumer<AppStateProvider>(
         builder: (context, appState, _) {
