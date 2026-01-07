@@ -22,9 +22,9 @@ class EnvironmentConfig {
   // Development Configuration
   static const EnvironmentConfig dev = EnvironmentConfig(
     environment: Environment.dev,
-    supabaseUrl: 'YOUR_DEV_SUPABASE_URL',
-    supabaseAnonKey: 'YOUR_DEV_SUPABASE_ANON_KEY',
-    googleMapsApiKey: 'YOUR_DEV_GOOGLE_MAPS_API_KEY',
+    supabaseUrl: 'https://bovusiymseuxvmgabtfi.supabase.co',
+    supabaseAnonKey: 'sb_publishable_fICPBi3ciN1H1VQp9B8SMQ_Tf-YyvIk',
+    googleMapsApiKey: 'AIzaSyDKjhVYa0okqPZFJcQyXK4x57iIV9JWAFE',
   );
   
   // Staging Configuration

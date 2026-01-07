@@ -9,6 +9,8 @@ import '../../presentation/screens/profile_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
+import '../../presentation/screens/venue/venue_details_screen.dart';
+import '../../data/models/venue.dart';
 
 /// App router configuration using go_router
 class AppRouter {
@@ -21,7 +23,7 @@ class AppRouter {
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
       ),
-      
+
       // Auth Routes
       GoRoute(
         path: '/login',
@@ -33,7 +35,7 @@ class AppRouter {
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
       ),
-      
+
       // Main App Routes
       GoRoute(
         path: '/',
@@ -65,13 +67,21 @@ class AppRouter {
         name: 'profile',
         builder: (context, state) => const ProfileScreen(),
       ),
-    ],
-    
-    // Error handling
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('Sayfa bulunamadı: ${state.uri}'),
+
+      // Venue Details
+      GoRoute(
+        path: '/venue/:id',
+        name: 'venue-details',
+        builder: (context, state) {
+          final venueId = state.pathParameters['id']!;
+          final venue = state.extra as Venue?;
+          return VenueDetailsScreen(venueId: venueId, initialVenue: venue);
+        },
       ),
-    ),
+    ],
+
+    // Error handling
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Sayfa bulunamadı: ${state.uri}'))),
   );
 }

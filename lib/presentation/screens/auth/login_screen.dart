@@ -57,13 +57,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: AppColors.nudeLight,
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Icon(
                       Icons.spa,
                       size: 50,
-                      color: AppColors.nude,
+                      color: AppColors.primary,
                     ),
                   ),
                 ),

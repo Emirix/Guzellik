@@ -1,0 +1,122 @@
+﻿{
+  "id": "add-supabase",
+  "title": "Setup Supabase Backend",
+  "deltaCount": 5,
+  "deltas": [
+    {
+      "spec": "database",
+      "operation": "ADDED",
+      "description": "Add requirement: Requirement: User Profiles",
+      "requirement": {
+        "text": "Requirement: User Profiles",
+        "scenarios": [
+          {
+            "rawText": "- **WHEN** a new user signs up through Supabase Auth and the signup is successful\n- **THEN** a corresponding entry in the `profiles` table MUST be created via database trigger"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "text": "Requirement: User Profiles",
+          "scenarios": [
+            {
+              "rawText": "- **WHEN** a new user signs up through Supabase Auth and the signup is successful\n- **THEN** a corresponding entry in the `profiles` table MUST be created via database trigger"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "spec": "database",
+      "operation": "ADDED",
+      "description": "Add requirement: Requirement: Venue Management",
+      "requirement": {
+        "text": "Requirement: Venue Management",
+        "scenarios": [
+          {
+            "rawText": "- **WHEN** a venue profile is created or updated\n- **THEN** it MUST include name, description, address, and geographic location for map searches"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "text": "Requirement: Venue Management",
+          "scenarios": [
+            {
+              "rawText": "- **WHEN** a venue profile is created or updated\n- **THEN** it MUST include name, description, address, and geographic location for map searches"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "spec": "database",
+      "operation": "ADDED",
+      "description": "Add requirement: Requirement: Service Catalog",
+      "requirement": {
+        "text": "Requirement: Service Catalog",
+        "scenarios": [
+          {
+            "rawText": "- **WHEN** services are listed\n- **THEN** they MUST be associated with categories like Sa├ğ, Cilt Bak─▒m─▒, etc."
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "text": "Requirement: Service Catalog",
+          "scenarios": [
+            {
+              "rawText": "- **WHEN** services are listed\n- **THEN** they MUST be associated with categories like Sa├ğ, Cilt Bak─▒m─▒, etc."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "spec": "database",
+      "operation": "ADDED",
+      "description": "Add requirement: Requirement: Following System",
+      "requirement": {
+        "text": "Requirement: Following System",
+        "scenarios": [
+          {
+            "rawText": "- **WHEN** an authenticated user follows a venue\n- **THEN** a record is created in `follows` table\n- **AND** the user becomes eligible for notifications from that venue"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "text": "Requirement: Following System",
+          "scenarios": [
+            {
+              "rawText": "- **WHEN** an authenticated user follows a venue\n- **THEN** a record is created in `follows` table\n- **AND** the user becomes eligible for notifications from that venue"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "spec": "edge-functions",
+      "operation": "ADDED",
+      "description": "Add requirement: Requirement: Notification Dispatch",
+      "requirement": {
+        "text": "Requirement: Notification Dispatch",
+        "scenarios": [
+          {
+            "rawText": "- **WHEN** the `send-notification` edge function is invoked with a notification payload (title, body, target token)\n- **THEN** it MUST communicate with Firebase Cloud Messaging API to deliver the message\n- **AND** it MUST return a success or failure status"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "text": "Requirement: Notification Dispatch",
+          "scenarios": [
+            {
+              "rawText": "- **WHEN** the `send-notification` edge function is invoked with a notification payload (title, body, target token)\n- **THEN** it MUST communicate with Firebase Cloud Messaging API to deliver the message\n- **AND** it MUST return a success or failure status"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

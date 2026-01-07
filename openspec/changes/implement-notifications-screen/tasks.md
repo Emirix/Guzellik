@@ -1,0 +1,22 @@
+# Tasks: Implement Notifications Screen
+
+- [x] **Infrastructure & Data Layer**
+    - [x] Create `notifications` table in Supabase via SQL migration.
+    - [x] Create `lib/data/models/notification_model.dart`.
+    - [x] Create `lib/data/repositories/notification_repository.dart`.
+    - [x] Implement fetch, mark-as-read, and delete methods in repository.
+- [x] **State Management**
+    - [x] Create `lib/presentation/providers/notification_provider.dart` using Riverpod/Provider.
+    - [x] Integrate Supabase real-time listeners for live updates.
+    - [x] Implement filtering logic for tabs.
+- [x] **UI Implementation**
+    - [x] Create `lib/presentation/widgets/notifications/notification_filter_tabs.dart`.
+    - [x] Create `lib/presentation/widgets/notifications/notification_card.dart` with swipe-to-delete.
+    - [x] Refactor `lib/presentation/screens/notifications_screen.dart` to use dynamic data and proper styling.
+    - [x] Implement date grouping logic ("Bugün", "Dün", "Geçen Hafta").
+- [x] **Navigation & Polish**
+    - [x] Add deep-linking logic for tapping notifications.
+    - [x] Implement "Mark all as read" button functionality.
+    - [x] Verify UI alignment with provided design (Inter font, pink accents, no appointment tab).
+- [x] **Validation**
+    - [x] Run `openspec validate implement-notifications-screen`.

@@ -73,6 +73,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/logos/
+    - assets/maps/
 
   # Fonts
   # fonts:

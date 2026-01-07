@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_state_provider.dart';
+import '../../providers/notification_provider.dart';
 
 /// Custom bottom navigation bar
 /// Main navigation for the app
 class CustomBottomNav extends StatelessWidget {
   const CustomBottomNav({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppStateProvider>(
@@ -15,7 +16,7 @@ class CustomBottomNav extends StatelessWidget {
           currentIndex: appState.selectedBottomNavIndex,
           onTap: (index) => appState.setBottomNavIndex(index),
           type: BottomNavigationBarType.fixed,
-          items: const [
+          items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.explore_outlined),
               activeIcon: Icon(Icons.explore),
@@ -32,8 +33,22 @@ class CustomBottomNav extends StatelessWidget {
               label: 'Favoriler',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_outlined),
-              activeIcon: Icon(Icons.notifications),
+              icon: Consumer<NotificationProvider>(
+                builder: (context, provider, _) => Badge(
+                  label: Text(provider.unreadCount.toString()),
+                  isLabelVisible: provider.unreadCount > 0,
+                  backgroundColor: Colors.red,
+                  child: const Icon(Icons.notifications_outlined),
+                ),
+              ),
+              activeIcon: Consumer<NotificationProvider>(
+                builder: (context, provider, _) => Badge(
+                  label: Text(provider.unreadCount.toString()),
+                  isLabelVisible: provider.unreadCount > 0,
+                  backgroundColor: Colors.red,
+                  child: const Icon(Icons.notifications),
+                ),
+              ),
               label: 'Bildirimler',
             ),
             BottomNavigationBarItem(

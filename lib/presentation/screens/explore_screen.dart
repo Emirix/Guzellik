@@ -1,46 +1,181 @@
 import 'package:flutter/material.dart';
-import '../widgets/common/custom_header.dart';
+import 'package:provider/provider.dart';
+import '../providers/discovery_provider.dart';
+import '../widgets/discovery/map_view.dart';
+import '../widgets/discovery/venue_list_view.dart';
+import '../widgets/discovery/search_bar.dart';
+import '../widgets/discovery/view_toggle.dart';
+import '../../core/theme/app_colors.dart';
 
-/// Explore screen - Map-based venue discovery
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          const CustomHeader(
-            title: 'Keşfet',
-            subtitle: 'Yakınınızdaki mekanları keşfedin',
-          ),
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.explore,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Keşfet Ekranı',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Harita tabanlı mekan keşfi burada görünecek',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+    return Consumer<DiscoveryProvider>(
+      builder: (context, provider, child) {
+        return Stack(
+          children: [
+            // 1. Content (Map or List)
+            Positioned.fill(
+              child: provider.viewMode == DiscoveryViewMode.map
+                  ? const DiscoveryMapView()
+                  : const VenueListView(),
+            ),
+
+            // 2. Top Header & Search Bar
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  MediaQuery.of(context).padding.top + 8,
+                  16,
+                  16,
+                ),
+                decoration: BoxDecoration(
+                  gradient: provider.viewMode == DiscoveryViewMode.map
+                      ? LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.white.withOpacity(0.9),
+                            Colors.white.withOpacity(0.5),
+                            Colors.transparent,
+                          ],
+                        )
+                      : null,
+                  color: provider.viewMode == DiscoveryViewMode.list
+                      ? AppColors.background
+                      : null,
+                ),
+                child: Column(
+                  children: [
+                    if (provider.viewMode == DiscoveryViewMode.list) ...[
+                      _buildLocationHeader(context, provider),
+                      const SizedBox(height: 16),
+                    ],
+                    const DiscoverySearchBar(),
+                  ],
+                ),
               ),
             ),
+
+            // 3. View mode toggle (Floating at bottom center)
+            Positioned(
+              bottom: 30,
+              left: 0,
+              right: 0,
+              child: Center(child: const ViewToggle()),
+            ),
+
+            // 4. Loading Overlay
+            if (provider.isLoading)
+              const Positioned.fill(
+                child: Center(child: CircularProgressIndicator()),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLocationHeader(
+    BuildContext context,
+    DiscoveryProvider provider,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: InkWell(
+            onTap: () => provider.updateLocation(),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.location_on,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Konum',
+                        style: TextStyle(
+                          color: AppColors.gray500,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              provider.currentLocationName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Icon(
+                            Icons.expand_more,
+                            color: AppColors.gray900,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.gray100),
+          ),
+          child: Stack(
+            children: [
+              const Icon(
+                Icons.notifications_outlined,
+                color: AppColors.gray700,
+                size: 22,
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.white, width: 1.5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
