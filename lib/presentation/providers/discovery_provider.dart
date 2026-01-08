@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../data/models/venue.dart';
 import '../../data/models/venue_filter.dart';
+import '../../data/models/user_location.dart';
 import '../../data/repositories/venue_repository.dart';
 import '../../data/services/location_service.dart';
+import '../../data/services/location_preferences.dart';
 
 enum DiscoveryViewMode { home, map, list }
 
 class DiscoveryProvider extends ChangeNotifier {
   final VenueRepository _venueRepository = VenueRepository();
   final LocationService _locationService = LocationService();
+  final LocationPreferences _locationPreferences = LocationPreferences();
 
   DiscoveryViewMode _viewMode = DiscoveryViewMode.home;
   List<Venue> _venues = [];
@@ -55,14 +58,47 @@ class DiscoveryProvider extends ChangeNotifier {
   }
 
   Future<void> _initialize() async {
-    await loadHomeData();
-    await refresh();
+    // First, check if we have a saved location from onboarding
+    await _loadSavedLocation();
 
-    // Ensure the app is ready to show the permission dialog
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await updateLocation();
-      await refresh();
-    });
+    // Load home data and venues in parallel (without showing loading indicator)
+    await Future.wait([loadHomeData(), _loadVenues(showLoading: false)]);
+  }
+
+  /// Load saved location from LocationPreferences
+  Future<void> _loadSavedLocation() async {
+    try {
+      final savedLocation = await _locationPreferences.getLocation();
+      if (savedLocation != null) {
+        _applyUserLocation(savedLocation);
+      }
+    } catch (e) {
+      debugPrint('Error loading saved location: $e');
+    }
+  }
+
+  /// Apply UserLocation to provider state
+  void _applyUserLocation(UserLocation location) {
+    _currentLocationName = location.formattedLocation;
+    _manualCity = location.provinceName;
+    _manualDistrict = location.districtName;
+    _isUsingManualLocation = !location.isGPSBased;
+
+    if (location.hasCoordinates) {
+      _currentPosition = Position(
+        latitude: location.latitude!,
+        longitude: location.longitude!,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        altitudeAccuracy: 0,
+        heading: 0,
+        headingAccuracy: 0,
+        speed: 0,
+        speedAccuracy: 0,
+      );
+    }
+    notifyListeners();
   }
 
   Future<void> loadHomeData() async {
@@ -82,6 +118,8 @@ class DiscoveryProvider extends ChangeNotifier {
 
   void setViewMode(DiscoveryViewMode mode) {
     _viewMode = mode;
+    // Don't set isLoading when just changing view mode
+    // This prevents showing loading indicator when switching between map/list
     notifyListeners();
   }
 
@@ -90,13 +128,20 @@ class DiscoveryProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final position = await _locationService.getCurrentPosition();
+      // Add timeout to prevent infinite loading
+      final position = await _locationService.getCurrentPosition().timeout(
+        const Duration(seconds: 10),
+      );
+
       if (position != null) {
         _currentPosition = position;
-        final address = await _locationService.getAddressFromCoordinates(
-          latitude: position.latitude,
-          longitude: position.longitude,
-        );
+        final address = await _locationService
+            .getAddressFromCoordinates(
+              latitude: position.latitude,
+              longitude: position.longitude,
+            )
+            .timeout(const Duration(seconds: 5));
+
         if (address != null) {
           _currentLocationName = _shortenAddress(address);
         }
@@ -109,16 +154,30 @@ class DiscoveryProvider extends ChangeNotifier {
       debugPrint('Error updating location: $e');
       // If location fails, we might still have the default or previous location
     } finally {
+      // Always ensure loading is set to false
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  void updateManualLocation(String city, String district) {
+  Future<void> updateManualLocation(String city, String district) async {
     _manualCity = city;
     _manualDistrict = district;
     _isUsingManualLocation = true;
     _currentLocationName = '$district, $city';
+
+    // Save to preferences for persistence
+    try {
+      final userLocation = UserLocation(
+        provinceName: city,
+        districtName: district,
+        isGPSBased: false,
+      );
+      await _locationPreferences.saveLocation(userLocation);
+    } catch (e) {
+      debugPrint('Error saving manual location: $e');
+    }
+
     notifyListeners();
     refresh();
   }
@@ -148,9 +207,12 @@ class DiscoveryProvider extends ChangeNotifier {
   }
 
   void toggleViewMode() {
-    _viewMode = _viewMode == DiscoveryViewMode.map
-        ? DiscoveryViewMode.list
-        : DiscoveryViewMode.map;
+    // Toggle between map and list only (never go back to home)
+    if (_viewMode == DiscoveryViewMode.map) {
+      _viewMode = DiscoveryViewMode.list;
+    } else {
+      _viewMode = DiscoveryViewMode.map;
+    }
     notifyListeners();
   }
 
@@ -169,9 +231,11 @@ class DiscoveryProvider extends ChangeNotifier {
     refresh();
   }
 
-  Future<void> _loadVenues() async {
-    _isLoading = true;
-    notifyListeners();
+  Future<void> _loadVenues({bool showLoading = true}) async {
+    if (showLoading) {
+      _isLoading = true;
+      notifyListeners();
+    }
 
     try {
       _venues = await _venueRepository.searchVenues(
@@ -184,7 +248,9 @@ class DiscoveryProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error loading venues: $e');
     } finally {
-      _isLoading = false;
+      if (showLoading) {
+        _isLoading = false;
+      }
       notifyListeners();
     }
   }

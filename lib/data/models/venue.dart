@@ -1,3 +1,4 @@
+import 'venue_category.dart';
 import 'venue_photo.dart';
 
 class Venue {
@@ -12,6 +13,9 @@ class Venue {
   // Gallery Support
   final List<String> heroImages; // Hero carousel URLs
   final List<VenuePhoto>? galleryPhotos; // Detailed gallery (lazy loaded)
+
+  // Category
+  final VenueCategory? category;
 
   // Trust Badges
   final bool isVerified;
@@ -42,6 +46,10 @@ class Venue {
   // Distance (transient field, populated by search RPC)
   final double? distance;
 
+  // Location IDs
+  final int? provinceId;
+  final String? districtId;
+
   Venue({
     required this.id,
     required this.name,
@@ -52,6 +60,7 @@ class Venue {
     this.imageUrl,
     this.heroImages = const [],
     this.galleryPhotos,
+    this.category,
     this.isVerified = false,
     this.isPreferred = false,
     this.isHygienic = false,
@@ -70,6 +79,8 @@ class Venue {
     this.rating = 0.0,
     this.ratingCount = 0,
     this.distance,
+    this.provinceId,
+    this.districtId,
   });
 
   factory Venue.fromJson(Map<String, dynamic> json) {
@@ -101,6 +112,19 @@ class Venue {
           .toList();
     }
 
+    // Parse category if provided (as a joined relation)
+    VenueCategory? venueCategory;
+    if (json['venue_categories'] != null) {
+      venueCategory = VenueCategory.fromJson(
+        json['venue_categories'] as Map<String, dynamic>,
+      );
+    } else if (json['category'] != null) {
+      // Handle cases where it might be a direct map
+      venueCategory = VenueCategory.fromJson(
+        json['category'] as Map<String, dynamic>,
+      );
+    }
+
     return Venue(
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? 'İsimsiz Mekan',
@@ -111,6 +135,7 @@ class Venue {
       imageUrl: json['image_url'] as String?,
       heroImages: heroImagesList,
       galleryPhotos: galleryPhotosList,
+      category: venueCategory,
       isVerified: json['is_verified'] as bool? ?? false,
       isPreferred: json['is_preferred'] as bool? ?? false,
       isHygienic: json['is_hygienic'] as bool? ?? false,
@@ -139,6 +164,8 @@ class Venue {
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       ratingCount: json['review_count'] as int? ?? 0,
       distance: (json['distance_meters'] as num?)?.toDouble(),
+      provinceId: json['province_id'] as int?,
+      districtId: json['district_id'] as String?,
     );
   }
 
@@ -153,6 +180,7 @@ class Venue {
       'image_url': imageUrl,
       'hero_images': heroImages,
       'gallery_photos': galleryPhotos?.map((photo) => photo.toJson()).toList(),
+      'category': category?.toJson(),
       'is_verified': isVerified,
       'is_preferred': isPreferred,
       'is_hygienic': isHygienic,
@@ -171,6 +199,8 @@ class Venue {
       'rating': rating,
       'review_count': ratingCount,
       'distance_meters': distance,
+      'province_id': provinceId,
+      'district_id': districtId,
     };
   }
 
@@ -184,6 +214,7 @@ class Venue {
     String? imageUrl,
     List<String>? heroImages,
     List<VenuePhoto>? galleryPhotos,
+    VenueCategory? category,
     bool? isVerified,
     bool? isPreferred,
     bool? isHygienic,
@@ -202,6 +233,8 @@ class Venue {
     double? rating,
     int? ratingCount,
     double? distance,
+    int? provinceId,
+    String? districtId,
   }) {
     return Venue(
       id: id ?? this.id,
@@ -213,6 +246,7 @@ class Venue {
       imageUrl: imageUrl ?? this.imageUrl,
       heroImages: heroImages ?? this.heroImages,
       galleryPhotos: galleryPhotos ?? this.galleryPhotos,
+      category: category ?? this.category,
       isVerified: isVerified ?? this.isVerified,
       isPreferred: isPreferred ?? this.isPreferred,
       isHygienic: isHygienic ?? this.isHygienic,
@@ -231,6 +265,8 @@ class Venue {
       rating: rating ?? this.rating,
       ratingCount: ratingCount ?? this.ratingCount,
       distance: distance ?? this.distance,
+      provinceId: provinceId ?? this.provinceId,
+      districtId: districtId ?? this.districtId,
     );
   }
 }

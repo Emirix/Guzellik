@@ -4,16 +4,19 @@ import '../providers/app_state_provider.dart';
 import '../widgets/common/custom_bottom_nav.dart';
 import '../../core/widgets/auth_guard.dart';
 import 'explore_screen.dart';
+import 'search_screen.dart';
 import 'favorites_screen.dart';
 import 'notifications_screen.dart';
 import 'profile_screen.dart';
 
 /// Home screen with bottom navigation
+/// Tabs: Keşfet(0), Ara(1), Favoriler(2), Bildirimler(3), Profil(4)
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   static final List<Widget> _screens = [
     const ExploreScreen(),
+    const SearchScreen(),
     const AuthGuard(
       requiredFor: 'Favoriler',
       redirectPath: '/favorites',

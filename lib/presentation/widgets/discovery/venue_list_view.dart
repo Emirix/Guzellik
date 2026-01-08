@@ -4,11 +4,22 @@ import '../../providers/discovery_provider.dart';
 import '../venue/venue_card.dart';
 import '../../../core/theme/app_colors.dart';
 
-class VenueListView extends StatelessWidget {
+class VenueListView extends StatefulWidget {
   const VenueListView({super.key});
 
   @override
+  State<VenueListView> createState() => _VenueListViewState();
+}
+
+class _VenueListViewState extends State<VenueListView>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         return SingleChildScrollView(

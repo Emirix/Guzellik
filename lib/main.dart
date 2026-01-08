@@ -9,13 +9,18 @@ import 'core/utils/app_router.dart';
 import 'data/services/supabase_service.dart';
 import 'data/services/notification_service.dart';
 import 'data/services/location_service.dart';
+import 'data/services/location_preferences.dart';
 import 'data/repositories/venue_repository.dart';
+import 'data/repositories/location_repository.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/app_state_provider.dart';
 import 'presentation/providers/discovery_provider.dart';
 import 'presentation/providers/venue_details_provider.dart';
 import 'presentation/providers/notification_provider.dart';
 import 'presentation/providers/review_submission_provider.dart';
+import 'presentation/providers/search_provider.dart';
+import 'presentation/providers/location_onboarding_provider.dart';
+import 'presentation/providers/category_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,13 +69,26 @@ class GuzellikApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (_) => LocationService()),
+        Provider(create: (_) => LocationPreferences()),
+        Provider(create: (_) => LocationRepository()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AppStateProvider()),
         ChangeNotifierProvider(create: (_) => DiscoveryProvider()),
         ChangeNotifierProvider(create: (_) => VenueDetailsProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(
           create: (_) => ReviewSubmissionProvider(VenueRepository()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SearchProvider(venueRepository: VenueRepository()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LocationOnboardingProvider(
+            locationService: context.read<LocationService>(),
+            locationRepository: context.read<LocationRepository>(),
+            locationPreferences: context.read<LocationPreferences>(),
+          ),
         ),
       ],
       child: Consumer<AppStateProvider>(

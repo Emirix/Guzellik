@@ -3,25 +3,41 @@ import '../models/service.dart';
 import '../models/venue_filter.dart';
 import '../models/review.dart';
 import '../models/venue_photo.dart';
+import '../models/venue_category.dart';
 import '../services/supabase_service.dart';
 
 class VenueRepository {
   final SupabaseService _supabase = SupabaseService.instance;
 
+  Future<List<VenueCategory>> getVenueCategories() async {
+    final response = await _supabase
+        .from('venue_categories')
+        .select()
+        .eq('is_active', true)
+        .order('name');
+    return (response as List)
+        .map((json) => VenueCategory.fromJson(json))
+        .toList();
+  }
+
   Future<List<Venue>> getVenues() async {
-    final response = await _supabase.from('venues_with_coords').select();
+    final response = await _supabase
+        .from('venues_with_coords')
+        .select('*, venue_categories(*)');
     return (response as List).map((json) => Venue.fromJson(json)).toList();
   }
 
   Future<List<Venue>> getFeaturedVenues() async {
-    final response = await _supabase.from('featured_venues').select();
+    final response = await _supabase
+        .from('featured_venues')
+        .select('*, venue_categories(*)');
     return (response as List).map((json) => Venue.fromJson(json)).toList();
   }
 
   Future<Venue?> getVenueById(String id) async {
     final response = await _supabase
         .from('venues_with_coords')
-        .select()
+        .select('*, venue_categories(*)')
         .eq('id', id)
         .single();
     return Venue.fromJson(response);
@@ -32,11 +48,16 @@ class VenueRepository {
     double lng,
     double radiusInMeters,
   ) async {
+    // Note: rpc doesn't support structured join in select easily, but search_venues_advanced returns details.
+    // get_nearby_venues returns SETOF venues_with_coords.
+    // We might need to join separately if we want category objects here.
     final List<dynamic> response = await _supabase.rpc(
       'get_nearby_venues',
       params: {'lat': lat, 'lng': lng, 'radius_meters': radiusInMeters},
     );
 
+    // To get category details for nearby venues, we should either update the RPC to join or fetch them later.
+    // For now, let's just use what's returned.
     return response.map((json) => Venue.fromJson(json)).toList();
   }
 

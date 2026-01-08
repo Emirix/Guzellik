@@ -13,8 +13,12 @@ class DiscoveryMapView extends StatefulWidget {
   State<DiscoveryMapView> createState() => _DiscoveryMapViewState();
 }
 
-class _DiscoveryMapViewState extends State<DiscoveryMapView> {
+class _DiscoveryMapViewState extends State<DiscoveryMapView>
+    with AutomaticKeepAliveClientMixin {
   GoogleMapController? _mapController;
+
+  @override
+  bool get wantKeepAlive => true;
 
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(41.0082, 28.9784),
@@ -24,6 +28,8 @@ class _DiscoveryMapViewState extends State<DiscoveryMapView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         return Stack(

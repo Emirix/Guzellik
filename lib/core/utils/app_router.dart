@@ -10,6 +10,7 @@ import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/auth/password_reset_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
 import '../../presentation/screens/venue/venue_details_screen.dart';
+import '../../presentation/screens/location_onboarding_screen.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
 
@@ -49,7 +50,8 @@ class AppRouter {
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) =>
+            const LocationOnboardingScreen(child: HomeScreen()),
       ),
       GoRoute(
         path: '/explore',

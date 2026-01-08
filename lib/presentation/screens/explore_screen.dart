@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../providers/discovery_provider.dart';
 import '../widgets/discovery/map_view.dart';
@@ -7,13 +8,26 @@ import '../widgets/discovery/search_bar.dart';
 import '../widgets/discovery/view_toggle.dart';
 import '../widgets/discovery/location_selection_bottom_sheet.dart';
 import '../widgets/discovery/featured_venues.dart';
+import '../widgets/discovery/category_icons.dart';
+import '../widgets/discovery/nearby_venues.dart';
 import '../../core/theme/app_colors.dart';
 
-class ExploreScreen extends StatelessWidget {
+class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
 
   @override
+  State<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends State<ExploreScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         // Show home view
@@ -77,8 +91,9 @@ class ExploreScreen extends StatelessWidget {
               child: Center(child: const ViewToggle()),
             ),
 
-            // 4. Loading Overlay
-            if (provider.isLoading)
+            // 4. Loading Overlay - only show when actually loading data
+            if (provider.isLoading &&
+                provider.viewMode != DiscoveryViewMode.home)
               const Positioned.fill(
                 child: Center(child: CircularProgressIndicator()),
               ),
@@ -218,33 +233,145 @@ class ExploreScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Header with location
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: Column(
-                  children: [
-                    _buildLocationHeader(context, provider),
-                    const SizedBox(height: 16),
-                    const DiscoverySearchBar(),
-                  ],
+        child: Stack(
+          children: [
+            CustomScrollView(
+              slivers: [
+                // Header with location
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Column(
+                      children: [
+                        _buildLocationHeader(context, provider),
+                        const SizedBox(height: 16),
+                        const DiscoverySearchBar(),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Featured Venues
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 24, bottom: 24),
+                    child: _BrandSection(),
+                  ),
+                ),
+
+                // Featured Venues
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 24),
+                    child: FeaturedVenues(),
+                  ),
+                ),
+
+                // Category Icons
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 24),
+                    child: CategoryIcons(),
+                  ),
+                ),
+
+                // Nearby Venues
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 24),
+                    child: NearbyVenues(),
+                  ),
+                ),
+
+                // Bottom padding for FAB
+                const SliverToBoxAdapter(child: SizedBox(height: 80)),
+              ],
+            ),
+
+            // Floating Action Button for Map View
+            Positioned(
+              bottom: 30,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => provider.setViewMode(DiscoveryViewMode.map),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.gray900,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.map, color: Colors.white, size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          'Harita Görünümü',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-
-            // Featured Venues
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.only(top: 24, bottom: 16),
-                child: FeaturedVenues(),
-              ),
-            ),
-
-            // Add more sections here as needed
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Logo ve "Güzellik haritam" yazısını içeren marka bölümü
+class _BrandSection extends StatelessWidget {
+  const _BrandSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Logo
+          SvgPicture.asset(
+            'assets/logo-transparent.svg',
+            height: 48,
+            width: 48,
+          ),
+          const SizedBox(width: 12),
+          // "Güzellik haritam" yazısı
+          ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
+            ).createShader(bounds),
+            child: const Text(
+              'Güzellik haritam',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_state_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../providers/discovery_provider.dart';
 
 /// Custom bottom navigation bar
 /// Main navigation for the app
+/// Tabs: Keşfet(0), Ara(1), Favoriler(2), Bildirimler(3), Profil(4)
 class CustomBottomNav extends StatelessWidget {
   const CustomBottomNav({super.key});
 
@@ -16,13 +18,25 @@ class CustomBottomNav extends StatelessWidget {
       builder: (context, appState, _) {
         return BottomNavigationBar(
           currentIndex: appState.selectedBottomNavIndex,
-          onTap: (index) => appState.setBottomNavIndex(index),
+          onTap: (index) {
+            appState.setBottomNavIndex(index);
+            // Reset discovery view to home when returning to Explore tab
+            if (index == 0) {
+              final discoveryProvider = context.read<DiscoveryProvider>();
+              discoveryProvider.setViewMode(DiscoveryViewMode.home);
+            }
+          },
           type: BottomNavigationBarType.fixed,
           items: [
             const BottomNavigationBarItem(
               icon: Icon(Icons.explore_outlined),
               activeIcon: Icon(Icons.explore),
               label: 'Keşfet',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.search_outlined),
+              activeIcon: Icon(Icons.search),
+              label: 'Ara',
             ),
             const BottomNavigationBarItem(
               icon: Icon(Icons.favorite_outline),

@@ -131,7 +131,7 @@ class VenueIdentityV2 extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Name and Logo Row
+            // Name, Location, Category and Image Row
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -139,58 +139,127 @@ class VenueIdentityV2 extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Venue Name
                       Text(
                         venue.name,
                         style: AppTextStyles.heading1.copyWith(
-                          fontSize: 24,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.5,
+                          color: AppColors.black,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
+                      // Location Row (İl, İlçe)
                       Row(
                         children: [
                           const Icon(
                             Icons.location_on,
                             size: 16,
-                            color: AppColors.gray500,
+                            color: AppColors.primary,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            'Kadıköy, İstanbul', // TODO: Get from address or new field
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.gray500,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 6),
+                          Flexible(
                             child: Text(
-                              '•',
-                              style: TextStyle(color: AppColors.gray400),
-                            ),
-                          ),
-                          Text(
-                            'Cilt Bakımı & Lazer', // TODO: Get from categories
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.gray500,
-                              fontWeight: FontWeight.w500,
+                              'Kadıköy, İstanbul', // TODO: Get from address or new field
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.gray600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
+                      const SizedBox(height: 6),
+                      // Category Row (Mekan Türü)
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.sell_outlined,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'Cilt Bakımı & Lazer', // TODO: Get from categories
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.gray600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      // Follow Button
+                      SizedBox(
+                        height: 36,
+                        child: OutlinedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () => _handleFollowTap(context),
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: isFollowing
+                                ? AppColors.primary.withOpacity(0.1)
+                                : Colors.white,
+                            side: BorderSide(
+                              color: isFollowing
+                                  ? AppColors.primary.withOpacity(0.5)
+                                  : AppColors.primary,
+                              width: 1,
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isLoading)
+                                SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColors.primary,
+                                    ),
+                                  ),
+                                )
+                              else
+                                Icon(
+                                  isFollowing ? Icons.check : Icons.add,
+                                  size: 16,
+                                  color: AppColors.primary,
+                                ),
+                              const SizedBox(width: 6),
+                              Text(
+                                isFollowing ? 'Takipte' : 'Takip Et',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 16),
-                // Logo Container
+                const SizedBox(width: 12),
+                // Main Image Container (larger, rounded)
                 Container(
-                  width: 64,
-                  height: 64,
+                  width: 100,
+                  height: 120,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white, width: 2),
                     boxShadow: const [
                       BoxShadow(
                         color: Color(0x14000000),
@@ -200,122 +269,92 @@ class VenueIdentityV2 extends StatelessWidget {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(16),
                     child: venue.imageUrl != null
-                        ? Image.network(venue.imageUrl!, fit: BoxFit.cover)
-                        : const Icon(Icons.business, color: AppColors.primary),
+                        ? Image.network(
+                            venue.imageUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.nude,
+                                child: const Icon(
+                                  Icons.business,
+                                  color: AppColors.primary,
+                                  size: 40,
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            color: AppColors.nude,
+                            child: const Icon(
+                              Icons.business,
+                              color: AppColors.primary,
+                              size: 40,
+                            ),
+                          ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            // Rating and Follow Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Rating Card
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.nude.withOpacity(0.5)),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x05000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Text(
-                        '4.8',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Row(
-                        children: List.generate(5, (index) {
-                          if (index < 4) {
-                            return const Icon(
-                              Icons.star,
-                              color: Color(0xFFFFB800),
-                              size: 14,
-                            );
-                          } else {
-                            return const Icon(
-                              Icons.star_half,
-                              color: Color(0xFFFFB800),
-                              size: 14,
-                            );
-                          }
-                        }),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '(124)',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.gray400,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Follow Button
-                ElevatedButton.icon(
-                  onPressed: isLoading ? null : () => _handleFollowTap(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isFollowing
-                        ? AppColors.primary
-                        : AppColors.primary.withOpacity(0.1),
-                    foregroundColor: isFollowing
-                        ? Colors.white
-                        : AppColors.primary,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: isLoading
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      : Icon(
-                          isFollowing
-                              ? Icons.notifications
-                              : Icons.notifications_outlined,
-                          size: 16,
-                        ),
-                  label: Text(
-                    isFollowing ? 'Takip Ediliyor' : 'Takip Et',
+            const SizedBox(height: 16),
+            // Rating Row - Now only contains the Rating Card
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9), // Mint/light green background
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: const Color(0xFFDCEFDC), width: 1),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    venue.rating?.toStringAsFixed(1) ?? '4.8',
                     style: const TextStyle(
+                      color: Color(0xFF2E7D32), // Dark green
                       fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      letterSpacing: 0.2,
+                      fontSize: 15,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  // Star icons - compact
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(5, (index) {
+                      final rating = venue.rating ?? 4.8;
+                      if (index < rating.floor()) {
+                        return const Icon(
+                          Icons.star,
+                          color: Color(0xFFFFB800),
+                          size: 14,
+                        );
+                      } else if (index < rating.ceil() && rating % 1 != 0) {
+                        return const Icon(
+                          Icons.star_half,
+                          color: Color(0xFFFFB800),
+                          size: 14,
+                        );
+                      } else {
+                        return const Icon(
+                          Icons.star_border,
+                          color: Color(0xFFFFB800),
+                          size: 14,
+                        );
+                      }
+                    }),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '(${venue.ratingCount ?? 124} Değerlendirme)',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: const Color(0xFF388E3C),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         );

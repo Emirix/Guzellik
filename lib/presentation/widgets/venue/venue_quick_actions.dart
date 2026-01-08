@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../data/models/venue.dart';
 import '../../../core/theme/app_colors.dart';
 import 'components/quick_action_button.dart';
@@ -64,7 +65,7 @@ class VenueQuickActions extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           QuickActionButton(
-            icon: Icons.chat,
+            icon: FontAwesomeIcons.whatsapp,
             label: 'WhatsApp',
             iconColor: const Color(0xFF25D366),
             onTap: _launchWhatsApp,
@@ -82,7 +83,7 @@ class VenueQuickActions extends StatelessWidget {
             onTap: _launchMaps,
           ),
           QuickActionButton(
-            icon: Icons.camera_alt,
+            icon: FontAwesomeIcons.instagram,
             label: 'Instagram',
             iconColor: const Color(0xFFE1306C),
             onTap: _launchInstagram,

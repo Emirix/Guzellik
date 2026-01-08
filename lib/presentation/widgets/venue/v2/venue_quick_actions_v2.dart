@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../data/models/venue.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -19,35 +20,39 @@ class VenueQuickActionsV2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildActionButton(
-          icon: Icons.chat_bubble_outline,
+          icon: FontAwesomeIcons.whatsapp,
           label: 'WhatsApp',
-          iconColor: const Color(0xFF25D366),
+          backgroundColor: const Color(0xFF25D366),
+          iconColor: Colors.white,
           onTap: () => _launchUrl(
             'https://wa.me/905000000000',
           ), // Replace with real phone
         ),
         _buildActionButton(
-          icon: Icons.call_outlined,
+          icon: Icons.call,
           label: 'Ara',
+          backgroundColor: AppColors.primaryLight,
           iconColor: AppColors.primary,
           onTap: () =>
               _launchUrl('tel:+905000000000'), // Replace with real phone
         ),
         _buildActionButton(
-          icon: Icons.map_outlined,
+          icon: Icons.near_me,
           label: 'Yol Tarifi',
-          iconColor: Colors.blue,
+          backgroundColor: const Color(0xFFE3F2FD),
+          iconColor: const Color(0xFF1976D2),
           onTap: () => _launchUrl(
             'https://maps.google.com/?q=${venue.latitude},${venue.longitude}',
           ),
         ),
         _buildActionButton(
-          icon: Icons.camera_alt_outlined,
+          icon: FontAwesomeIcons.instagram,
           label: 'Instagram',
-          iconColor: const Color(0xFFE1306C),
+          backgroundColor: AppColors.primaryLight,
+          iconColor: AppColors.primary,
           onTap: () => _launchUrl(
             'https://instagram.com/linaestetik',
           ), // Replace with real IG
@@ -59,21 +64,21 @@ class VenueQuickActionsV2 extends StatelessWidget {
   Widget _buildActionButton({
     required IconData icon,
     required String label,
+    required Color backgroundColor,
     required Color iconColor,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
       child: Column(
         children: [
           Container(
-            width: 56,
-            height: 56,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.nude),
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(20),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x08000000),
@@ -82,14 +87,14 @@ class VenueQuickActionsV2 extends StatelessWidget {
                 ),
               ],
             ),
-            child: Icon(icon, color: iconColor, size: 24),
+            child: Icon(icon, color: iconColor, size: 26),
           ),
           const SizedBox(height: 8),
           Text(
             label,
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.gray700,
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),

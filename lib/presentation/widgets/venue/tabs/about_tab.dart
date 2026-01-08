@@ -3,6 +3,7 @@ import '../../../../data/models/venue.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../components/working_hours_card.dart';
 
 class AboutTab extends StatelessWidget {
@@ -259,7 +260,7 @@ class AboutTab extends StatelessWidget {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () => _openWhatsApp(whatsapp),
-              icon: const Icon(Icons.chat),
+              icon: const Icon(FontAwesomeIcons.whatsapp),
               label: const Text('WhatsApp'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF25D366),
