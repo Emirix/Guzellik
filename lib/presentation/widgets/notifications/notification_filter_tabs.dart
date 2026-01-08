@@ -18,22 +18,22 @@ class NotificationFilterTabs extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           _FilterChip(
-            label: 'Tümü',
+            label: 'Hepsi',
             isSelected: provider.currentFilter == NotificationFilter.all,
             onTap: () => provider.setFilter(NotificationFilter.all),
           ),
           const SizedBox(width: 8),
           _FilterChip(
-            label: 'Fırsatlar',
-            isSelected:
-                provider.currentFilter == NotificationFilter.opportunity,
-            onTap: () => provider.setFilter(NotificationFilter.opportunity),
+            label: 'Kampanyalar',
+            isSelected: provider.currentFilter == NotificationFilter.campaign,
+            onTap: () => provider.setFilter(NotificationFilter.campaign),
           ),
           const SizedBox(width: 8),
           _FilterChip(
-            label: 'Sistem',
-            isSelected: provider.currentFilter == NotificationFilter.system,
-            onTap: () => provider.setFilter(NotificationFilter.system),
+            label: 'Randevular',
+            isSelected:
+                provider.currentFilter == NotificationFilter.appointment,
+            onTap: () => provider.setFilter(NotificationFilter.appointment),
           ),
         ],
       ),

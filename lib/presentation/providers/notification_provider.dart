@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../data/models/notification_model.dart';
 import '../../data/repositories/notification_repository.dart';
 
-enum NotificationFilter { all, opportunity, system }
+enum NotificationFilter { all, campaign, appointment }
 
 class NotificationProvider extends ChangeNotifier {
   final NotificationRepository _repository = NotificationRepository();
@@ -31,9 +31,9 @@ class NotificationProvider extends ChangeNotifier {
   List<NotificationModel> _getFilteredNotifications() {
     if (_currentFilter == NotificationFilter.all) return _notifications;
 
-    final type = _currentFilter == NotificationFilter.opportunity
-        ? NotificationType.opportunity
-        : NotificationType.system;
+    final type = _currentFilter == NotificationFilter.campaign
+        ? NotificationType.campaign
+        : NotificationType.appointment;
 
     return _notifications.where((n) => n.type == type).toList();
   }

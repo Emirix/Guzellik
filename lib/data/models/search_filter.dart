@@ -1,12 +1,5 @@
 /// Sıralama seçenekleri
-enum SortOption {
-  recommended,
-  nearest,
-  highestRated,
-  mostReviewed,
-  priceAsc,
-  priceDesc,
-}
+enum SortOption { recommended, nearest, highestRated, mostReviewed }
 
 /// Arama filtresi modeli
 class SearchFilter {
@@ -15,11 +8,11 @@ class SearchFilter {
   final double? maxDistanceKm;
   final List<String> serviceIds;
   final List<String> venueTypes;
+  final String? venueCategoryId;
   final double? minRating;
   final bool onlyVerified;
   final bool onlyHygienic;
   final bool onlyPreferred;
-  final bool isOpenNow;
   final SortOption sortBy;
 
   const SearchFilter({
@@ -28,11 +21,11 @@ class SearchFilter {
     this.maxDistanceKm,
     this.serviceIds = const [],
     this.venueTypes = const [],
+    this.venueCategoryId,
     this.minRating,
     this.onlyVerified = false,
     this.onlyHygienic = false,
     this.onlyPreferred = false,
-    this.isOpenNow = false,
     this.sortBy = SortOption.recommended,
   });
 
@@ -46,11 +39,11 @@ class SearchFilter {
       maxDistanceKm != null ||
       serviceIds.isNotEmpty ||
       venueTypes.isNotEmpty ||
+      venueCategoryId != null ||
       minRating != null ||
       onlyVerified ||
       onlyHygienic ||
       onlyPreferred ||
-      isOpenNow ||
       sortBy != SortOption.recommended;
 
   /// Aktif filtre sayısını döndürür
@@ -60,11 +53,11 @@ class SearchFilter {
     if (maxDistanceKm != null) count++;
     if (serviceIds.isNotEmpty) count++;
     if (venueTypes.isNotEmpty) count++;
+    if (venueCategoryId != null) count++;
     if (minRating != null) count++;
     if (onlyVerified) count++;
     if (onlyHygienic) count++;
     if (onlyPreferred) count++;
-    if (isOpenNow) count++;
     return count;
   }
 
@@ -74,16 +67,17 @@ class SearchFilter {
     double? maxDistanceKm,
     List<String>? serviceIds,
     List<String>? venueTypes,
+    String? venueCategoryId,
     double? minRating,
     bool? onlyVerified,
     bool? onlyHygienic,
     bool? onlyPreferred,
-    bool? isOpenNow,
     SortOption? sortBy,
     bool clearProvince = false,
     bool clearDistrict = false,
     bool clearMaxDistance = false,
     bool clearMinRating = false,
+    bool clearVenueCategory = false,
   }) {
     return SearchFilter(
       province: clearProvince ? null : (province ?? this.province),
@@ -93,11 +87,13 @@ class SearchFilter {
           : (maxDistanceKm ?? this.maxDistanceKm),
       serviceIds: serviceIds ?? this.serviceIds,
       venueTypes: venueTypes ?? this.venueTypes,
+      venueCategoryId: clearVenueCategory
+          ? null
+          : (venueCategoryId ?? this.venueCategoryId),
       minRating: clearMinRating ? null : (minRating ?? this.minRating),
       onlyVerified: onlyVerified ?? this.onlyVerified,
       onlyHygienic: onlyHygienic ?? this.onlyHygienic,
       onlyPreferred: onlyPreferred ?? this.onlyPreferred,
-      isOpenNow: isOpenNow ?? this.isOpenNow,
       sortBy: sortBy ?? this.sortBy,
     );
   }
@@ -110,11 +106,11 @@ class SearchFilter {
       'maxDistanceKm': maxDistanceKm,
       'serviceIds': serviceIds,
       'venueTypes': venueTypes,
+      'venueCategoryId': venueCategoryId,
       'minRating': minRating,
       'onlyVerified': onlyVerified,
       'onlyHygienic': onlyHygienic,
       'onlyPreferred': onlyPreferred,
-      'isOpenNow': isOpenNow,
       'sortBy': sortBy.name,
     };
   }
@@ -135,11 +131,11 @@ class SearchFilter {
               ?.map((e) => e as String)
               .toList() ??
           [],
+      venueCategoryId: json['venueCategoryId'] as String?,
       minRating: (json['minRating'] as num?)?.toDouble(),
       onlyVerified: json['onlyVerified'] as bool? ?? false,
       onlyHygienic: json['onlyHygienic'] as bool? ?? false,
       onlyPreferred: json['onlyPreferred'] as bool? ?? false,
-      isOpenNow: json['isOpenNow'] as bool? ?? false,
       sortBy: SortOption.values.firstWhere(
         (e) => e.name == json['sortBy'],
         orElse: () => SortOption.recommended,
@@ -149,6 +145,6 @@ class SearchFilter {
 
   @override
   String toString() {
-    return 'SearchFilter(province: $province, district: $district, maxDistanceKm: $maxDistanceKm, serviceIds: $serviceIds, venueTypes: $venueTypes, minRating: $minRating, onlyVerified: $onlyVerified, onlyHygienic: $onlyHygienic, onlyPreferred: $onlyPreferred, isOpenNow: $isOpenNow, sortBy: $sortBy)';
+    return 'SearchFilter(province: $province, district: $district, maxDistanceKm: $maxDistanceKm, serviceIds: $serviceIds, venueTypes: $venueTypes, venueCategoryId: $venueCategoryId, minRating: $minRating, onlyVerified: $onlyVerified, onlyHygienic: $onlyHygienic, onlyPreferred: $onlyPreferred, sortBy: $sortBy)';
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../providers/discovery_provider.dart';
 import '../widgets/discovery/map_view.dart';
@@ -53,7 +52,7 @@ class _ExploreScreenState extends State<ExploreScreen>
               child: Container(
                 padding: EdgeInsets.fromLTRB(
                   16,
-                  MediaQuery.of(context).padding.top + 8,
+                  MediaQuery.of(context).padding.top + 24,
                   16,
                   16,
                 ),
@@ -254,14 +253,6 @@ class _ExploreScreenState extends State<ExploreScreen>
                 // Featured Venues
                 const SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.only(top: 24, bottom: 24),
-                    child: _BrandSection(),
-                  ),
-                ),
-
-                // Featured Venues
-                const SliverToBoxAdapter(
-                  child: Padding(
                     padding: EdgeInsets.only(bottom: 24),
                     child: FeaturedVenues(),
                   ),
@@ -333,45 +324,6 @@ class _ExploreScreenState extends State<ExploreScreen>
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Logo ve "Güzellik haritam" yazısını içeren marka bölümü
-class _BrandSection extends StatelessWidget {
-  const _BrandSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Logo
-          SvgPicture.asset(
-            'assets/logo-transparent.svg',
-            height: 48,
-            width: 48,
-          ),
-          const SizedBox(width: 12),
-          // "Güzellik haritam" yazısı
-          ShaderMask(
-            shaderCallback: (bounds) => LinearGradient(
-              colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
-            ).createShader(bounds),
-            child: const Text(
-              'Güzellik haritam',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

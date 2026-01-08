@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import '../../../providers/venue_details_provider.dart';
 import '../venue_hero_carousel.dart';
 import '../photo_gallery_viewer.dart';
+import '../../../providers/favorites_provider.dart';
+import '../../../providers/auth_provider.dart';
 
 class VenueHeroV2 extends StatelessWidget {
   final Venue venue;
@@ -76,7 +78,50 @@ class VenueHeroV2 extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        _buildGlassButton(icon: Icons.favorite, onTap: () {}),
+                        _buildGlassButton(
+                          icon: venue.isFavorited
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          iconColor: venue.isFavorited
+                              ? AppColors.primary
+                              : Colors.white,
+                          onTap: () async {
+                            final authProvider = context.read<AuthProvider>();
+                            if (!authProvider.isAuthenticated) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Lütfen önce giriş yapın'),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                              return;
+                            }
+
+                            try {
+                              final favoritesProvider = context
+                                  .read<FavoritesProvider>();
+                              await favoritesProvider.toggleFavorite(venue);
+
+                              // Local sync for details provider if needed
+                              final detailsProvider = context
+                                  .read<VenueDetailsProvider>();
+                              if (detailsProvider.venue?.id == venue.id) {
+                                detailsProvider.loadVenueDetails(
+                                  venue.id,
+                                  initialVenue: venue.copyWith(
+                                    isFavorited: !venue.isFavorited,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Hata: $e')),
+                                );
+                              }
+                            }
+                          },
+                        ),
                         const SizedBox(width: 12),
                         _buildGlassButton(
                           icon: Icons.ios_share,
@@ -138,6 +183,7 @@ class VenueHeroV2 extends StatelessWidget {
   Widget _buildGlassButton({
     required IconData icon,
     required VoidCallback onTap,
+    Color iconColor = Colors.white,
   }) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
@@ -151,7 +197,7 @@ class VenueHeroV2 extends StatelessWidget {
               width: 40,
               height: 40,
               alignment: Alignment.center,
-              child: Icon(icon, color: Colors.white, size: 22),
+              child: Icon(icon, color: iconColor, size: 22),
             ),
           ),
         ),

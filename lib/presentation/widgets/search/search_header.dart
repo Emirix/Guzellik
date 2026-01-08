@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../providers/app_state_provider.dart';
+import '../../providers/discovery_provider.dart';
 
 /// Arama başlığı widget'ı
 /// Geri butonu, arama input'u ve harita toggle'ı içerir
@@ -20,46 +23,67 @@ class SearchHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+      padding: EdgeInsets.fromLTRB(
+        16,
+        MediaQuery.of(context).padding.top + 12,
+        16,
+        12,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.background, // Background color matches the design
       ),
       child: Row(
         children: [
-          // Back button
+          // Back button (Rounded full from design)
           GestureDetector(
             onTap: () {
-              // Clear search and go back
               FocusScope.of(context).unfocus();
+              context.read<AppStateProvider>().setBottomNavIndex(0);
             },
             child: Container(
               width: 40,
               height: 40,
-              alignment: Alignment.center,
-              child: const Icon(Icons.arrow_back, color: AppColors.gray900),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.gray100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_back,
+                color: AppColors.gray900,
+                size: 20,
+              ),
             ),
           ),
           const SizedBox(width: 8),
 
-          // Search input
+          // Search input (Rounded 2xl from design)
           Expanded(
             child: Container(
-              height: 44,
+              height: 48,
               decoration: BoxDecoration(
-                color: AppColors.gray50,
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.gray100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
                   const SizedBox(width: 12),
-                  const Icon(Icons.search, color: AppColors.gray400, size: 20),
+                  const Icon(Icons.search, color: AppColors.primary, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
@@ -68,6 +92,7 @@ class SearchHeader extends StatelessWidget {
                       onChanged: onChanged,
                       style: const TextStyle(
                         fontSize: 14,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.gray900,
                       ),
                       decoration: const InputDecoration(
@@ -75,6 +100,7 @@ class SearchHeader extends StatelessWidget {
                         hintStyle: TextStyle(
                           color: AppColors.gray400,
                           fontSize: 14,
+                          fontWeight: FontWeight.w400,
                         ),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.zero,
@@ -101,23 +127,31 @@ class SearchHeader extends StatelessWidget {
 
           const SizedBox(width: 8),
 
-          // Map toggle button
+          // Map toggle button (Rounded 2xl from design)
           GestureDetector(
             onTap: () {
-              // TODO: Navigate to map view
+              FocusScope.of(context).unfocus();
+              context.read<DiscoveryProvider>().setViewMode(
+                DiscoveryViewMode.map,
+              );
+              context.read<AppStateProvider>().setBottomNavIndex(0);
             },
             child: Container(
-              width: 40,
-              height: 40,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.gray100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Icon(
-                Icons.map_outlined,
-                color: AppColors.primary,
-                size: 20,
-              ),
+              child: const Icon(Icons.map, color: AppColors.primary, size: 20),
             ),
           ),
         ],

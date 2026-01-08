@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/search_provider.dart';
+import '../providers/app_state_provider.dart';
+import '../providers/discovery_provider.dart';
 import '../widgets/search/search_header.dart';
 import '../widgets/search/search_filter_chips.dart';
 import '../widgets/search/recent_searches_section.dart';
 import '../widgets/search/popular_services_section.dart';
+import '../widgets/search/search_categories_section.dart';
 import '../widgets/search/suggested_venues_section.dart';
 import '../widgets/search/search_results_list.dart';
 import '../../core/theme/app_colors.dart';
+import '../widgets/search/search_initial_view.dart';
+import '../../data/models/venue_category.dart';
 
 /// Arama ekranı
 /// Kullanıcıların hizmet, mekan ve konuma göre arama yapabilmesini sağlar
@@ -28,10 +33,50 @@ class _SearchScreenState extends State<SearchScreen> {
     // Sync controller with provider
     final provider = context.read<SearchProvider>();
     _searchController.text = provider.searchQuery;
+    provider.addListener(_onProviderChanged);
+
+    // Sync location from DiscoveryProvider and listen for changes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncLocation();
+      context.read<DiscoveryProvider>().addListener(_syncLocation);
+    });
+  }
+
+  void _syncLocation() {
+    if (!mounted) return;
+    final discoveryProvider = context.read<DiscoveryProvider>();
+    final searchProvider = context.read<SearchProvider>();
+
+    if (discoveryProvider.currentPosition != null) {
+      searchProvider.setLocation(
+        latitude: discoveryProvider.currentPosition!.latitude,
+        longitude: discoveryProvider.currentPosition!.longitude,
+        province: discoveryProvider.manualCity,
+        district: discoveryProvider.manualDistrict,
+        // provinceId: ... (if available)
+      );
+    }
+  }
+
+  void _onProviderChanged() {
+    if (!mounted) return;
+    final query = context.read<SearchProvider>().searchQuery;
+    if (_searchController.text != query) {
+      _searchController.text = query;
+      // Cursor positioning
+      _searchController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _searchController.text.length),
+      );
+    }
   }
 
   @override
   void dispose() {
+    context.read<SearchProvider>().removeListener(_onProviderChanged);
+    // Use try-catch or check if provider is still available to be safe
+    try {
+      context.read<DiscoveryProvider>().removeListener(_syncLocation);
+    } catch (_) {}
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -42,70 +87,264 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Column(
+        top: false,
+        child: Consumer<SearchProvider>(
+          builder: (context, provider, _) {
+            return Column(
+              children: [
+                // Header with search input - ALWAYS show this
+                SearchHeader(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  onChanged: (value) {
+                    provider.setSearchQuery(value);
+                  },
+                  onClear: () {
+                    _searchController.clear();
+                    provider.clearSearch();
+                  },
+                ),
+
+                // Selected category banner
+                if (provider.isCategorySelected)
+                  _buildSelectedCategoryBanner(provider.selectedCategory!, () {
+                    provider.clearFilters();
+                  }),
+
+                // Filter chips row
+                const SearchFilterChips(),
+
+                // Content area
+                Expanded(
+                  child: provider.isCategorySelected
+                      ? _buildSearchContent(provider)
+                      : const SearchInitialView(),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectedCategoryBanner(
+    VenueCategory category,
+    VoidCallback onClear,
+  ) {
+    return Container(
+      height: 100,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            // Header with search input
-            SearchHeader(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              onChanged: (value) {
-                context.read<SearchProvider>().setSearchQuery(value);
-              },
-              onClear: () {
-                _searchController.clear();
-                context.read<SearchProvider>().clearSearch();
-              },
+            // Background image
+            if (category.imageUrl != null)
+              Image.network(
+                category.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary,
+                        AppColors.primary.withOpacity(0.7),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withOpacity(0.7),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            // Dark gradient overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.6),
+                    Colors.black.withOpacity(0.3),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+              ),
             ),
-
-            // Filter chips row
-            const SearchFilterChips(),
-
-            // Content area
-            Expanded(
-              child: Consumer<SearchProvider>(
-                builder: (context, provider, _) {
-                  // Loading state
-                  if (provider.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  // Error state
-                  if (provider.errorMessage != null) {
-                    return _buildErrorState(provider.errorMessage!);
-                  }
-
-                  // Empty state (show recent searches + popular services)
-                  if (provider.showEmptyState) {
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          SizedBox(height: 16),
-                          RecentSearchesSection(),
-                          SizedBox(height: 24),
-                          PopularServicesSection(),
-                          SizedBox(height: 24),
-                          SuggestedVenuesSection(),
-                          SizedBox(height: 100),
-                        ],
+            // Content
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                children: [
+                  // Category icon
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
                       ),
-                    );
-                  }
-
-                  // No results state
-                  if (provider.showNoResults) {
-                    return _buildNoResultsState();
-                  }
-
-                  // Results list
-                  return SearchResultsList(results: provider.searchResults);
-                },
+                    ),
+                    child: Icon(
+                      Icons.spa_outlined,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Category info
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Arama Kategorisi',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.white.withOpacity(0.8),
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          category.name,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Change button
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onClear,
+                        borderRadius: BorderRadius.circular(24),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.swap_horiz,
+                                size: 18,
+                                color: AppColors.gray800,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Değiştir',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.gray800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSearchContent(SearchProvider provider) {
+    // Loading state
+    if (provider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Error state
+    if (provider.errorMessage != null) {
+      return _buildErrorState(provider.errorMessage!);
+    }
+
+    // Empty state (show recent searches + popular services)
+    // Not: Artık kategori seçili olduğu için bu "boş arama" durumudur
+    if (provider.showEmptyState) {
+      return SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            SizedBox(height: 16),
+            SearchCategoriesSection(),
+            SizedBox(height: 24),
+            RecentSearchesSection(),
+            SizedBox(height: 24),
+            PopularServicesSection(),
+            SizedBox(height: 24),
+            SuggestedVenuesSection(),
+            SizedBox(height: 100),
+          ],
+        ),
+      );
+    }
+
+    // No results state
+    if (provider.showNoResults) {
+      return _buildNoResultsState();
+    }
+
+    // Results list
+    return SearchResultsList(
+      results: provider.searchResults,
+      highlightedService: provider.searchQuery.isNotEmpty
+          ? provider.searchQuery
+          : null,
     );
   }
 
@@ -203,7 +442,11 @@ class _SearchScreenState extends State<SearchScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Navigate to map view
+                  // Navigate to map view in Keşfet tab
+                  context.read<DiscoveryProvider>().setViewMode(
+                    DiscoveryViewMode.map,
+                  );
+                  context.read<AppStateProvider>().setBottomNavIndex(0);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.gray900,

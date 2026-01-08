@@ -96,31 +96,9 @@ class VenueDetailsProvider extends ChangeNotifier {
       await _repository.followVenue(_venue!.id);
 
       // Update local state
-      _venue = Venue(
-        id: _venue!.id,
-        name: _venue!.name,
-        description: _venue!.description,
-        address: _venue!.address,
-        latitude: _venue!.latitude,
-        longitude: _venue!.longitude,
-        imageUrl: _venue!.imageUrl,
-        heroImages: _venue!.heroImages,
-        galleryPhotos: _venue!.galleryPhotos,
-        isVerified: _venue!.isVerified,
-        isPreferred: _venue!.isPreferred,
-        isHygienic: _venue!.isHygienic,
+      _venue = _venue!.copyWith(
         isFollowing: true,
         followerCount: _venue!.followerCount + 1,
-        workingHours: _venue!.workingHours,
-        expertTeam: _venue!.expertTeam,
-        certifications: _venue!.certifications,
-        paymentOptions: _venue!.paymentOptions,
-        accessibility: _venue!.accessibility,
-        faq: _venue!.faq,
-        socialLinks: _venue!.socialLinks,
-        features: _venue!.features,
-        ownerId: _venue!.ownerId,
-        createdAt: _venue!.createdAt,
       );
 
       _isFollowLoading = false;
@@ -145,33 +123,11 @@ class VenueDetailsProvider extends ChangeNotifier {
       await _repository.unfollowVenue(_venue!.id);
 
       // Update local state
-      _venue = Venue(
-        id: _venue!.id,
-        name: _venue!.name,
-        description: _venue!.description,
-        address: _venue!.address,
-        latitude: _venue!.latitude,
-        longitude: _venue!.longitude,
-        imageUrl: _venue!.imageUrl,
-        heroImages: _venue!.heroImages,
-        galleryPhotos: _venue!.galleryPhotos,
-        isVerified: _venue!.isVerified,
-        isPreferred: _venue!.isPreferred,
-        isHygienic: _venue!.isHygienic,
+      _venue = _venue!.copyWith(
         isFollowing: false,
         followerCount: _venue!.followerCount > 0
             ? _venue!.followerCount - 1
             : 0,
-        workingHours: _venue!.workingHours,
-        expertTeam: _venue!.expertTeam,
-        certifications: _venue!.certifications,
-        paymentOptions: _venue!.paymentOptions,
-        accessibility: _venue!.accessibility,
-        faq: _venue!.faq,
-        socialLinks: _venue!.socialLinks,
-        features: _venue!.features,
-        ownerId: _venue!.ownerId,
-        createdAt: _venue!.createdAt,
       );
 
       _isFollowLoading = false;

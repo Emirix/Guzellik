@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/app_state_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/discovery_provider.dart';
+import '../../providers/search_provider.dart';
 
 /// Custom bottom navigation bar
 /// Main navigation for the app
@@ -24,6 +25,12 @@ class CustomBottomNav extends StatelessWidget {
             if (index == 0) {
               final discoveryProvider = context.read<DiscoveryProvider>();
               discoveryProvider.setViewMode(DiscoveryViewMode.home);
+            }
+            // Reset search filters when going to Search tab
+            if (index == 1) {
+              final searchProvider = context.read<SearchProvider>();
+              searchProvider.clearFilters();
+              searchProvider.clearSearch();
             }
           },
           type: BottomNavigationBarType.fixed,

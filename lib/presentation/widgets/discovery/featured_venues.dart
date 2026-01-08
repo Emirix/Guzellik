@@ -1,8 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/discovery_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/venue.dart';
+import '../../providers/favorites_provider.dart';
+import '../../providers/auth_provider.dart';
 
 class FeaturedVenues extends StatelessWidget {
   const FeaturedVenues({super.key});
@@ -92,7 +96,7 @@ class FeaturedVenueCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Navigate to venue details
+        context.push('/venue/${venue.id}', extra: venue);
       },
       child: Container(
         width: 280,
@@ -161,6 +165,62 @@ class FeaturedVenueCard extends StatelessWidget {
                 ),
               ),
 
+            // Favorite button
+            Positioned(
+              top: 16,
+              right: 16,
+              child: GestureDetector(
+                onTap: () async {
+                  final authProvider = context.read<AuthProvider>();
+                  if (!authProvider.isAuthenticated) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Lütfen önce giriş yapın'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    return;
+                  }
+
+                  try {
+                    final favoritesProvider = context.read<FavoritesProvider>();
+                    await favoritesProvider.toggleFavorite(venue);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+                    }
+                  }
+                },
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Center(
+                        child: Icon(
+                          venue.isFavorited
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 20,
+                          color: venue.isFavorited
+                              ? AppColors.primary
+                              : Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
             // Info
             Positioned(
               bottom: 20,
@@ -191,18 +251,18 @@ class FeaturedVenueCard extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      const Text('•', style: TextStyle(color: Colors.white)),
-                      const SizedBox(width: 8),
-                      Text(
-                        venue.distance != null
-                            ? '${(venue.distance! / 1000).toStringAsFixed(1)} km'
-                            : '1.2 km',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
+                      if (venue.distance != null) ...[
+                        const SizedBox(width: 8),
+                        const Text('•', style: TextStyle(color: Colors.white)),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${(venue.distance! / 1000).toStringAsFixed(1)} km',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ],

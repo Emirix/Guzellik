@@ -1,4 +1,4 @@
-enum NotificationType { opportunity, system }
+enum NotificationType { campaign, appointment, system }
 
 class NotificationModel {
   final String id;

@@ -99,16 +99,12 @@ class _SearchFilterBottomSheetState extends State<SearchFilterBottomSheet> {
                       _buildDistanceSection(),
                       const SizedBox(height: 24),
 
-                      // Venue type section
-                      _buildVenueTypeSection(),
-                      const SizedBox(height: 24),
-
                       // Rating section
                       _buildRatingSection(),
                       const SizedBox(height: 24),
 
-                      // Trust badges section
-                      _buildTrustBadgesSection(),
+                      // Services section
+                      _buildServicesSection(),
                       const SizedBox(height: 100),
                     ],
                   ),
@@ -179,8 +175,7 @@ class _SearchFilterBottomSheetState extends State<SearchFilterBottomSheet> {
             _buildSortChip(SortOption.recommended, 'Önerilen'),
             _buildSortChip(SortOption.nearest, 'En Yakın'),
             _buildSortChip(SortOption.highestRated, 'En Yüksek Puan'),
-            _buildSortChip(SortOption.priceAsc, 'Fiyat (Artan)'),
-            _buildSortChip(SortOption.priceDesc, 'Fiyat (Azalan)'),
+            _buildSortChip(SortOption.mostReviewed, 'En Çok Yorum Alan'),
           ],
         ),
       ],
@@ -280,75 +275,6 @@ class _SearchFilterBottomSheetState extends State<SearchFilterBottomSheet> {
     );
   }
 
-  Widget _buildVenueTypeSection() {
-    final venueTypes = [
-      'Güzellik Salonu',
-      'Kuaför',
-      'Estetik Kliniği',
-      'Tırnak Stüdyosu',
-      'Solaryum',
-      'Ayak Bakım',
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Mekan Türü',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.gray900,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: venueTypes.map((type) {
-            final isSelected = _tempFilter.venueTypes.contains(type);
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  final types = List<String>.from(_tempFilter.venueTypes);
-                  if (isSelected) {
-                    types.remove(type);
-                  } else {
-                    types.add(type);
-                  }
-                  _tempFilter = _tempFilter.copyWith(venueTypes: types);
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primary.withOpacity(0.1)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected ? AppColors.primary : AppColors.gray200,
-                  ),
-                ),
-                child: Text(
-                  type,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: isSelected ? AppColors.primary : AppColors.gray700,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
   Widget _buildRatingSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,96 +339,84 @@ class _SearchFilterBottomSheetState extends State<SearchFilterBottomSheet> {
     );
   }
 
-  Widget _buildTrustBadgesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Güven Rozetleri',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.gray900,
-          ),
-        ),
-        const SizedBox(height: 12),
-        _buildCheckboxTile(
-          'Onaylı Mekan',
-          Icons.verified,
-          _tempFilter.onlyVerified,
-          (value) {
-            setState(() {
-              _tempFilter = _tempFilter.copyWith(onlyVerified: value ?? false);
-            });
-          },
-        ),
-        _buildCheckboxTile(
-          'Hijyen Onaylı',
-          Icons.cleaning_services,
-          _tempFilter.onlyHygienic,
-          (value) {
-            setState(() {
-              _tempFilter = _tempFilter.copyWith(onlyHygienic: value ?? false);
-            });
-          },
-        ),
-        _buildCheckboxTile(
-          'En Çok Tercih Edilen',
-          Icons.trending_up,
-          _tempFilter.onlyPreferred,
-          (value) {
-            setState(() {
-              _tempFilter = _tempFilter.copyWith(onlyPreferred: value ?? false);
-            });
-          },
-        ),
-      ],
-    );
-  }
+  Widget _buildServicesSection() {
+    return Consumer<SearchProvider>(
+      builder: (context, provider, child) {
+        if (provider.selectedCategory == null) return const SizedBox.shrink();
 
-  Widget _buildCheckboxTile(
-    String label,
-    IconData icon,
-    bool value,
-    ValueChanged<bool?> onChanged,
-  ) {
-    return GestureDetector(
-      onTap: () => onChanged(!value),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
+        if (provider.isLoadingCategoryServices) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          );
+        }
+
+        if (provider.categoryServices.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.gray100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, size: 18, color: AppColors.gray600),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.gray900,
-                ),
+            const Text(
+              'Hizmetler',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.gray900,
               ),
             ),
-            Checkbox(
-              value: value,
-              onChanged: onChanged,
-              activeColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: provider.categoryServices.map((service) {
+                final isSelected = _tempFilter.serviceIds.contains(service.id);
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      final newServiceIds = List<String>.from(
+                        _tempFilter.serviceIds,
+                      );
+                      if (isSelected) {
+                        newServiceIds.remove(service.id);
+                      } else {
+                        newServiceIds.add(service.id);
+                      }
+                      _tempFilter = _tempFilter.copyWith(
+                        serviceIds: newServiceIds,
+                      );
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.gray200,
+                      ),
+                    ),
+                    child: Text(
+                      service.name,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: isSelected ? Colors.white : AppColors.gray700,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 

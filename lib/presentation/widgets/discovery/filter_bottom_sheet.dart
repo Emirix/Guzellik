@@ -14,17 +14,6 @@ class FilterBottomSheet extends StatefulWidget {
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   late VenueFilter _tempFilter;
 
-  final List<String> _categories = [
-    'Saç',
-    'Cilt Bakımı',
-    'Kaş-Kirpik',
-    'Makyaj',
-    'Tırnak',
-    'Estetik',
-    'Masaj',
-    'Spa',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -103,58 +92,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Categories
-                  _buildSectionTitle('Kategoriler'),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _categories.map((category) {
-                      final isSelected = _tempFilter.categories.contains(
-                        category,
-                      );
-                      return FilterChip(
-                        label: Text(category),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          setState(() {
-                            if (selected) {
-                              _tempFilter = _tempFilter.copyWith(
-                                categories: [
-                                  ..._tempFilter.categories,
-                                  category,
-                                ],
-                              );
-                            } else {
-                              _tempFilter = _tempFilter.copyWith(
-                                categories: _tempFilter.categories
-                                    .where((c) => c != category)
-                                    .toList(),
-                              );
-                            }
-                          });
-                        },
-                        backgroundColor: AppColors.gray100,
-                        selectedColor: AppColors.primary.withOpacity(0.15),
-                        checkmarkColor: AppColors.primary,
-                        labelStyle: TextStyle(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.gray700,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                        ),
-                        side: BorderSide(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.gray200,
-                          width: 1,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-
                   const SizedBox(height: 24),
 
                   // Distance
@@ -204,95 +141,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                   const SizedBox(height: 24),
 
-                  // Trust Badges
-                  _buildSectionTitle('Güven Rozetleri'),
-                  const SizedBox(height: 12),
-                  _buildCheckboxTile('Onaylı Mekan', _tempFilter.onlyVerified, (
-                    value,
-                  ) {
-                    setState(() {
-                      _tempFilter = _tempFilter.copyWith(onlyVerified: value);
-                    });
-                  }),
-                  _buildCheckboxTile(
-                    'En Çok Tercih Edilen',
-                    _tempFilter.onlyPreferred,
-                    (value) {
-                      setState(() {
-                        _tempFilter = _tempFilter.copyWith(
-                          onlyPreferred: value,
-                        );
-                      });
-                    },
-                  ),
-                  _buildCheckboxTile(
-                    'Hijyen Onaylı',
-                    _tempFilter.onlyHygienic,
-                    (value) {
-                      setState(() {
-                        _tempFilter = _tempFilter.copyWith(onlyHygienic: value);
-                      });
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Price Range
-                  _buildSectionTitle('Fiyat Aralığı'),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Min',
-                            prefixText: '₺',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                          ),
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            final price = double.tryParse(value);
-                            setState(() {
-                              _tempFilter = _tempFilter.copyWith(
-                                minPrice: price,
-                              );
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Max',
-                            prefixText: '₺',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                          ),
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            final price = double.tryParse(value);
-                            setState(() {
-                              _tempFilter = _tempFilter.copyWith(
-                                maxPrice: price,
-                              );
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Distance filter is the only one remaining for now besides potential others not asked to remove
                 ],
               ),
             ),
@@ -349,37 +198,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         fontSize: 16,
         fontWeight: FontWeight.bold,
         color: AppColors.gray900,
-      ),
-    );
-  }
-
-  Widget _buildCheckboxTile(
-    String title,
-    bool value,
-    ValueChanged<bool> onChanged,
-  ) {
-    return InkWell(
-      onTap: () => onChanged(!value),
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            Checkbox(
-              value: value,
-              onChanged: (val) => onChanged(val ?? false),
-              activeColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 15, color: AppColors.gray900),
-            ),
-          ],
-        ),
       ),
     );
   }

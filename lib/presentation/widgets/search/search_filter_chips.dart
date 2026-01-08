@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../providers/search_provider.dart';
 import '../../../data/models/search_filter.dart';
+import '../../../data/models/service.dart';
 import 'search_filter_bottom_sheet.dart';
 
 /// Filtre chip'leri satırı
@@ -59,16 +60,31 @@ class SearchFilterChips extends StatelessWidget {
                 ),
               if (filter.maxDistanceKm != null) const SizedBox(width: 8),
 
-              // Open now chip
-              _ToggleChip(
-                label: 'Şu An Açık',
-                isSelected: filter.isOpenNow,
-                onTap: () {
-                  provider.setFilter(
-                    filter.copyWith(isOpenNow: !filter.isOpenNow),
-                  );
-                },
-              ),
+              // Service chips
+              ...filter.serviceIds.map((id) {
+                final service = provider.categoryServices.firstWhere(
+                  (s) => s.id == id,
+                  orElse: () => Service(
+                    id: id,
+                    name: 'Hizmet',
+                    venueServiceId: '',
+                    createdAt: DateTime.now(),
+                  ),
+                );
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: _ActiveChip(
+                    label: service.name,
+                    onRemove: () {
+                      final newServiceIds = List<String>.from(filter.serviceIds)
+                        ..remove(id);
+                      provider.setFilter(
+                        filter.copyWith(serviceIds: newServiceIds),
+                      );
+                    },
+                  ),
+                );
+              }),
             ],
           ),
         );
@@ -95,32 +111,54 @@ class _FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isFilterActive = activeCount > 0;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: activeCount > 0 ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: activeCount > 0 ? AppColors.primary : AppColors.gray200,
-          ),
+          color: AppColors.gray900, // Black background as in design
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.tune,
-              size: 16,
-              color: activeCount > 0 ? Colors.white : AppColors.gray700,
+            Stack(
+              children: [
+                const Icon(Icons.tune, size: 18, color: Colors.white),
+                if (isFilterActive)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.gray900,
+                          width: 1.5,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 8),
             Text(
-              activeCount > 0 ? 'Filtrele ($activeCount)' : 'Filtrele',
-              style: TextStyle(
+              'Filtrele',
+              style: const TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: activeCount > 0 ? Colors.white : AppColors.gray700,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
           ],
@@ -147,10 +185,6 @@ class _SortChip extends StatelessWidget {
         return 'En Yüksek Puan';
       case SortOption.mostReviewed:
         return 'En Çok Yorum';
-      case SortOption.priceAsc:
-        return 'Fiyat (Artan)';
-      case SortOption.priceDesc:
-        return 'Fiyat (Azalan)';
     }
   }
 
@@ -246,44 +280,6 @@ class _ActiveChip extends StatelessWidget {
             child: const Icon(Icons.close, size: 14, color: AppColors.primary),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Toggle chip (seçilebilir)
-class _ToggleChip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _ToggleChip({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.gray200,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: isSelected ? AppColors.primary : AppColors.gray700,
-          ),
-        ),
       ),
     );
   }

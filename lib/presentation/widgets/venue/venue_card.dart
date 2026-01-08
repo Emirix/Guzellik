@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../data/models/venue.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/icon_utils.dart';
 
 enum VenueCardType { horizontal, vertical }
 
@@ -150,7 +151,7 @@ class VenueCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${venue.address} • ${venue.distance != null ? (venue.distance! / 1000).toStringAsFixed(1) : '1.2'} km',
+                    '${venue.address}${venue.distance != null ? ' • ${(venue.distance! / 1000).toStringAsFixed(1)} km' : ''}',
                     style: const TextStyle(
                       color: AppColors.secondary,
                       fontSize: 13,
@@ -160,17 +161,24 @@ class VenueCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      _buildMiniTag('Saç'),
-                      _buildMiniTag('Makyaj'),
-                      const Text(
-                        '+3',
-                        style: TextStyle(color: Colors.grey, fontSize: 11),
+                  if (venue.category != null)
+                    _buildMiniTag(
+                      venue.category!.name,
+                      icon: IconUtils.getCategoryIcon(
+                        venue.icon ?? venue.category?.icon,
                       ),
-                    ],
-                  ),
+                    ),
+                  if (venue.features.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Wrap(
+                        spacing: 8,
+                        children: venue.features
+                            .take(2)
+                            .map((f) => _buildSimpleTag(f))
+                            .toList(),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -244,7 +252,7 @@ class VenueCard extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    'Saç • Makyaj • Manikür',
+                    venue.category?.name ?? 'Güzellik Salonu',
                     style: const TextStyle(
                       color: AppColors.gray500,
                       fontSize: 12,
@@ -276,23 +284,26 @@ class VenueCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.near_me,
-                            color: AppColors.gray400,
-                            size: 14,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${venue.distance != null ? (venue.distance! / 1000).toStringAsFixed(1) : '0.8'} km',
-                            style: const TextStyle(
+                      if (venue.distance != null)
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.near_me,
                               color: AppColors.gray400,
-                              fontSize: 12,
+                              size: 14,
                             ),
-                          ),
-                        ],
-                      ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${(venue.distance! / 1000).toStringAsFixed(1)} km',
+                              style: const TextStyle(
+                                color: AppColors.gray400,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        const SizedBox.shrink(),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -322,20 +333,43 @@ class VenueCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMiniTag(String label) {
+  Widget _buildMiniTag(String label, {IconData? icon}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: AppColors.nudeLight,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: AppColors.secondary),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: const TextStyle(
+              color: AppColors.secondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSimpleTag(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColors.gray100,
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: AppColors.secondary,
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
-        ),
+        style: const TextStyle(color: AppColors.gray600, fontSize: 10),
       ),
     );
   }

@@ -60,6 +60,46 @@ class _LocationSelectionBottomSheetState
     _loadProvinces();
   }
 
+  void _setInitialSelection() {
+    String? currentCity;
+    String? currentDistrict;
+
+    if (widget.isOnboarding) {
+      final onboarding = context.read<LocationOnboardingProvider>();
+      currentCity = onboarding.selectedLocation?.provinceName;
+      currentDistrict = onboarding.selectedLocation?.districtName;
+    } else {
+      final discovery = context.read<DiscoveryProvider>();
+      currentCity = discovery.manualCity;
+      currentDistrict = discovery.manualDistrict;
+
+      // Fallback if not using manual location but have coordinates
+      if (currentCity == null && currentDistrict == null) {
+        // Try to parse from name if it follows "District, City" format
+        final name = discovery.currentLocationName;
+        if (name.contains(', ')) {
+          final parts = name.split(', ');
+          currentDistrict = parts[0];
+          currentCity = parts[1];
+        }
+      }
+    }
+
+    if (currentCity != null) {
+      final province = _provinces.cast<Province?>().firstWhere(
+        (p) => p?.name.toLowerCase() == currentCity?.toLowerCase(),
+        orElse: () => null,
+      );
+
+      if (province != null) {
+        setState(() {
+          _selectedProvince = province;
+        });
+        _loadDistricts(province.id, initialDistrictName: currentDistrict);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _provinceSearchController.dispose();
@@ -80,6 +120,7 @@ class _LocationSelectionBottomSheetState
         _filteredProvinces = provinces;
         _isLoadingProvinces = false;
       });
+      _setInitialSelection();
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -88,13 +129,18 @@ class _LocationSelectionBottomSheetState
     }
   }
 
-  Future<void> _loadDistricts(int provinceId) async {
+  Future<void> _loadDistricts(
+    int provinceId, {
+    String? initialDistrictName,
+  }) async {
     setState(() {
       _isLoadingDistricts = true;
       _districts = [];
       _filteredDistricts = [];
-      _selectedDistrict = null;
-      _districtSearchController.clear();
+      if (initialDistrictName == null) {
+        _selectedDistrict = null;
+        _districtSearchController.clear();
+      }
     });
 
     try {
@@ -105,6 +151,13 @@ class _LocationSelectionBottomSheetState
         _districts = districts;
         _filteredDistricts = districts;
         _isLoadingDistricts = false;
+
+        if (initialDistrictName != null) {
+          _selectedDistrict = _districts.cast<District?>().firstWhere(
+            (d) => d?.name.toLowerCase() == initialDistrictName.toLowerCase(),
+            orElse: () => null,
+          );
+        }
       });
     } catch (e) {
       setState(() {
@@ -207,12 +260,15 @@ class _LocationSelectionBottomSheetState
                   ),
                   const SizedBox(height: 16),
 
-                  // Province Selection
-                  _buildProvinceSelection(),
-                  const SizedBox(height: 16),
-
-                  // District Selection
-                  _buildDistrictSelection(),
+                  // Province & District Selection (Side by Side)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _buildProvinceDropdown()),
+                      const SizedBox(width: 12),
+                      Expanded(child: _buildDistrictDropdown()),
+                    ],
+                  ),
                   const SizedBox(height: 24),
 
                   // Map Selection Button
@@ -234,7 +290,10 @@ class _LocationSelectionBottomSheetState
                               } else {
                                 context
                                     .read<DiscoveryProvider>()
-                                    .updateManualLocation(city, district);
+                                    .updateManualLocation(
+                                      city: city,
+                                      district: district,
+                                    );
                               }
                               // No need to pop here as MapLocationPicker does it?
                               // Actually MapLocationPicker calls onLocationSelected, so we need to pop MapLocationPicker.
@@ -330,264 +389,424 @@ class _LocationSelectionBottomSheetState
     );
   }
 
-  Widget _buildProvinceSelection() {
-    if (_isLoadingProvinces) {
-      return _buildLoadingContainer('İller yükleniyor...');
-    }
-
+  Widget _buildProvinceDropdown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Search field
-        TextField(
-          controller: _provinceSearchController,
-          decoration: InputDecoration(
-            hintText: 'İl ara...',
-            prefixIcon: const Icon(Icons.search, color: AppColors.gray500),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.gray300),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.gray300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
+        const Text(
+          'İl',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.gray700,
           ),
-          onChanged: _filterProvinces,
         ),
-        const SizedBox(height: 12),
-
-        // Province list
-        Container(
-          height: 200,
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.gray300),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: _filteredProvinces.isEmpty
-              ? const Center(
-                  child: Text(
-                    'İl bulunamadı',
-                    style: TextStyle(color: AppColors.gray500),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: _filteredProvinces.length,
-                  itemBuilder: (context, index) {
-                    final province = _filteredProvinces[index];
-                    final isSelected = _selectedProvince?.id == province.id;
-
-                    return ListTile(
-                      dense: true,
-                      title: Text(
-                        province.name,
-                        style: TextStyle(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.gray900,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
-                      ),
-                      trailing: isSelected
-                          ? const Icon(
-                              Icons.check,
-                              color: AppColors.primary,
-                              size: 20,
-                            )
-                          : null,
-                      onTap: () {
-                        setState(() {
-                          _selectedProvince = province;
-                          _provinceSearchController.clear();
-                          _filteredProvinces = _provinces;
-                        });
-                        _loadDistricts(province.id);
-                      },
-                    );
-                  },
-                ),
-        ),
-
-        // Selected province indicator
-        if (_selectedProvince != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.location_city,
-                  color: AppColors.primary,
-                  size: 16,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Seçilen İl: ${_selectedProvince!.name}',
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildDistrictSelection() {
-    if (_selectedProvince == null) {
-      return Container(
-        height: 56,
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.gray200),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: _isLoadingProvinces ? null : () => _showProvinceSelector(),
           borderRadius: BorderRadius.circular(12),
-          color: AppColors.gray100,
-        ),
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: const Text(
-          'Önce bir il seçin',
-          style: TextStyle(color: AppColors.gray400),
-        ),
-      );
-    }
-
-    if (_isLoadingDistricts) {
-      return _buildLoadingContainer('İlçeler yükleniyor...');
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Search field
-        TextField(
-          controller: _districtSearchController,
-          decoration: InputDecoration(
-            hintText: 'İlçe ara...',
-            prefixIcon: const Icon(Icons.search, color: AppColors.gray500),
-            border: OutlineInputBorder(
+          child: Container(
+            height: 52,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _selectedProvince != null
+                    ? AppColors.primary
+                    : AppColors.gray300,
+              ),
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.gray300),
+              color: AppColors.white,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.gray300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-          ),
-          onChanged: _filterDistricts,
-        ),
-        const SizedBox(height: 12),
-
-        // District list
-        Container(
-          height: 200,
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.gray300),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: _filteredDistricts.isEmpty
-              ? const Center(
-                  child: Text(
-                    'İlçe bulunamadı',
-                    style: TextStyle(color: AppColors.gray500),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: _filteredDistricts.length,
-                  itemBuilder: (context, index) {
-                    final district = _filteredDistricts[index];
-                    final isSelected = _selectedDistrict?.id == district.id;
-
-                    return ListTile(
-                      dense: true,
-                      title: Text(
-                        district.name,
-                        style: TextStyle(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.gray900,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
-                      ),
-                      trailing: isSelected
-                          ? const Icon(
-                              Icons.check,
-                              color: AppColors.primary,
-                              size: 20,
-                            )
-                          : null,
-                      onTap: () {
-                        setState(() {
-                          _selectedDistrict = district;
-                          _districtSearchController.clear();
-                          _filteredDistricts = _districts;
-                        });
-                      },
-                    );
-                  },
-                ),
-        ),
-
-        // Selected district indicator
-        if (_selectedDistrict != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
             child: Row(
               children: [
-                const Icon(Icons.place, color: AppColors.primary, size: 16),
-                const SizedBox(width: 8),
-                Text(
-                  'Seçilen İlçe: ${_selectedDistrict!.name}',
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Icon(
+                  Icons.location_city_outlined,
+                  size: 20,
+                  color: _selectedProvince != null
+                      ? AppColors.primary
+                      : AppColors.gray400,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _isLoadingProvinces
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          _selectedProvince?.name ?? 'İl seçin',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _selectedProvince != null
+                                ? AppColors.gray900
+                                : AppColors.gray400,
+                            fontWeight: _selectedProvince != null
+                                ? FontWeight.w500
+                                : FontWeight.normal,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: _selectedProvince != null
+                      ? AppColors.primary
+                      : AppColors.gray400,
                 ),
               ],
             ),
           ),
+        ),
       ],
     );
   }
 
-  Widget _buildLoadingContainer(String message) {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.gray200),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Center(
+  Widget _buildDistrictDropdown() {
+    final isEnabled = _selectedProvince != null && !_isLoadingDistricts;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'İlçe',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.gray700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: isEnabled ? () => _showDistrictSelector() : null,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            height: 52,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _selectedDistrict != null
+                    ? AppColors.primary
+                    : AppColors.gray300,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              color: _selectedProvince == null
+                  ? AppColors.gray100
+                  : AppColors.white,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.place_outlined,
+                  size: 20,
+                  color: _selectedDistrict != null
+                      ? AppColors.primary
+                      : AppColors.gray400,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _isLoadingDistricts
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          _selectedDistrict?.name ??
+                              (_selectedProvince == null
+                                  ? 'Önce il seçin'
+                                  : 'İlçe seçin'),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _selectedDistrict != null
+                                ? AppColors.gray900
+                                : AppColors.gray400,
+                            fontWeight: _selectedDistrict != null
+                                ? FontWeight.w500
+                                : FontWeight.normal,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: _selectedDistrict != null
+                      ? AppColors.primary
+                      : AppColors.gray400,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showProvinceSelector() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        decoration: const BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2),
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.gray300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Title
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'İl Seçin',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.gray900,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: AppColors.gray700),
+                  ),
+                ],
+              ),
+            ),
+            // Search
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _provinceSearchController,
+                decoration: InputDecoration(
+                  hintText: 'İl ara...',
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.gray500,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.gray300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.gray300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primary),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                onChanged: _filterProvinces,
+              ),
             ),
             const SizedBox(height: 12),
-            Text(message, style: const TextStyle(color: AppColors.gray500)),
+            // List
+            Expanded(
+              child: _filteredProvinces.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'İl bulunamadı',
+                        style: TextStyle(color: AppColors.gray500),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _filteredProvinces.length,
+                      itemBuilder: (context, index) {
+                        final province = _filteredProvinces[index];
+                        final isSelected = _selectedProvince?.id == province.id;
+
+                        return ListTile(
+                          leading: Icon(
+                            Icons.location_city,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.gray400,
+                            size: 20,
+                          ),
+                          title: Text(
+                            province.name,
+                            style: TextStyle(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.gray900,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                          trailing: isSelected
+                              ? const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                )
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              _selectedProvince = province;
+                              _provinceSearchController.clear();
+                              _filteredProvinces = _provinces;
+                            });
+                            _loadDistricts(province.id);
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDistrictSelector() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        decoration: const BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.gray300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Title
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${_selectedProvince?.name ?? ''} - İlçe Seçin',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.gray900,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: AppColors.gray700),
+                  ),
+                ],
+              ),
+            ),
+            // Search
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _districtSearchController,
+                decoration: InputDecoration(
+                  hintText: 'İlçe ara...',
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.gray500,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.gray300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.gray300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primary),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                onChanged: _filterDistricts,
+              ),
+            ),
+            const SizedBox(height: 12),
+            // List
+            Expanded(
+              child: _filteredDistricts.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'İlçe bulunamadı',
+                        style: TextStyle(color: AppColors.gray500),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _filteredDistricts.length,
+                      itemBuilder: (context, index) {
+                        final district = _filteredDistricts[index];
+                        final isSelected = _selectedDistrict?.id == district.id;
+
+                        return ListTile(
+                          leading: Icon(
+                            Icons.place,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.gray400,
+                            size: 20,
+                          ),
+                          title: Text(
+                            district.name,
+                            style: TextStyle(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.gray900,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                          trailing: isSelected
+                              ? const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                )
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              _selectedDistrict = district;
+                              _districtSearchController.clear();
+                              _filteredDistricts = _districts;
+                            });
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
+            ),
           ],
         ),
       ),
@@ -614,9 +833,12 @@ class _LocationSelectionBottomSheetState
               } else {
                 // Use discovery provider
                 final provider = context.read<DiscoveryProvider>();
-                provider.updateManualLocation(
-                  _selectedProvince!.name,
-                  _selectedDistrict!.name,
+                await provider.updateManualLocation(
+                  city: _selectedProvince!.name,
+                  district: _selectedDistrict!.name,
+                  provinceId: _selectedProvince!.id,
+                  latitude: _selectedProvince!.latitude,
+                  longitude: _selectedProvince!.longitude,
                 );
               }
               if (context.mounted) {

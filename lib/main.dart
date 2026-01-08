@@ -21,6 +21,7 @@ import 'presentation/providers/review_submission_provider.dart';
 import 'presentation/providers/search_provider.dart';
 import 'presentation/providers/location_onboarding_provider.dart';
 import 'presentation/providers/category_provider.dart';
+import 'presentation/providers/favorites_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,6 +90,9 @@ class GuzellikApp extends StatelessWidget {
             locationRepository: context.read<LocationRepository>(),
             locationPreferences: context.read<LocationPreferences>(),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => FavoritesProvider(venueRepository: VenueRepository()),
         ),
       ],
       child: Consumer<AppStateProvider>(

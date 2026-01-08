@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../core/theme/app_colors.dart';
@@ -102,7 +104,18 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               target: _selectedLocation,
               zoom: 14,
             ),
-            onMapCreated: (controller) => _mapController = controller,
+            onMapCreated: (controller) async {
+              _mapController = controller;
+              final style = await DefaultAssetBundle.of(
+                context,
+              ).loadString('assets/maps/rose_premium_style.json');
+              _mapController?.setMapStyle(style);
+            },
+            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+              Factory<OneSequenceGestureRecognizer>(
+                () => EagerGestureRecognizer(),
+              ),
+            },
             onTap: _onMapTapped,
             markers: {
               Marker(

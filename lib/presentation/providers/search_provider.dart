@@ -6,8 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/models/recent_search.dart';
 import '../../data/models/search_filter.dart';
+import '../../data/models/service.dart';
 import '../../data/models/venue.dart';
 import '../../data/models/venue_filter.dart';
+import '../../data/models/venue_category.dart';
 import '../../data/repositories/venue_repository.dart';
 
 /// Arama ekranı state yönetimi
@@ -35,16 +37,25 @@ class SearchProvider extends ChangeNotifier {
   List<Venue> _suggestedVenues = [];
   bool _isLoadingSuggestions = false;
 
+  // Kategoriler
+  List<VenueCategory> _categories = [];
+  bool _isLoadingCategories = false;
+  VenueCategory? _selectedCategory;
+  List<Service> _categoryServices = [];
+  bool _isLoadingCategoryServices = false;
+
   // Konum
   String? _selectedProvince;
   String? _selectedDistrict;
+  int? _selectedProvinceId;
+  String? _selectedDistrictId;
   double? _userLatitude;
   double? _userLongitude;
 
   // Constants
   static const String _recentSearchesKey = 'recent_searches';
   static const String _lastFilterKey = 'last_search_filter';
-  static const int _maxRecentSearches = 10;
+  static const int _maxRecentSearches = 3;
 
   SearchProvider({required VenueRepository venueRepository})
     : _venueRepository = venueRepository {
@@ -52,6 +63,7 @@ class SearchProvider extends ChangeNotifier {
     _loadLastFilter();
     _loadPopularServices();
     _loadSuggestedVenues();
+    _loadCategories();
   }
 
   // Getters
@@ -66,13 +78,41 @@ class SearchProvider extends ChangeNotifier {
   bool get isLoadingServices => _isLoadingServices;
   String? get selectedProvince => _selectedProvince;
   String? get selectedDistrict => _selectedDistrict;
+  int? get selectedProvinceId => _selectedProvinceId;
+  String? get selectedDistrictId => _selectedDistrictId;
   double? get userLatitude => _userLatitude;
   double? get userLongitude => _userLongitude;
   List<Venue> get suggestedVenues => _suggestedVenues;
   bool get isLoadingSuggestions => _isLoadingSuggestions;
+  List<VenueCategory> get categories => _categories;
+  bool get isLoadingCategories => _isLoadingCategories;
+  VenueCategory? get selectedCategory => _selectedCategory;
+  List<Service> get categoryServices => _categoryServices;
+  bool get isLoadingCategoryServices => _isLoadingCategoryServices;
 
   bool get hasActiveFilters => _filter.hasActiveFilters;
   int get activeFilterCount => _filter.activeFilterCount;
+  bool get isCategorySelected => _selectedCategory != null;
+
+  /// Kategori Id'sine göre kategoriyi döner (restorasyon için)
+  void _syncSelectedCategory() {
+    if (_filter.venueCategoryId != null && _categories.isNotEmpty) {
+      try {
+        final category = _categories.firstWhere(
+          (c) => c.id == _filter.venueCategoryId,
+        );
+        _selectedCategory = category;
+        _hasSearched = true; // Kayıtlı kategori varsa sonuçları göster
+        notifyListeners();
+        // Eğer kategori varsa ama sonuçlar boşsa yükle
+        if (_searchResults.isEmpty && _searchQuery.isEmpty) {
+          searchByCategory(showLoading: false);
+        }
+      } catch (e) {
+        debugPrint('Could not restore selected category: $e');
+      }
+    }
+  }
 
   /// Arama durumunu kontrol eder
   bool get showEmptyState =>
@@ -97,36 +137,44 @@ class SearchProvider extends ChangeNotifier {
         search();
       });
     } else {
-      _hasSearched = false;
-      _searchResults = [];
+      // Kategori seçiliyse kategori aramasına geri dön
+      if (isCategorySelected) {
+        _hasSearched = true;
+        _searchResults = []; // Geçici olarak temizle
+        searchByCategory();
+      } else {
+        _hasSearched = false;
+        _searchResults = [];
+      }
       notifyListeners();
     }
   }
 
-  /// Arama yapar
-  Future<void> search() async {
+  /// Arama yapar - Elastic Search kullanarak tam metin araması
+  Future<void> search({bool showLoading = true}) async {
     if (_searchQuery.isEmpty) return;
 
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    if (showLoading) {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+    }
 
     try {
-      // Convert SearchFilter to VenueFilter for repository call
-      final venueFilter = VenueFilter(
-        categories: _filter.venueTypes,
-        maxDistanceKm: _filter.maxDistanceKm,
-        minRating: _filter.minRating,
-        onlyVerified: _filter.onlyVerified,
-        onlyHygienic: _filter.onlyHygienic,
-        onlyPreferred: _filter.onlyPreferred,
-      );
-
-      final results = await _venueRepository.searchVenues(
+      // Use elastic search for comprehensive full-text search
+      final results = await _venueRepository.elasticSearchVenues(
         query: _searchQuery,
-        filter: venueFilter,
         lat: _userLatitude,
         lng: _userLongitude,
+        provinceId: _selectedProvinceId,
+        districtId: _selectedDistrictId,
+        maxDistanceKm: _filter.maxDistanceKm,
+        onlyVerified: _filter.onlyVerified,
+        onlyPreferred: _filter.onlyPreferred,
+        onlyHygienic: _filter.onlyHygienic,
+        minRating: _filter.minRating,
+        sortBy: _filter.sortBy.name,
+        serviceIds: _filter.serviceIds,
       );
 
       _searchResults = results;
@@ -145,6 +193,62 @@ class SearchProvider extends ChangeNotifier {
     } catch (e) {
       _errorMessage = 'Arama sırasında bir hata oluştu';
       debugPrint('Search error: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Kategori seçer ve kategoriye göre filtreleme yapar (arama sorgusu kullanmadan)
+  void selectCategory(VenueCategory category) {
+    // Kategori seçildiğinde diğer filtreleri sıfırla
+    _selectedCategory = category;
+    _filter = SearchFilter(
+      venueCategoryId: category.id,
+      venueTypes: [category.name],
+    );
+    _searchQuery = ''; // Arama sorgusunu temizle
+    _hasSearched = true; // Sonuçları göstermek için
+    _categoryServices = []; // Hizmetleri sıfırla
+    _saveLastFilter();
+    notifyListeners();
+    loadServicesByCategory(category.id);
+    searchByCategory(); // Elastic search yerine kategoriye göre ara
+  }
+
+  /// Sadece kategoriye göre arama yapar
+  Future<void> searchByCategory({bool showLoading = true}) async {
+    if (showLoading) {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+    }
+
+    try {
+      final venueFilter = VenueFilter(
+        categoryId: _filter.venueCategoryId,
+        categories: _filter.venueTypes,
+        maxDistanceKm: _filter.maxDistanceKm,
+        minRating: _filter.minRating,
+        onlyVerified: _filter.onlyVerified,
+        onlyHygienic: _filter.onlyHygienic,
+        onlyPreferred: _filter.onlyPreferred,
+        sortBy: _mapSortOptionToVenueSortBy(_filter.sortBy),
+        serviceIds: _filter.serviceIds,
+      );
+
+      final results = await _venueRepository.searchVenues(
+        query: null,
+        filter: venueFilter,
+        lat: _userLatitude,
+        lng: _userLongitude,
+      );
+
+      _searchResults = results;
+      _hasSearched = true;
+    } catch (e) {
+      _errorMessage = 'Kategori araması sırasında bir hata oluştu';
+      debugPrint('Category search error: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -170,19 +274,26 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
 
     // Arama varsa yeniden ara
-    if (_hasSearched && _searchQuery.isNotEmpty) {
-      search();
+    if (_hasSearched) {
+      if (_searchQuery.isNotEmpty) {
+        search();
+      } else if (_selectedCategory != null || _filter.venueCategoryId != null) {
+        searchByCategory();
+      }
     }
   }
 
   /// Filtreyi sıfırlar
   void clearFilters() {
     _filter = SearchFilter.empty();
+    _selectedCategory = null;
     _saveLastFilter();
     notifyListeners();
 
     if (_hasSearched && _searchQuery.isNotEmpty) {
       search();
+    } else if (isCategorySelected) {
+      searchByCategory();
     }
   }
 
@@ -190,17 +301,44 @@ class SearchProvider extends ChangeNotifier {
   void setLocation({
     String? province,
     String? district,
+    int? provinceId,
+    String? districtId,
     double? latitude,
     double? longitude,
   }) {
+    // Only update if values actually changed to avoid redundant searches
+    final bool locationChanged =
+        _userLatitude != latitude ||
+        _userLongitude != longitude ||
+        _selectedProvinceId != provinceId ||
+        _selectedDistrictId != districtId;
+
+    if (!locationChanged) return;
+
     _selectedProvince = province;
     _selectedDistrict = district;
+    _selectedProvinceId = provinceId;
+    _selectedDistrictId = districtId;
     _userLatitude = latitude;
     _userLongitude = longitude;
 
     _filter = _filter.copyWith(province: province, district: district);
 
     notifyListeners();
+
+    // Arama yapılmışsa yeni konuma göre sonuçları güncelle
+    if (_hasSearched) {
+      refreshSearch(showLoading: false);
+    }
+  }
+
+  /// Mevcut arama kriterlerine göre sonuçları yeniler
+  Future<void> refreshSearch({bool showLoading = true}) async {
+    if (_searchQuery.isNotEmpty) {
+      await search(showLoading: showLoading);
+    } else if (_selectedCategory != null || _filter.venueCategoryId != null) {
+      await searchByCategory(showLoading: showLoading);
+    }
   }
 
   // ==================== Son Aramalar ====================
@@ -215,6 +353,12 @@ class SearchProvider extends ChangeNotifier {
         _recentSearches = jsonList
             .map((e) => RecentSearch.fromJson(e))
             .toList();
+
+        // Limit loaded searches
+        if (_recentSearches.length > _maxRecentSearches) {
+          _recentSearches = _recentSearches.sublist(0, _maxRecentSearches);
+        }
+
         notifyListeners();
       }
     } catch (e) {
@@ -349,6 +493,87 @@ class SearchProvider extends ChangeNotifier {
     } finally {
       _isLoadingSuggestions = false;
       notifyListeners();
+    }
+  }
+
+  /// Mekan kategorilerini yükler
+  Future<void> _loadCategories() async {
+    _isLoadingCategories = true;
+    notifyListeners();
+
+    try {
+      _categories = await _venueRepository.getVenueCategories();
+      _syncSelectedCategory(); // Kategoriler yüklenince seçili olanı eşle
+    } catch (e) {
+      debugPrint('Error loading search categories: $e');
+    } finally {
+      _isLoadingCategories = false;
+      notifyListeners();
+    }
+  }
+
+  /// Seçili kategoriye ait hizmetleri yükler
+  Future<void> loadServicesByCategory(String categoryId) async {
+    _isLoadingCategoryServices = true;
+    notifyListeners();
+
+    try {
+      _categoryServices = await _venueRepository.getServicesByCategory(
+        categoryId,
+      );
+    } catch (e) {
+      debugPrint('Error loading category services: $e');
+      _categoryServices = [];
+    } finally {
+      _isLoadingCategoryServices = false;
+      notifyListeners();
+    }
+  }
+
+  VenueSortBy _mapSortOptionToVenueSortBy(SortOption option) {
+    switch (option) {
+      case SortOption.nearest:
+        return VenueSortBy.nearest;
+      case SortOption.highestRated:
+        return VenueSortBy.highestRated;
+      case SortOption.mostReviewed:
+        return VenueSortBy.mostReviewed;
+      case SortOption.recommended:
+        return VenueSortBy.recommended;
+    }
+  }
+
+  // ==================== Mekan Takip İşlemleri ====================
+
+  /// Mekanı takip eder veya takibi bırakır
+  Future<void> toggleFollowVenue(Venue venue) async {
+    final index = _searchResults.indexWhere((v) => v.id == venue.id);
+    if (index == -1) return;
+
+    final isFollowing = venue.isFollowing;
+    final newFollowerCount = isFollowing
+        ? (venue.followerCount > 0 ? venue.followerCount - 1 : 0)
+        : venue.followerCount + 1;
+
+    // Local state update for immediate feedback
+    _searchResults[index] = venue.copyWith(
+      isFollowing: !isFollowing,
+      followerCount: newFollowerCount,
+    );
+    notifyListeners();
+
+    try {
+      if (isFollowing) {
+        await _venueRepository.unfollowVenue(venue.id);
+      } else {
+        await _venueRepository.followVenue(venue.id);
+      }
+    } catch (e) {
+      debugPrint('Error toggling follow: $e');
+      // Revert local state on error
+      _searchResults[index] = venue;
+      notifyListeners();
+      rethrow;
     }
   }
 

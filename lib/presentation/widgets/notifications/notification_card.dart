@@ -42,7 +42,7 @@ class NotificationCard extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: notification.type == NotificationType.opportunity
+              color: notification.type == NotificationType.campaign
                   ? AppColors.gold.withOpacity(0.3)
                   : AppColors.gray100,
             ),
@@ -108,7 +108,7 @@ class NotificationCard extends StatelessWidget {
                             fontSize: 11,
                           ),
                         ),
-                        if (notification.type == NotificationType.opportunity)
+                        if (notification.type == NotificationType.campaign)
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
@@ -122,6 +122,25 @@ class NotificationCard extends StatelessWidget {
                               'Fırsatı Gör',
                               style: TextStyle(
                                 color: AppColors.gold,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        if (notification.type == NotificationType.appointment)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'Onayla',
+                              style: TextStyle(
+                                color: AppColors.primary,
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -145,15 +164,20 @@ class NotificationCard extends StatelessWidget {
     Color bgColor;
 
     switch (notification.type) {
-      case NotificationType.opportunity:
+      case NotificationType.campaign:
         iconData = Icons.stars;
         iconColor = AppColors.gold;
         bgColor = AppColors.goldLight.withOpacity(0.15);
         break;
-      case NotificationType.system:
-        iconData = Icons.info_outline;
+      case NotificationType.appointment:
+        iconData = Icons.calendar_today_outlined;
         iconColor = AppColors.primary;
         bgColor = AppColors.primaryLight;
+        break;
+      case NotificationType.system:
+        iconData = Icons.info_outline;
+        iconColor = AppColors.gray400;
+        bgColor = AppColors.gray100;
         break;
     }
 

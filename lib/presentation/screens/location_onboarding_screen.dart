@@ -106,8 +106,11 @@ class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
           if (discoveryProvider.manualCity != loc.provinceName ||
               discoveryProvider.manualDistrict != loc.districtName) {
             discoveryProvider.updateManualLocation(
-              loc.provinceName,
-              loc.districtName,
+              city: loc.provinceName,
+              district: loc.districtName,
+              provinceId: loc.provinceId,
+              latitude: loc.latitude,
+              longitude: loc.longitude,
             );
           }
         }

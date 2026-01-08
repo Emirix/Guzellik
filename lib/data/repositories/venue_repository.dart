@@ -14,7 +14,7 @@ class VenueRepository {
         .from('venue_categories')
         .select()
         .eq('is_active', true)
-        .order('name');
+        .order('order', ascending: true);
     return (response as List)
         .map((json) => VenueCategory.fromJson(json))
         .toList();
@@ -27,7 +27,15 @@ class VenueRepository {
     return (response as List).map((json) => Venue.fromJson(json)).toList();
   }
 
-  Future<List<Venue>> getFeaturedVenues() async {
+  Future<List<Venue>> getFeaturedVenues({double? lat, double? lng}) async {
+    if (lat != null && lng != null) {
+      // Use searchVenues to get distances if we have a location
+      return searchVenues(
+        lat: lat,
+        lng: lng,
+        filter: VenueFilter(minRating: 4.0),
+      );
+    }
     final response = await _supabase
         .from('featured_venues')
         .select('*, venue_categories(*)');
@@ -117,6 +125,116 @@ class VenueRepository {
     }
   }
 
+  /// Get list of venues followed by the current user
+  Future<List<Venue>> getFollowedVenues() async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) return [];
+
+      final response = await _supabase
+          .from('follows')
+          .select('venue_id, venues_with_coords(*, venue_categories(*))')
+          .eq('user_id', userId);
+
+      return (response as List)
+          .where((item) => item['venues_with_coords'] != null)
+          .map((item) {
+            final venueJson = Map<String, dynamic>.from(
+              item['venues_with_coords'],
+            );
+            venueJson['is_following'] = true;
+            return Venue.fromJson(venueJson);
+          })
+          .toList();
+    } catch (e) {
+      print('Error getting followed venues: $e');
+      return [];
+    }
+  }
+
+  /// Check if current user has favorited a venue
+  Future<bool> checkIfFavorited(String venueId) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) return false;
+
+      final response = await _supabase
+          .from('user_favorites')
+          .select()
+          .eq('user_id', userId)
+          .eq('venue_id', venueId)
+          .maybeSingle();
+
+      return response != null;
+    } catch (e) {
+      print('Error checking favorite status: $e');
+      return false;
+    }
+  }
+
+  /// Add a venue to favorites
+  Future<void> addFavorite(String venueId) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
+
+      await _supabase.from('user_favorites').insert({
+        'user_id': userId,
+        'venue_id': venueId,
+      });
+    } catch (e) {
+      if (e.toString().contains('23505') || e.toString().contains('conflict')) {
+        return;
+      }
+      print('Error adding to favorites: $e');
+      rethrow;
+    }
+  }
+
+  /// Remove a venue from favorites
+  Future<void> removeFavorite(String venueId) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
+
+      await _supabase.from('user_favorites').delete().match({
+        'user_id': userId,
+        'venue_id': venueId,
+      });
+    } catch (e) {
+      print('Error removing from favorites: $e');
+      rethrow;
+    }
+  }
+
+  /// Get list of favorited venues for the current user
+  Future<List<Venue>> getFavoriteVenues() async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) return [];
+
+      final response = await _supabase
+          .from('user_favorites')
+          .select('venue_id, venues_with_coords(*, venue_categories(*))')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      return (response as List)
+          .where((item) => item['venues_with_coords'] != null)
+          .map((item) {
+            final venueJson = Map<String, dynamic>.from(
+              item['venues_with_coords'],
+            );
+            venueJson['is_favorited'] = true;
+            return Venue.fromJson(venueJson);
+          })
+          .toList();
+    } catch (e) {
+      print('Error getting favorite venues: $e');
+      return [];
+    }
+  }
+
   Future<List<Service>> getServicesByVenueId(String venueId) async {
     final List<dynamic> response = await _supabase.rpc(
       'get_venue_services',
@@ -136,30 +254,17 @@ class VenueRepository {
     return (response as List).map((json) => Review.fromJson(json)).toList();
   }
 
-  static const Map<String, List<String>> _categoryMapping = {
-    'Saç': ['Kuaför - Kadın', 'Kuaför - Erkek'],
-    'Cilt Bakımı': ['Cilt Bakımı - Yüz', 'Cilt Bakımı - Vücut'],
-    'Kaş-Kirpik': ['Kaş & Kirpik'],
-    'Makyaj': ['Makyaj'],
-    'Tırnak': ['Tırnak - Manikür', 'Tırnak - Pedikür', 'El & Ayak Bakımı'],
-    'Estetik': ['Özel Tedavi'],
-    'Masaj': ['Masaj'],
-    'Spa': ['Hamam & Spa'],
-  };
-
   Future<List<Venue>> searchVenues({
     String? query,
     VenueFilter? filter,
     double? lat,
     double? lng,
   }) async {
-    // Map UI categories to database categories
-    List<String>? mappedCategories;
-    if (filter != null && filter.categories.isNotEmpty) {
-      mappedCategories = filter.categories
-          .expand((cat) => _categoryMapping[cat] ?? [cat])
-          .toList();
-    }
+    // Use categories directly as they now come from the database
+    final List<String>? mappedCategories =
+        (filter != null && filter.categories.isNotEmpty)
+        ? filter.categories
+        : null;
 
     try {
       final List<dynamic> response = await _supabase.rpc(
@@ -176,14 +281,69 @@ class VenueRepository {
           'p_only_preferred': filter?.onlyPreferred ?? false,
           'p_only_hygienic': filter?.onlyHygienic ?? false,
           'p_min_rating': filter?.minRating,
+          'p_category_id': filter?.categoryId,
+          'p_sort_by': filter?.sortBy.name,
+          'p_service_ids': filter?.serviceIds,
+        },
+      );
+
+      return response
+          .map((json) => Venue.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error searching venues advanced: $e');
+      rethrow;
+    }
+  }
+
+  /// Elastic search - comprehensive full-text search across venues, services, and locations
+  /// Supports Turkish character normalization and fuzzy matching
+  Future<List<Venue>> elasticSearchVenues({
+    required String query,
+    double? lat,
+    double? lng,
+    int? provinceId,
+    String? districtId,
+    double? maxDistanceKm,
+    bool onlyVerified = false,
+    bool onlyPreferred = false,
+    bool onlyHygienic = false,
+    double? minRating,
+    String sortBy = 'recommended',
+    List<String>? serviceIds,
+    int limit = 20,
+  }) async {
+    if (query.trim().isEmpty) {
+      return [];
+    }
+
+    try {
+      final List<dynamic> response = await _supabase.rpc(
+        'elastic_search_venues',
+        params: {
+          'p_query': query.trim(),
+          'p_lat': lat,
+          'p_lng': lng,
+          'p_province_id': provinceId,
+          'p_district_id': districtId,
+          'p_max_dist_meters': maxDistanceKm != null
+              ? maxDistanceKm * 1000
+              : null,
+          'p_only_verified': onlyVerified,
+          'p_only_preferred': onlyPreferred,
+          'p_only_hygienic': onlyHygienic,
+          'p_min_rating': minRating,
+          'p_sort_by': sortBy,
+          'p_limit': limit,
+          'p_service_ids': serviceIds,
         },
       );
 
       return response.map((json) => Venue.fromJson(json)).toList();
     } catch (e) {
-      print('Error searching venues advanced: $e');
-      // Fallback or rethrow
-      rethrow;
+      print('Error in elastic search: $e');
+      // Fallback to basic search if elastic search fails
+      return searchVenues(query: query, lat: lat, lng: lng);
     }
   }
 
@@ -305,5 +465,15 @@ class VenueRepository {
   /// Unlike a photo (decrement likes_count)
   Future<void> unlikePhoto(String photoId) async {
     await _supabase.rpc('decrement_photo_likes', params: {'photo_id': photoId});
+  }
+
+  /// Get services for a specific venue category
+  Future<List<Service>> getServicesByCategory(String categoryId) async {
+    final List<dynamic> response = await _supabase.rpc(
+      'get_services_by_venue_category',
+      params: {'p_category_id': categoryId},
+    );
+
+    return response.map((json) => Service.fromJson(json)).toList();
   }
 }

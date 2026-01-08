@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/discovery_provider.dart';
 import '../venue/venue_card.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/icon_utils.dart';
 
 class VenueListView extends StatefulWidget {
   const VenueListView({super.key});
@@ -27,9 +28,6 @@ class _VenueListViewState extends State<VenueListView>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header simulated in the list for scrolling behavior if needed,
-              // but ExploreScreen has the floating search bar.
-
               // 1. Categories Chips
               _buildCategories(context),
 
@@ -81,67 +79,65 @@ class _VenueListViewState extends State<VenueListView>
   }
 
   Widget _buildCategories(BuildContext context) {
-    final provider = context.watch<DiscoveryProvider>();
-    final categories = [
-      'Tümü',
-      'Saç',
-      'Cilt Bakımı',
-      'Kaş-Kirpik',
-      'Makyaj',
-      'Tırnak',
-      'Masaj',
-    ];
+    return Consumer<DiscoveryProvider>(
+      builder: (context, provider, _) {
+        final categoryNames = [
+          'Tümü',
+          ...provider.categories.map((c) => c.name),
+        ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: SizedBox(
-        height: 40,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.only(left: 16),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            final isSelected = category == 'Tümü'
-                ? provider.filter.categories.isEmpty
-                : provider.filter.categories.contains(category);
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: SizedBox(
+            height: 40,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(left: 16),
+              itemCount: categoryNames.length,
+              itemBuilder: (context, index) {
+                final category = categoryNames[index];
+                final isSelected = category == 'Tümü'
+                    ? provider.filter.categories.isEmpty
+                    : provider.filter.categories.contains(category);
 
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: GestureDetector(
-                onTap: () {
-                  if (category == 'Tümü') {
-                    provider.updateFilter(
-                      provider.filter.copyWith(categories: []),
-                    );
-                  } else {
-                    provider.updateFilter(
-                      provider.filter.copyWith(
-                        categories: [
-                          category,
-                        ], // For now, single select for these quick chips
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: () {
+                      if (category == 'Tümü') {
+                        provider.updateFilter(
+                          provider.filter.copyWith(categories: []),
+                        );
+                      } else {
+                        provider.updateFilter(
+                          provider.filter.copyWith(categories: [category]),
+                        );
+                      }
+                    },
+                    child: Chip(
+                      label: Text(category),
+                      backgroundColor: isSelected
+                          ? AppColors.primary
+                          : AppColors.white,
+                      labelStyle: TextStyle(
+                        color: isSelected ? Colors.white : AppColors.gray900,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                       ),
-                    );
-                  }
-                },
-                child: Chip(
-                  label: Text(category),
-                  backgroundColor: isSelected
-                      ? AppColors.primary
-                      : AppColors.white,
-                  labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.gray900,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                      side: BorderSide(
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.gray100,
+                      ),
+                    ),
                   ),
-                  side: BorderSide(
-                    color: isSelected ? AppColors.primary : AppColors.gray100,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -173,55 +169,53 @@ class _VenueListViewState extends State<VenueListView>
   }
 
   Widget _buildCategoryBrowser(BuildContext context) {
-    final items = [
-      {'label': 'Saç', 'icon': Icons.content_cut},
-      {'label': 'Makyaj', 'icon': Icons.face},
-      {'label': 'Tırnak', 'icon': Icons.back_hand},
-      {'label': 'Cilt', 'icon': Icons.spa},
-      {'label': 'Diğer', 'icon': Icons.grid_view},
-    ];
+    return Consumer<DiscoveryProvider>(
+      builder: (context, provider, _) {
+        final categories = provider.categories;
 
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 16),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 24),
-            child: Column(
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.gray100, width: 2),
-                  ),
-                  child: Icon(
-                    item['icon'] as IconData,
-                    color: AppColors.primary,
-                    size: 28,
-                  ),
+        return SizedBox(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.only(left: 16),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              return Padding(
+                padding: const EdgeInsets.only(right: 24),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.gray100, width: 2),
+                      ),
+                      child: Icon(
+                        IconUtils.getCategoryIcon(category.icon),
+                        color: AppColors.primary,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      category.name,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  item['label'] as String,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

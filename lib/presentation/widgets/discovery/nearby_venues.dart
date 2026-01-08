@@ -4,6 +4,8 @@ import '../../providers/discovery_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/venue.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/favorites_provider.dart';
+import '../../providers/auth_provider.dart';
 
 class NearbyVenues extends StatelessWidget {
   const NearbyVenues({super.key});
@@ -12,16 +14,19 @@ class NearbyVenues extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
-        if (provider.isLoading && provider.venues.isEmpty) {
+        if (provider.isLoadingNearby && provider.nearbyVenues.isEmpty) {
+          return const SizedBox(
+            height: 200,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (provider.nearbyVenues.isEmpty) {
           return const SizedBox.shrink();
         }
 
-        if (provider.venues.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        // Show first 6 venues
-        final nearbyVenues = provider.venues.take(6).toList();
+        // Show first 10 venues as requested
+        final nearbyVenues = provider.nearbyVenues.take(10).toList();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,7 +37,7 @@ class NearbyVenues extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Yakınımdaki Mekanlar',
+                    'Sana yakın yerler',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -99,7 +104,6 @@ class NearbyVenueCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Image
             Container(
               width: 100,
               height: 100,
@@ -116,9 +120,63 @@ class NearbyVenueCard extends StatelessWidget {
                     : null,
                 color: venue.heroImages.isEmpty ? AppColors.gray200 : null,
               ),
-              child: venue.heroImages.isEmpty
-                  ? const Icon(Icons.store, color: AppColors.gray400, size: 40)
-                  : null,
+              child: Stack(
+                children: [
+                  if (venue.heroImages.isEmpty)
+                    const Center(
+                      child: Icon(
+                        Icons.store,
+                        color: AppColors.gray400,
+                        size: 40,
+                      ),
+                    ),
+                  // Favorite button
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: GestureDetector(
+                      onTap: () async {
+                        final authProvider = context.read<AuthProvider>();
+                        if (!authProvider.isAuthenticated) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Lütfen önce giriş yapın'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+
+                        try {
+                          final favoritesProvider = context
+                              .read<FavoritesProvider>();
+                          await favoritesProvider.toggleFavorite(venue);
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+                          }
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          venue.isFavorited
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 16,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             // Info
             Expanded(

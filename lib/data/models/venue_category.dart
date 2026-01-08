@@ -8,6 +8,8 @@ class VenueCategory {
   final String? description;
   final bool isActive;
 
+  final int? order;
+
   VenueCategory({
     required this.id,
     required this.name,
@@ -17,6 +19,7 @@ class VenueCategory {
     this.logoUrl,
     this.description,
     this.isActive = true,
+    this.order,
   });
 
   factory VenueCategory.fromJson(Map<String, dynamic> json) {
@@ -29,6 +32,7 @@ class VenueCategory {
       logoUrl: json['logo_url'] as String?,
       description: json['description'] as String?,
       isActive: json['is_active'] as bool? ?? true,
+      order: json['order'] as int?,
     );
   }
 
@@ -42,6 +46,7 @@ class VenueCategory {
       'logo_url': logoUrl,
       'description': description,
       'is_active': isActive,
+      'order': order,
     };
   }
 }

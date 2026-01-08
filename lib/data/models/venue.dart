@@ -14,17 +14,19 @@ class Venue {
   final List<String> heroImages; // Hero carousel URLs
   final List<VenuePhoto>? galleryPhotos; // Detailed gallery (lazy loaded)
 
-  // Category
+  // Category & Icon
   final VenueCategory? category;
+  final String? icon;
 
   // Trust Badges
   final bool isVerified;
   final bool isPreferred;
   final bool isHygienic;
 
-  // Follow System
+  // Follow & Favorite System
   final bool isFollowing; // Whether current user follows this venue
   final int followerCount; // Total number of followers
+  final bool isFavorited; // Whether current user favorited this venue
 
   // Detailed Info
   final Map<String, dynamic> workingHours;
@@ -61,11 +63,13 @@ class Venue {
     this.heroImages = const [],
     this.galleryPhotos,
     this.category,
+    this.icon,
     this.isVerified = false,
     this.isPreferred = false,
     this.isHygienic = false,
     this.isFollowing = false,
     this.followerCount = 0,
+    this.isFavorited = false,
     this.workingHours = const {},
     this.expertTeam = const [],
     this.certifications = const [],
@@ -112,35 +116,48 @@ class Venue {
           .toList();
     }
 
-    // Parse category if provided (as a joined relation)
+    // Parse category if provided (as a joined relation or flattened fields)
     VenueCategory? venueCategory;
+    String? categoryIcon = json['category_icon'] as String?;
+
     if (json['venue_categories'] != null) {
       venueCategory = VenueCategory.fromJson(
         json['venue_categories'] as Map<String, dynamic>,
       );
+      categoryIcon ??= venueCategory.icon;
     } else if (json['category'] != null) {
-      // Handle cases where it might be a direct map
       venueCategory = VenueCategory.fromJson(
         json['category'] as Map<String, dynamic>,
+      );
+      categoryIcon ??= venueCategory.icon;
+    } else if (json['category_name'] != null) {
+      // Handle flattened category fields from search RPC
+      venueCategory = VenueCategory(
+        id: json['category_id'] as String? ?? '',
+        name: json['category_name'] as String,
+        slug: '',
+        icon: categoryIcon ?? 'spa',
       );
     }
 
     return Venue(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? 'İsimsiz Mekan',
-      description: json['description'] as String?,
-      address: json['address'] as String? ?? '',
-      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
-      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
-      imageUrl: json['image_url'] as String?,
+      id: _toString(json['id']) ?? '',
+      name: _toString(json['name']) ?? 'İsimsiz Mekan',
+      description: _toString(json['description']),
+      address: _toString(json['address']) ?? '',
+      latitude: _toDouble(json['latitude']),
+      longitude: _toDouble(json['longitude']),
+      imageUrl: _toString(json['image_url']),
       heroImages: heroImagesList,
       galleryPhotos: galleryPhotosList,
       category: venueCategory,
-      isVerified: json['is_verified'] as bool? ?? false,
-      isPreferred: json['is_preferred'] as bool? ?? false,
-      isHygienic: json['is_hygienic'] as bool? ?? false,
-      isFollowing: json['is_following'] as bool? ?? false,
-      followerCount: json['follower_count'] as int? ?? 0,
+      icon: categoryIcon ?? _toString(json['icon']),
+      isVerified: _toBool(json['is_verified']),
+      isPreferred: _toBool(json['is_preferred']),
+      isHygienic: _toBool(json['is_hygienic']),
+      isFollowing: _toBool(json['is_following']),
+      followerCount: _toInt(json['follower_count']),
+      isFavorited: _toBool(json['is_favorited']),
       workingHours: json['working_hours'] as Map<String, dynamic>? ?? {},
       expertTeam: json['expert_team'] as List<dynamic>? ?? [],
       certifications: json['certifications'] as List<dynamic>? ?? [],
@@ -157,16 +174,43 @@ class Venue {
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      ownerId: json['owner_id'] as String?,
+      ownerId: _toString(json['owner_id']),
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      ratingCount: json['review_count'] as int? ?? 0,
-      distance: (json['distance_meters'] as num?)?.toDouble(),
-      provinceId: json['province_id'] as int?,
-      districtId: json['district_id'] as String?,
+      rating: _toDouble(json['rating']),
+      ratingCount: _toInt(json['review_count']),
+      distance: _toDouble(json['distance_meters']),
+      provinceId: _toInt(json['province_id']),
+      districtId: _toString(json['district_id']),
     );
+  }
+
+  static double _toDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
+  static int _toInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  static String? _toString(dynamic value) {
+    if (value == null) return null;
+    return value.toString();
+  }
+
+  static bool _toBool(dynamic value) {
+    if (value == null) return false;
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) return value.toLowerCase() == 'true';
+    return false;
   }
 
   Map<String, dynamic> toJson() {
@@ -181,11 +225,13 @@ class Venue {
       'hero_images': heroImages,
       'gallery_photos': galleryPhotos?.map((photo) => photo.toJson()).toList(),
       'category': category?.toJson(),
+      'icon': icon,
       'is_verified': isVerified,
       'is_preferred': isPreferred,
       'is_hygienic': isHygienic,
       'is_following': isFollowing,
       'follower_count': followerCount,
+      'is_favorited': isFavorited,
       'working_hours': workingHours,
       'expert_team': expertTeam,
       'certifications': certifications,
@@ -220,6 +266,7 @@ class Venue {
     bool? isHygienic,
     bool? isFollowing,
     int? followerCount,
+    bool? isFavorited,
     Map<String, dynamic>? workingHours,
     List<dynamic>? expertTeam,
     List<dynamic>? certifications,
@@ -252,6 +299,7 @@ class Venue {
       isHygienic: isHygienic ?? this.isHygienic,
       isFollowing: isFollowing ?? this.isFollowing,
       followerCount: followerCount ?? this.followerCount,
+      isFavorited: isFavorited ?? this.isFavorited,
       workingHours: workingHours ?? this.workingHours,
       expertTeam: expertTeam ?? this.expertTeam,
       certifications: certifications ?? this.certifications,

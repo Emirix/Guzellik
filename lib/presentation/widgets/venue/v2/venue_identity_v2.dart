@@ -7,6 +7,7 @@ import '../../../providers/auth_provider.dart';
 import '../../../../data/repositories/auth_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/icon_utils.dart';
 import '../../../providers/venue_details_provider.dart';
 import '../../dialogs/follow_info_bottom_sheet.dart';
 import '../../dialogs/unfollow_confirmation_dialog.dart';
@@ -161,7 +162,7 @@ class VenueIdentityV2 extends StatelessWidget {
                           const SizedBox(width: 4),
                           Flexible(
                             child: Text(
-                              'Kadıköy, İstanbul', // TODO: Get from address or new field
+                              venue.address,
                               style: AppTextStyles.bodySmall.copyWith(
                                 color: AppColors.gray600,
                                 fontWeight: FontWeight.w500,
@@ -175,15 +176,17 @@ class VenueIdentityV2 extends StatelessWidget {
                       // Category Row (Mekan Türü)
                       Row(
                         children: [
-                          const Icon(
-                            Icons.sell_outlined,
+                          Icon(
+                            IconUtils.getCategoryIcon(
+                              venue.icon ?? venue.category?.icon,
+                            ),
                             size: 16,
                             color: AppColors.primary,
                           ),
                           const SizedBox(width: 4),
                           Flexible(
                             child: Text(
-                              'Cilt Bakımı & Lazer', // TODO: Get from categories
+                              venue.category?.name ?? 'Güzellik Salonu',
                               style: AppTextStyles.bodySmall.copyWith(
                                 color: AppColors.gray600,
                                 fontWeight: FontWeight.w500,
@@ -310,7 +313,7 @@ class VenueIdentityV2 extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    venue.rating?.toStringAsFixed(1) ?? '4.8',
+                    venue.rating.toStringAsFixed(1),
                     style: const TextStyle(
                       color: Color(0xFF2E7D32), // Dark green
                       fontWeight: FontWeight.bold,
@@ -322,7 +325,7 @@ class VenueIdentityV2 extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: List.generate(5, (index) {
-                      final rating = venue.rating ?? 4.8;
+                      final rating = venue.rating;
                       if (index < rating.floor()) {
                         return const Icon(
                           Icons.star,
@@ -346,7 +349,7 @@ class VenueIdentityV2 extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '(${venue.ratingCount ?? 124} Değerlendirme)',
+                    '(${venue.ratingCount} Değerlendirme)',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: const Color(0xFF388E3C),
                       fontWeight: FontWeight.w500,
