@@ -301,13 +301,23 @@ class VenueIdentityV2 extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            // Rating Row - Now only contains the Rating Card
+            // Rating Card - Premium Design
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9), // Mint/light green background
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFFDCEFDC), width: 1),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppColors.nude.withOpacity(0.8),
+                  width: 1.5,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x05000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
+                  ),
+                ],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -315,44 +325,44 @@ class VenueIdentityV2 extends StatelessWidget {
                   Text(
                     venue.rating.toStringAsFixed(1),
                     style: const TextStyle(
-                      color: Color(0xFF2E7D32), // Dark green
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
-                      fontSize: 15,
+                      fontSize: 16,
                     ),
                   ),
-                  const SizedBox(width: 4),
-                  // Star icons - compact
+                  const SizedBox(width: 8),
+                  // Star icons - Gold and rounded
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: List.generate(5, (index) {
                       final rating = venue.rating;
                       if (index < rating.floor()) {
                         return const Icon(
-                          Icons.star,
-                          color: Color(0xFFFFB800),
-                          size: 14,
+                          Icons.star_rounded,
+                          color: AppColors.gold,
+                          size: 18,
                         );
                       } else if (index < rating.ceil() && rating % 1 != 0) {
                         return const Icon(
-                          Icons.star_half,
-                          color: Color(0xFFFFB800),
-                          size: 14,
+                          Icons.star_half_rounded,
+                          color: AppColors.gold,
+                          size: 18,
                         );
                       } else {
                         return const Icon(
-                          Icons.star_border,
-                          color: Color(0xFFFFB800),
-                          size: 14,
+                          Icons.star_outline_rounded,
+                          color: AppColors.gold,
+                          size: 18,
                         );
                       }
                     }),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 8),
                   Text(
                     '(${venue.ratingCount} Değerlendirme)',
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: const Color(0xFF388E3C),
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.gray500,
+                      fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
                   ),

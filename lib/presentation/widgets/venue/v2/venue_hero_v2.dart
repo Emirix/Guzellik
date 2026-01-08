@@ -10,6 +10,8 @@ import '../venue_hero_carousel.dart';
 import '../photo_gallery_viewer.dart';
 import '../../../providers/favorites_provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/discovery_provider.dart';
+import '../../../providers/search_provider.dart';
 
 class VenueHeroV2 extends StatelessWidget {
   final Venue venue;
@@ -100,19 +102,19 @@ class VenueHeroV2 extends StatelessWidget {
                             try {
                               final favoritesProvider = context
                                   .read<FavoritesProvider>();
-                              await favoritesProvider.toggleFavorite(venue);
-
-                              // Local sync for details provider if needed
+                              final discoveryProvider = context
+                                  .read<DiscoveryProvider>();
+                              final searchProvider = context
+                                  .read<SearchProvider>();
                               final detailsProvider = context
                                   .read<VenueDetailsProvider>();
-                              if (detailsProvider.venue?.id == venue.id) {
-                                detailsProvider.loadVenueDetails(
-                                  venue.id,
-                                  initialVenue: venue.copyWith(
-                                    isFavorited: !venue.isFavorited,
-                                  ),
-                                );
-                              }
+
+                              await Future.wait([
+                                favoritesProvider.toggleFavorite(venue),
+                                discoveryProvider.toggleFavoriteVenue(venue),
+                                searchProvider.toggleFavoriteVenue(venue),
+                                detailsProvider.toggleFavoriteVenue(venue),
+                              ]);
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(

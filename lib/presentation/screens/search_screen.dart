@@ -226,6 +226,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         Text(
                           'Arama Kategorisi',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 11,
                             color: Colors.white.withOpacity(0.8),
@@ -236,6 +238,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(height: 4),
                         Text(
                           category.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

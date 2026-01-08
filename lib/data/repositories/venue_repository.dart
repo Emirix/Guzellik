@@ -33,7 +33,7 @@ class VenueRepository {
       return searchVenues(
         lat: lat,
         lng: lng,
-        filter: VenueFilter(minRating: 4.0),
+        filter: VenueFilter(minRating: 0.0),
       );
     }
     final response = await _supabase
@@ -282,8 +282,10 @@ class VenueRepository {
           'p_only_hygienic': filter?.onlyHygienic ?? false,
           'p_min_rating': filter?.minRating,
           'p_category_id': filter?.categoryId,
-          'p_sort_by': filter?.sortBy.name,
-          'p_service_ids': filter?.serviceIds,
+          'p_sort_by': filter?.sortBy.name ?? 'recommended',
+          'p_service_ids': (filter?.serviceIds.isNotEmpty ?? false)
+              ? filter!.serviceIds
+              : null,
         },
       );
 
@@ -335,7 +337,9 @@ class VenueRepository {
           'p_min_rating': minRating,
           'p_sort_by': sortBy,
           'p_limit': limit,
-          'p_service_ids': serviceIds,
+          'p_service_ids': (serviceIds?.isNotEmpty ?? false)
+              ? serviceIds
+              : null,
         },
       );
 

@@ -577,6 +577,32 @@ class SearchProvider extends ChangeNotifier {
     }
   }
 
+  /// Mekanı favorilere ekler veya favorilerden çıkarır
+  Future<void> toggleFavoriteVenue(Venue venue) async {
+    final index = _searchResults.indexWhere((v) => v.id == venue.id);
+    if (index == -1) return;
+
+    final isFavorited = venue.isFavorited;
+
+    // Local state update for immediate feedback
+    _searchResults[index] = venue.copyWith(isFavorited: !isFavorited);
+    notifyListeners();
+
+    try {
+      if (isFavorited) {
+        await _venueRepository.removeFavorite(venue.id);
+      } else {
+        await _venueRepository.addFavorite(venue.id);
+      }
+    } catch (e) {
+      debugPrint('Error toggling favorite in Search: $e');
+      // Revert local state on error
+      _searchResults[index] = venue;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
   @override
   void dispose() {
     _debounceTimer?.cancel();

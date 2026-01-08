@@ -141,6 +141,30 @@ class VenueDetailsProvider extends ChangeNotifier {
     }
   }
 
+  /// Toggle favorite status
+  Future<void> toggleFavoriteVenue(Venue venue) async {
+    if (_venue == null || _venue!.id != venue.id) return;
+
+    final isFavorited = _venue!.isFavorited;
+
+    // Update local state immediately
+    _venue = _venue!.copyWith(isFavorited: !isFavorited);
+    notifyListeners();
+
+    try {
+      if (isFavorited) {
+        await _repository.removeFavorite(_venue!.id);
+      } else {
+        await _repository.addFavorite(_venue!.id);
+      }
+    } catch (e) {
+      // Revert local state on error
+      _venue = _venue!.copyWith(isFavorited: isFavorited);
+      notifyListeners();
+      rethrow;
+    }
+  }
+
   /// Like a gallery photo
   Future<void> likePhoto(String photoId) async {
     try {

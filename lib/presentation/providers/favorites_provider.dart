@@ -99,22 +99,27 @@ class FavoritesProvider extends ChangeNotifier {
   Future<void> toggleFavorite(Venue venue) async {
     final isFavorited = venue.isFavorited;
 
+    // Optimistik güncelleme
+    _updateVenueInLists(venue.id, isFavorited: !isFavorited);
+    if (isFavorited) {
+      _favoriteVenues.removeWhere((v) => v.id == venue.id);
+    }
+    notifyListeners();
+
     try {
       if (isFavorited) {
         await _venueRepository.removeFavorite(venue.id);
-        // Remove from local list if we are on favorites tab
-        _favoriteVenues.removeWhere((v) => v.id == venue.id);
       } else {
         await _venueRepository.addFavorite(venue.id);
-        // Ideally we'd refresh or add to list, but usually this is called from discovery/search
-        // If we are on favorites screen, it might already be favorited.
       }
-
-      // Update the venue object in both lists if it exists
-      _updateVenueInLists(venue.id, isFavorited: !isFavorited);
-      notifyListeners();
     } catch (e) {
       debugPrint('Error toggling favorite: $e');
+      // Hata durumunda geri al
+      _updateVenueInLists(venue.id, isFavorited: isFavorited);
+      if (isFavorited && !_favoriteVenues.any((v) => v.id == venue.id)) {
+        _favoriteVenues.add(venue);
+      }
+      notifyListeners();
       rethrow;
     }
   }

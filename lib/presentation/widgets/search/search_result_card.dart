@@ -215,7 +215,14 @@ class SearchResultCard extends StatelessWidget {
 
               try {
                 final favoritesProvider = context.read<FavoritesProvider>();
-                await favoritesProvider.toggleFavorite(venue);
+                final searchProvider = context.read<SearchProvider>();
+                final discoveryProvider = context.read<DiscoveryProvider>();
+
+                await Future.wait([
+                  favoritesProvider.toggleFavorite(venue),
+                  searchProvider.toggleFavoriteVenue(venue),
+                  discoveryProvider.toggleFavoriteVenue(venue),
+                ]);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(

@@ -171,6 +171,15 @@ class DiscoveryProvider extends ChangeNotifier {
         lng: _currentPosition?.longitude,
       );
 
+      // Fallback: if search with coordinates returned nothing (e.g. strict filter or far from mock data),
+      // try without coordinates to get at least something for the home screen
+      if (_featuredVenues.isEmpty && _currentPosition != null) {
+        debugPrint(
+          'loadHomeData: Search with coords was empty, falling back to all featured',
+        );
+        _featuredVenues = await _venueRepository.getFeaturedVenues();
+      }
+
       // If position is available but distance is null (e.g. view didn't return it), calculate locally
       if (_currentPosition != null &&
           _featuredVenues.isNotEmpty &&
@@ -179,6 +188,14 @@ class DiscoveryProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error loading home data: $e');
+      // If it failed and we have no data, try the simple path as ultimate fallback
+      if (_featuredVenues.isEmpty) {
+        try {
+          _featuredVenues = await _venueRepository.getFeaturedVenues();
+        } catch (innerE) {
+          debugPrint('Ultimate fallback for featured venues failed: $innerE');
+        }
+      }
     } finally {
       _isLoadingHome = false;
       notifyListeners();
@@ -216,12 +233,17 @@ class DiscoveryProvider extends ChangeNotifier {
         _nearbyVenues = await _venueRepository.getVenues();
       }
 
-      // 3. Ultimate fallback: if both are empty, use featured venues
+      // 3. Ultimate fallback: if both are empty, use featured venues (might still be empty)
       if (_nearbyVenues.isEmpty) {
         debugPrint(
           'Both nearby and all_venues were empty, using featured venues',
         );
         _nearbyVenues = List.from(_featuredVenues);
+      }
+
+      // Final check: if still empty, get everything from repository directly
+      if (_nearbyVenues.isEmpty) {
+        _nearbyVenues = await _venueRepository.getVenues();
       }
 
       // Final count limit
@@ -230,9 +252,16 @@ class DiscoveryProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error fetching nearby venues: $e');
-      // Final fallback on error
+      // Final fallback on error: try to use whatever we have
       if (_nearbyVenues.isEmpty) {
-        _nearbyVenues = List.from(_featuredVenues);
+        if (_featuredVenues.isNotEmpty) {
+          _nearbyVenues = List.from(_featuredVenues);
+        } else {
+          // One last attempt
+          try {
+            _nearbyVenues = await _venueRepository.getVenues();
+          } catch (_) {}
+        }
       }
     } finally {
       _isLoadingNearby = false;
@@ -498,6 +527,50 @@ class DiscoveryProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error toggling follow in Discovery: $e');
+      // Revert states
+      void revertList(List<Venue> list) {
+        final index = list.indexWhere((v) => v.id == venue.id);
+        if (index != -1) {
+          list[index] = venue;
+        }
+      }
+
+      revertList(_venues);
+      revertList(_filteredVenues);
+      revertList(_featuredVenues);
+      revertList(_nearbyVenues);
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  /// Mekanı favorilere ekler veya favorilerden çıkarır
+  Future<void> toggleFavoriteVenue(Venue venue) async {
+    final isFavorited = venue.isFavorited;
+    final updatedVenue = venue.copyWith(isFavorited: !isFavorited);
+
+    // Update all lists that might contain this venue
+    void updateList(List<Venue> list) {
+      final index = list.indexWhere((v) => v.id == venue.id);
+      if (index != -1) {
+        list[index] = updatedVenue;
+      }
+    }
+
+    updateList(_venues);
+    updateList(_filteredVenues);
+    updateList(_featuredVenues);
+    updateList(_nearbyVenues);
+    notifyListeners();
+
+    try {
+      if (isFavorited) {
+        await _venueRepository.removeFavorite(venue.id);
+      } else {
+        await _venueRepository.addFavorite(venue.id);
+      }
+    } catch (e) {
+      debugPrint('Error toggling favorite in Discovery: $e');
       // Revert states
       void revertList(List<Venue> list) {
         final index = list.indexWhere((v) => v.id == venue.id);

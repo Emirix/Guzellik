@@ -6,6 +6,7 @@ import '../../../data/models/venue.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/favorites_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/search_provider.dart';
 
 class NearbyVenues extends StatelessWidget {
   const NearbyVenues({super.key});
@@ -150,7 +151,15 @@ class NearbyVenueCard extends StatelessWidget {
                         try {
                           final favoritesProvider = context
                               .read<FavoritesProvider>();
-                          await favoritesProvider.toggleFavorite(venue);
+                          final discoveryProvider = context
+                              .read<DiscoveryProvider>();
+                          final searchProvider = context.read<SearchProvider>();
+
+                          await Future.wait([
+                            favoritesProvider.toggleFavorite(venue),
+                            discoveryProvider.toggleFavoriteVenue(venue),
+                            searchProvider.toggleFavoriteVenue(venue),
+                          ]);
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(

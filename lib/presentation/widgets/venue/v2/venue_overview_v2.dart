@@ -9,7 +9,6 @@ import 'experts_section_v2.dart';
 import 'working_hours_card_v2.dart';
 import 'map_preview_v2.dart';
 import 'trust_badges_grid_v2.dart';
-import 'features_grid_v2.dart';
 import 'reviews_preview_v2.dart';
 import 'gallery_section_v2.dart';
 
@@ -123,13 +122,7 @@ class VenueOverviewV2 extends StatelessWidget {
         // 6. Social Proof (Certificates & Features)
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              TrustBadgesGridV2(venue: venue),
-              const SizedBox(height: 32),
-              FeaturesGridV2(venue: venue),
-            ],
-          ),
+          child: Column(children: [TrustBadgesGridV2(venue: venue)]),
         ),
         const SizedBox(height: 24),
 
