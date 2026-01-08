@@ -43,3 +43,24 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase / Services
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+*.jks
+*.keystore
+*.p12
+
+# Temporary and Debug files
+change_*.json
+*.json
+!theme.json
+!pubspec.json
+!package.json
+!package-lock.json
+
+# Supabase
+supabase/.temp/
+supabase/functions/.env
+
+
