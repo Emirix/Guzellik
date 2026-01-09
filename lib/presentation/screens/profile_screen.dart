@@ -144,6 +144,14 @@ class ProfileScreen extends StatelessWidget {
                                   },
                                 ),
                                 ProfileMenuItem(
+                                  icon: Icons.request_quote_outlined,
+                                  title: 'Tekliflerim',
+                                  isPrimary: true,
+                                  onTap: () {
+                                    context.push('/my-quotes');
+                                  },
+                                ),
+                                ProfileMenuItem(
                                   icon: Icons.account_balance_wallet,
                                   title: 'Cüzdanım',
                                   subtitle: 'Son işlem: Dün',

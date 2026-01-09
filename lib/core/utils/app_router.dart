@@ -11,6 +11,10 @@ import '../../presentation/screens/auth/password_reset_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
 import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../presentation/screens/location_onboarding_screen.dart';
+import '../../presentation/screens/quote/quote_request_screen.dart';
+import '../../presentation/screens/quote/my_quotes_screen.dart';
+import '../../presentation/screens/quote/quote_detail_screen.dart';
+import '../../data/models/quote_request.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
 
@@ -90,7 +94,37 @@ class AppRouter {
           child: ProfileScreen(),
         ),
       ),
+      GoRoute(
+        path: '/quote-request',
+        name: 'quote-request',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Teklif İste',
+          redirectPath: '/quote-request',
+          child: QuoteRequestScreen(),
+        ),
+      ),
 
+      GoRoute(
+        path: '/my-quotes',
+        name: 'my-quotes',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Tekliflerim',
+          redirectPath: '/my-quotes',
+          child: MyQuotesScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/quote-detail',
+        name: 'quote-detail',
+        builder: (context, state) {
+          final quote = state.extra as QuoteRequest;
+          return AuthGuard(
+            requiredFor: 'Teklif Detayı',
+            redirectPath: '/my-quotes',
+            child: QuoteDetailScreen(quote: quote),
+          );
+        },
+      ),
       // Venue Details (Public)
       GoRoute(
         path: '/venue/:id',

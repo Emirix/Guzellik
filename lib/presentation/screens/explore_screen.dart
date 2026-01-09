@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/discovery_provider.dart';
+import '../providers/app_state_provider.dart';
 import '../widgets/discovery/map_view.dart';
 import '../widgets/discovery/venue_list_view.dart';
 import '../widgets/discovery/search_bar.dart';
@@ -174,34 +175,40 @@ class _ExploreScreenState extends State<ExploreScreen>
             ),
           ),
         ),
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.gray100),
-          ),
-          child: Stack(
-            children: [
-              const Icon(
-                Icons.notifications_outlined,
-                color: AppColors.gray700,
-                size: 22,
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.white, width: 1.5),
+        InkWell(
+          onTap: () {
+            context.read<AppStateProvider>().setBottomNavIndex(2);
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.gray100),
+            ),
+            child: Stack(
+              children: [
+                const Icon(
+                  Icons.notifications_outlined,
+                  color: AppColors.gray700,
+                  size: 22,
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.white, width: 1.5),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
