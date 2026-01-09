@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/discovery_provider.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../data/models/venue.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/discovery_provider.dart';
 import '../../providers/favorites_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/search_provider.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../data/models/venue.dart';
+import 'discovery_shimmer_loading.dart';
 
 class NearbyVenues extends StatelessWidget {
   const NearbyVenues({super.key});
@@ -16,18 +18,15 @@ class NearbyVenues extends StatelessWidget {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         if (provider.isLoadingNearby && provider.nearbyVenues.isEmpty) {
-          return const SizedBox(
-            height: 200,
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return const NearbyVenuesShimmer();
         }
 
         if (provider.nearbyVenues.isEmpty) {
           return const SizedBox.shrink();
         }
 
-        // Show first 10 venues as requested
-        final nearbyVenues = provider.nearbyVenues.take(10).toList();
+        // No longer limiting to 10 venues
+        final nearbyVenues = provider.nearbyVenues;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,6 +71,21 @@ class NearbyVenues extends StatelessWidget {
                 return NearbyVenueCard(venue: venue);
               },
             ),
+            if (provider.isLoadingMoreNearby)
+              const Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: NearbyVenuesShimmer(itemCount: 1),
+              ),
+            if (!provider.hasMoreNearby && nearbyVenues.isNotEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Center(
+                  child: Text(
+                    'Daha fazla mekan bulunamadı',
+                    style: TextStyle(color: AppColors.gray500, fontSize: 13),
+                  ),
+                ),
+              ),
           ],
         );
       },
@@ -95,42 +109,56 @@ class NearbyVenueCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Color.fromRGBO(0, 0, 0, 0.05),
               blurRadius: 10,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
-            Container(
+            // Image with CachedNetworkImage and favorite button overlay
+            SizedBox(
               width: 100,
               height: 100,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
-                ),
-                image: venue.heroImages.isNotEmpty
-                    ? DecorationImage(
-                        image: NetworkImage(venue.heroImages.first),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
-                color: venue.heroImages.isEmpty ? AppColors.gray200 : null,
-              ),
               child: Stack(
                 children: [
-                  if (venue.heroImages.isEmpty)
-                    const Center(
-                      child: Icon(
-                        Icons.store,
-                        color: AppColors.gray400,
-                        size: 40,
-                      ),
+                  // Image
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
                     ),
+                    child: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: venue.heroImages.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: venue.heroImages.first,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) =>
+                                  Container(color: AppColors.gray200),
+                              errorWidget: (context, url, error) => Container(
+                                color: AppColors.gray200,
+                                child: const Icon(
+                                  Icons.store,
+                                  color: AppColors.gray400,
+                                  size: 40,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              color: AppColors.gray200,
+                              child: const Icon(
+                                Icons.store,
+                                color: AppColors.gray400,
+                                size: 40,
+                              ),
+                            ),
+                    ),
+                  ),
                   // Favorite button
                   Positioned(
                     top: 8,
@@ -170,8 +198,8 @@ class NearbyVenueCard extends StatelessWidget {
                       },
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                        decoration: const BoxDecoration(
+                          color: Color.fromRGBO(255, 255, 255, 0.8),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -222,25 +250,28 @@ class NearbyVenueCard extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          venue.rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.black,
+                        if (venue.ratingCount > 0) ...[
+                          const Icon(Icons.star, color: Colors.amber, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            venue.rating.toStringAsFixed(1),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.black,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '(${venue.ratingCount})',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.gray500,
+                          const SizedBox(width: 4),
+                          Text(
+                            '(${venue.ratingCount})',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.gray500,
+                            ),
                           ),
-                        ),
-                        const Spacer(),
+                        ],
+                        if (venue.ratingCount > 0 && venue.distance != null)
+                          const Spacer(),
                         if (venue.distance != null)
                           Row(
                             children: [

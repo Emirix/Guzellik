@@ -1,23 +1,51 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/discovery_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/venue.dart';
 import '../../providers/favorites_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/search_provider.dart';
+import 'discovery_shimmer_loading.dart';
 
-class FeaturedVenues extends StatelessWidget {
+class FeaturedVenues extends StatefulWidget {
   const FeaturedVenues({super.key});
+
+  @override
+  State<FeaturedVenues> createState() => _FeaturedVenuesState();
+}
+
+class _FeaturedVenuesState extends State<FeaturedVenues> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<DiscoveryProvider>().loadMoreFeaturedVenues();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         if (provider.isLoadingHome && provider.featuredVenues.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return const FeaturedVenuesShimmer();
         }
 
         if (provider.featuredVenues.isEmpty) {
@@ -59,17 +87,104 @@ class FeaturedVenues extends StatelessWidget {
             SizedBox(
               height: 260,
               child: ListView.separated(
+                controller: _scrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 scrollDirection: Axis.horizontal,
-                itemCount: provider.featuredVenues.length,
+                itemCount:
+                    provider.featuredVenues.length +
+                    (provider.isLoadingMoreFeatured ? 1 : 0),
                 separatorBuilder: (context, index) => const SizedBox(width: 16),
                 itemBuilder: (context, index) {
-                  final venue = provider.featuredVenues[index];
-                  return FeaturedVenueCard(venue: venue, index: index);
+                  if (index < provider.featuredVenues.length) {
+                    final venue = provider.featuredVenues[index];
+                    return FeaturedVenueCard(venue: venue, index: index);
+                  } else {
+                    return const Padding(
+                      padding: EdgeInsets.only(right: 20),
+                      child: SizedBox(
+                        width: 280,
+                        child: FeaturedVenuesShimmerCard(),
+                      ),
+                    );
+                  }
                 },
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+}
+
+class FeaturedVenuesShimmerCard extends StatefulWidget {
+  const FeaturedVenuesShimmerCard({super.key});
+
+  @override
+  State<FeaturedVenuesShimmerCard> createState() =>
+      _FeaturedVenuesShimmerCardState();
+}
+
+class _FeaturedVenuesShimmerCardState extends State<FeaturedVenuesShimmerCard>
+    with SingleTickerProviderStateMixin, ShimmerMixin {
+  @override
+  void initState() {
+    super.initState();
+    initShimmer();
+  }
+
+  @override
+  void dispose() {
+    disposeShimmer();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: shimmerAnimation,
+      builder: (context, child) {
+        return Container(
+          width: 280,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: LinearGradient(
+              begin: Alignment(shimmerAnimation.value - 1, 0),
+              end: Alignment(shimmerAnimation.value + 1, 0),
+              colors: [AppColors.gray100, AppColors.gray50, AppColors.gray100],
+            ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 180,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: AppColors.gray200,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 120,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: AppColors.gray200,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -92,8 +207,8 @@ class FeaturedVenueCard extends StatelessWidget {
     final String? badgeText = index % 2 == 0 ? '%20 İndirim' : 'Popüler';
     final Color badgeColor = index % 2 == 0
         ? AppColors.primary
-        : Colors.white.withOpacity(0.3);
-    final Color textColor = index % 2 == 0 ? Colors.white : Colors.white;
+        : const Color.fromRGBO(255, 255, 255, 0.3);
+    final Color textColor = Colors.white;
 
     return GestureDetector(
       onTap: () {
@@ -103,35 +218,48 @@ class FeaturedVenueCard extends StatelessWidget {
         width: 280,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
-          image: venue.heroImages.isNotEmpty
-              ? DecorationImage(
-                  image: NetworkImage(venue.heroImages.first),
-                  fit: BoxFit.cover,
-                )
-              : null,
-          color: venue.heroImages.isEmpty ? AppColors.gray200 : null,
-          boxShadow: [
+          color: AppColors.gray200,
+          boxShadow: const [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Color.fromRGBO(0, 0, 0, 0.1),
               blurRadius: 10,
-              offset: const Offset(0, 5),
+              offset: Offset(0, 5),
             ),
           ],
         ),
+        clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
+            // Background image with CachedNetworkImage
+            if (venue.heroImages.isNotEmpty)
+              Positioned.fill(
+                child: CachedNetworkImage(
+                  imageUrl: venue.heroImages.first,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Container(color: AppColors.gray200),
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColors.gray200,
+                    child: const Icon(
+                      Icons.store,
+                      color: AppColors.gray400,
+                      size: 48,
+                    ),
+                  ),
+                ),
+              ),
+
             // Dark gradient at the bottom
             Positioned.fill(
               child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
                       Colors.transparent,
-                      Colors.black.withOpacity(0.7),
+                      Color.fromRGBO(0, 0, 0, 0.7),
                     ],
                   ),
                 ),
@@ -152,7 +280,9 @@ class FeaturedVenueCard extends StatelessWidget {
                     color: badgeColor,
                     borderRadius: BorderRadius.circular(12),
                     border: index % 2 != 0
-                        ? Border.all(color: Colors.white.withOpacity(0.5))
+                        ? Border.all(
+                            color: const Color.fromRGBO(255, 255, 255, 0.5),
+                          )
                         : null,
                   ),
                   child: Text(
@@ -166,7 +296,7 @@ class FeaturedVenueCard extends StatelessWidget {
                 ),
               ),
 
-            // Favorite button
+            // Favorite button - OPTIMIZED: Removed expensive BackdropFilter
             Positioned(
               top: 16,
               right: 16,
@@ -204,25 +334,19 @@ class FeaturedVenueCard extends StatelessWidget {
                 child: Container(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
+                  decoration: const BoxDecoration(
+                    color: Color.fromRGBO(0, 0, 0, 0.3),
                     shape: BoxShape.circle,
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Center(
-                        child: Icon(
-                          venue.isFavorited
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          size: 20,
-                          color: venue.isFavorited
-                              ? AppColors.primary
-                              : Colors.white,
-                        ),
-                      ),
+                  child: Center(
+                    child: Icon(
+                      venue.isFavorited
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      size: 20,
+                      color: venue.isFavorited
+                          ? AppColors.primary
+                          : Colors.white,
                     ),
                   ),
                 ),
@@ -248,21 +372,44 @@ class FeaturedVenueCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, color: Colors.yellow, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${venue.rating.toStringAsFixed(1)} (${venue.ratingCount})',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
+                  if (venue.ratingCount > 0)
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.yellow, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${venue.rating.toStringAsFixed(1)} (${venue.ratingCount})',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      if (venue.distance != null) ...[
-                        const SizedBox(width: 8),
-                        const Text('•', style: TextStyle(color: Colors.white)),
-                        const SizedBox(width: 8),
+                        if (venue.distance != null) ...[
+                          const SizedBox(width: 8),
+                          const Text(
+                            '•',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${(venue.distance! / 1000).toStringAsFixed(1)} km',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ],
+                    )
+                  else if (venue.distance != null)
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
                         Text(
                           '${(venue.distance! / 1000).toStringAsFixed(1)} km',
                           style: const TextStyle(
@@ -271,8 +418,7 @@ class FeaturedVenueCard extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ],
-                  ),
+                    ),
                 ],
               ),
             ),

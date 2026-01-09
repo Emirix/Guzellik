@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:geolocator/geolocator.dart';
 import '../providers/discovery_provider.dart';
 import '../providers/app_state_provider.dart';
 import '../widgets/discovery/map_view.dart';
@@ -25,6 +26,58 @@ class _ExploreScreenState extends State<ExploreScreen>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    // Listen for location errors and show snackbar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLocationError();
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      final provider = context.read<DiscoveryProvider>();
+      if (provider.viewMode == DiscoveryViewMode.home) {
+        provider.loadMoreNearbyVenues();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _checkLocationError() {
+    final provider = context.read<DiscoveryProvider>();
+    if (provider.hasLocationError) {
+      _showLocationErrorSnackbar(provider.locationError!);
+      provider.clearLocationError();
+    }
+  }
+
+  void _showLocationErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Ayarlar',
+          onPressed: () {
+            // Open app settings for location permission
+            Geolocator.openAppSettings();
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +85,14 @@ class _ExploreScreenState extends State<ExploreScreen>
 
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
+        // Check for location errors when provider updates
+        if (provider.hasLocationError) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showLocationErrorSnackbar(provider.locationError!);
+            provider.clearLocationError();
+          });
+        }
+
         // Show home view
         if (provider.viewMode == DiscoveryViewMode.home) {
           return _buildHomeView(context, provider);
@@ -67,7 +128,6 @@ class _ExploreScreenState extends State<ExploreScreen>
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            // Performans: withOpacity yerine const Color
                             const Color.fromRGBO(255, 255, 255, 0.9),
                             const Color.fromRGBO(255, 255, 255, 0.5),
                             Colors.transparent,
@@ -223,7 +283,6 @@ class _ExploreScreenState extends State<ExploreScreen>
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              // Performans: withOpacity yerine const Color
               color: const Color.fromRGBO(0, 0, 0, 0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
@@ -244,6 +303,7 @@ class _ExploreScreenState extends State<ExploreScreen>
         child: Stack(
           children: [
             CustomScrollView(
+              controller: _scrollController,
               slivers: [
                 // Header with location
                 SliverToBoxAdapter(
@@ -313,7 +373,6 @@ class _ExploreScreenState extends State<ExploreScreen>
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          // Performans: withOpacity yerine const Color
                           color: const Color.fromRGBO(0, 0, 0, 0.2),
                           blurRadius: 15,
                           offset: const Offset(0, 5),

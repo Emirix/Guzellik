@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/models/recent_search.dart';
@@ -19,9 +20,13 @@ class SearchProvider extends ChangeNotifier {
   // Arama durumu
   String _searchQuery = '';
   bool _isLoading = false;
+  bool _isLoadingMore = false;
   List<Venue> _searchResults = [];
   String? _errorMessage;
   bool _hasSearched = false;
+  int _offset = 0;
+  bool _hasMore = true;
+  static const int _pageSize = 20;
 
   // Filtreler
   SearchFilter _filter = SearchFilter.empty();
@@ -69,9 +74,11 @@ class SearchProvider extends ChangeNotifier {
   // Getters
   String get searchQuery => _searchQuery;
   bool get isLoading => _isLoading;
+  bool get isLoadingMore => _isLoadingMore;
   List<Venue> get searchResults => _searchResults;
   String? get errorMessage => _errorMessage;
   bool get hasSearched => _hasSearched;
+  bool get hasMore => _hasMore;
   SearchFilter get filter => _filter;
   List<RecentSearch> get recentSearches => _recentSearches;
   List<PopularService> get popularServices => _popularServices;
@@ -157,6 +164,8 @@ class SearchProvider extends ChangeNotifier {
     if (showLoading) {
       _isLoading = true;
       _errorMessage = null;
+      _offset = 0;
+      _hasMore = true;
       notifyListeners();
     }
 
@@ -175,10 +184,28 @@ class SearchProvider extends ChangeNotifier {
         minRating: _filter.minRating,
         sortBy: _filter.sortBy.name,
         serviceIds: _filter.serviceIds,
+        limit: _pageSize,
+        offset: _offset,
       );
 
-      _searchResults = results;
+      // Map distances locally if needed
+      if (_userLatitude != null && _userLongitude != null) {
+        _searchResults = results.map((v) {
+          final distance = Geolocator.distanceBetween(
+            _userLatitude!,
+            _userLongitude!,
+            v.latitude,
+            v.longitude,
+          );
+          return v.copyWith(distance: distance);
+        }).toList();
+      } else {
+        _searchResults = results;
+      }
+
       _hasSearched = true;
+      _hasMore = results.length >= _pageSize;
+      _offset = results.length;
 
       // Son aramalara ekle
       await _addToRecentSearches(
@@ -221,6 +248,8 @@ class SearchProvider extends ChangeNotifier {
     if (showLoading) {
       _isLoading = true;
       _errorMessage = null;
+      _offset = 0;
+      _hasMore = true;
       notifyListeners();
     }
 
@@ -242,15 +271,117 @@ class SearchProvider extends ChangeNotifier {
         filter: venueFilter,
         lat: _userLatitude,
         lng: _userLongitude,
+        limit: _pageSize,
+        offset: _offset,
       );
 
-      _searchResults = results;
+      // Map distances locally if needed
+      if (_userLatitude != null && _userLongitude != null) {
+        _searchResults = results.map((v) {
+          final distance = Geolocator.distanceBetween(
+            _userLatitude!,
+            _userLongitude!,
+            v.latitude,
+            v.longitude,
+          );
+          return v.copyWith(distance: distance);
+        }).toList();
+      } else {
+        _searchResults = results;
+      }
+
       _hasSearched = true;
+      _hasMore = results.length >= _pageSize;
+      _offset = results.length;
     } catch (e) {
       _errorMessage = 'Kategori araması sırasında bir hata oluştu';
       debugPrint('Category search error: $e');
     } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Daha fazla sonuç yükler
+  Future<void> loadMore() async {
+    if (_isLoadingMore || !_hasMore) return;
+
+    _isLoadingMore = true;
+    notifyListeners();
+
+    try {
+      List<Venue> results = [];
+      if (_searchQuery.isNotEmpty) {
+        results = await _venueRepository.elasticSearchVenues(
+          query: _searchQuery,
+          lat: _userLatitude,
+          lng: _userLongitude,
+          provinceId: _selectedProvinceId,
+          districtId: _selectedDistrictId,
+          maxDistanceKm: _filter.maxDistanceKm,
+          onlyVerified: _filter.onlyVerified,
+          onlyPreferred: _filter.onlyPreferred,
+          onlyHygienic: _filter.onlyHygienic,
+          minRating: _filter.minRating,
+          sortBy: _filter.sortBy.name,
+          serviceIds: _filter.serviceIds,
+          limit: _pageSize,
+          offset: _offset,
+        );
+      } else if (isCategorySelected || _filter.venueCategoryId != null) {
+        final venueFilter = VenueFilter(
+          categoryId: _filter.venueCategoryId,
+          categories: _filter.venueTypes,
+          maxDistanceKm: _filter.maxDistanceKm,
+          minRating: _filter.minRating,
+          onlyVerified: _filter.onlyVerified,
+          onlyHygienic: _filter.onlyHygienic,
+          onlyPreferred: _filter.onlyPreferred,
+          sortBy: _mapSortOptionToVenueSortBy(_filter.sortBy),
+          serviceIds: _filter.serviceIds,
+        );
+
+        results = await _venueRepository.searchVenues(
+          query: null,
+          filter: venueFilter,
+          lat: _userLatitude,
+          lng: _userLongitude,
+          limit: _pageSize,
+          offset: _offset,
+        );
+      }
+
+      if (results.isEmpty) {
+        _hasMore = false;
+      } else {
+        // Update distances locally if we have current position
+        List<Venue> processedResults = results;
+        if (_userLatitude != null && _userLongitude != null) {
+          processedResults = results.map((v) {
+            final distance = Geolocator.distanceBetween(
+              _userLatitude!,
+              _userLongitude!,
+              v.latitude,
+              v.longitude,
+            );
+            return v.copyWith(distance: distance);
+          }).toList();
+        }
+
+        // Double check for duplicates
+        final existingIds = _searchResults.map((v) => v.id).toSet();
+        final uniqueResults = processedResults
+            .where((v) => !existingIds.contains(v.id))
+            .toList();
+
+        _searchResults.addAll(uniqueResults);
+        _offset += results.length;
+        _hasMore = results.length >= _pageSize;
+      }
+    } catch (e) {
+      debugPrint('Load more error: $e');
+    } finally {
+      _isLoadingMore = false;
       notifyListeners();
     }
   }

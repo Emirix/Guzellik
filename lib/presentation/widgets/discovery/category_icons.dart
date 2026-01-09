@@ -6,6 +6,7 @@ import '../../providers/app_state_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/icon_utils.dart';
 import '../../../data/models/venue_category.dart';
+import 'discovery_shimmer_loading.dart';
 
 class CategoryIcons extends StatelessWidget {
   const CategoryIcons({super.key});
@@ -29,10 +30,7 @@ class CategoryIcons extends StatelessWidget {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         if (provider.isLoadingCategories) {
-          return const SizedBox(
-            height: 100,
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return const CategoryIconsShimmer();
         }
 
         final categories = provider.categories;

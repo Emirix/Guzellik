@@ -54,7 +54,7 @@
 - [x] `SearchHeader` widget oluşturulması
 - [x] Geri butonu (önceki sekmeye dönüş)
 - [x] Arama input alanı (tıklanabilir, odaklanabilir)
-- [ ] Konum alt yazısı gösterimi
+- [x] Konum alt yazısı gösterimi
 - [x] Temizle (X) butonu
 - [x] Harita toggle butonu
 - [x] `design/ara/code.html` tasarımına uygunluk
@@ -90,7 +90,7 @@
 - **Doğrulama**: Sonuç kartları tasarıma uygun görünmeli ✅
 
 ### 3.6 Loading & Error States
-- [ ] Shimmer/skeleton loading kartları
+- [x] Shimmer/skeleton loading kartları
 - [x] Hata mesajı UI'ı
 - [x] "Sonuç bulunamadı" empty state
 - [x] "Haritada Görüntüle" butonu
@@ -138,9 +138,9 @@
 - **Doğrulama**: Birden fazla mekan türü seçilebilmeli ✅
 
 ### 4.6 Hizmet Filtresi Bölümü
-- [ ] `ServiceFilterSection` oluşturulması
-- [ ] Veritabanından hizmet listesi çekme
-- [ ] Hizmet chip'leri (çoklu seçim)
+- [x] `ServiceFilterSection` oluşturulması
+- [x] Veritabanından hizmet listesi çekme
+- [x] Hizmet chip'leri (çoklu seçim)
 - [ ] "Tümünü Gör" linki (expand/collapse veya modal)
 - [ ] Seçili hizmet sayısı gösterimi
 - **Doğrulama**: Hizmetler DB'den gelmeli, seçilebilmeli

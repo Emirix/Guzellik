@@ -53,33 +53,46 @@ class VenueRepository {
   }
 
   /// Featured venues - konum varsa hesaplanır, yoksa cache kullanılır (5 dk)
-  Future<List<Venue>> getFeaturedVenues({double? lat, double? lng}) async {
+  Future<List<Venue>> getFeaturedVenues({
+    double? lat,
+    double? lng,
+    int limit = 20,
+    int offset = 0,
+  }) async {
     if (lat != null && lng != null) {
       // Konum varsa distance hesaplaması gerekir, cache kullanma
       return searchVenues(
         lat: lat,
         lng: lng,
         filter: VenueFilter(minRating: 0.0),
+        limit: limit,
+        offset: offset,
       );
     }
 
-    // Cache'den kontrol et (konum olmadan)
-    final cached = _cache.get<List<Venue>>(CacheService.featuredVenuesKey);
-    if (cached != null) return cached;
+    // Cache'den kontrol et (konum olmadan) - Sadece ilk sayfa için cache kullanalım
+    if (offset == 0) {
+      final cached = _cache.get<List<Venue>>(CacheService.featuredVenuesKey);
+      if (cached != null) return cached;
+    }
 
     final response = await _supabase
         .from('featured_venues')
-        .select('*, venue_categories(*)');
+        .select('*, venue_categories(*)')
+        .range(offset, offset + limit - 1);
+
     final venues = (response as List)
         .map((json) => Venue.fromJson(json))
         .toList();
 
-    // Cache'e kaydet
-    _cache.set(
-      CacheService.featuredVenuesKey,
-      venues,
-      ttlSeconds: CacheService.featuredVenuesTTL,
-    );
+    // Cache'e kaydet (sadece ilk sayfa)
+    if (offset == 0) {
+      _cache.set(
+        CacheService.featuredVenuesKey,
+        venues,
+        ttlSeconds: CacheService.featuredVenuesTTL,
+      );
+    }
 
     return venues;
   }
@@ -107,14 +120,22 @@ class VenueRepository {
   Future<List<Venue>> getVenuesNearby(
     double lat,
     double lng,
-    double radiusInMeters,
-  ) async {
+    double radiusInMeters, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
     // Note: rpc doesn't support structured join in select easily, but search_venues_advanced returns details.
     // get_nearby_venues returns SETOF venues_with_coords.
     // We might need to join separately if we want category objects here.
     final List<dynamic> response = await _supabase.rpc(
       'get_nearby_venues',
-      params: {'lat': lat, 'lng': lng, 'radius_meters': radiusInMeters},
+      params: {
+        'p_lat': lat,
+        'p_lng': lng,
+        'p_radius_meters': radiusInMeters,
+        'p_limit': limit,
+        'p_offset': offset,
+      },
     );
 
     // To get category details for nearby venues, we should either update the RPC to join or fetch them later.
@@ -312,6 +333,8 @@ class VenueRepository {
     VenueFilter? filter,
     double? lat,
     double? lng,
+    int limit = 20,
+    int offset = 0,
   }) async {
     // Use categories directly as they now come from the database
     final List<String>? mappedCategories =
@@ -339,6 +362,8 @@ class VenueRepository {
           'p_service_ids': (filter?.serviceIds.isNotEmpty ?? false)
               ? filter!.serviceIds
               : null,
+          'p_limit': limit,
+          'p_offset': offset,
         },
       );
 
@@ -367,6 +392,7 @@ class VenueRepository {
     String sortBy = 'recommended',
     List<String>? serviceIds,
     int limit = 20,
+    int offset = 0,
   }) async {
     if (query.trim().isEmpty) {
       return [];
@@ -390,6 +416,7 @@ class VenueRepository {
           'p_min_rating': minRating,
           'p_sort_by': sortBy,
           'p_limit': limit,
+          'p_offset': offset,
           'p_service_ids': (serviceIds?.isNotEmpty ?? false)
               ? serviceIds
               : null,

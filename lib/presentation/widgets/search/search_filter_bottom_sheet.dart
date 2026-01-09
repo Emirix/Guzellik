@@ -95,16 +95,17 @@ class _SearchFilterBottomSheetState extends State<SearchFilterBottomSheet> {
                       _buildSortSection(),
                       const SizedBox(height: 24),
 
+                      // Services section (hizmetlere göre filtreleme)
+                      _buildServicesSection(),
+                      const SizedBox(height: 24),
+
                       // Distance section
                       _buildDistanceSection(),
                       const SizedBox(height: 24),
 
                       // Rating section
                       _buildRatingSection(),
-                      const SizedBox(height: 24),
-
-                      // Services section
-                      _buildServicesSection(),
+                      const SizedBox(height: 100),
                       const SizedBox(height: 100),
                     ],
                   ),

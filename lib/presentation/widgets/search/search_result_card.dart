@@ -293,7 +293,7 @@ class SearchResultCard extends StatelessWidget {
         const SizedBox(width: 8),
 
         // Rating and reviews in a beautiful badge
-        _buildRatingBadge(),
+        if (venue.ratingCount > 0) _buildRatingBadge(),
       ],
     );
   }

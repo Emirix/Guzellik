@@ -251,76 +251,78 @@ class VenueIdentityV2 extends StatelessWidget {
             Row(
               children: [
                 // Rating Badge - Premium design
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.nude.withOpacity(0.5),
-                      width: 1,
+                if (venue.ratingCount > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.nude.withOpacity(0.5),
+                        width: 1,
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        venue.rating.toStringAsFixed(1),
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      // Star icons - Gold
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(5, (index) {
-                          final rating = venue.rating;
-                          if (index < rating.floor()) {
-                            return const Icon(
-                              Icons.star_rounded,
-                              color: AppColors.gold,
-                              size: 16,
-                            );
-                          } else if (index < rating.ceil() && rating % 1 != 0) {
-                            return const Icon(
-                              Icons.star_half_rounded,
-                              color: AppColors.gold,
-                              size: 16,
-                            );
-                          } else {
-                            return Icon(
-                              Icons.star_outline_rounded,
-                              color: AppColors.gold.withOpacity(0.4),
-                              size: 16,
-                            );
-                          }
-                        }),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '(${venue.ratingCount})',
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.gray400,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          venue.rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        // Star icons - Gold
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(5, (index) {
+                            final rating = venue.rating;
+                            if (index < rating.floor()) {
+                              return const Icon(
+                                Icons.star_rounded,
+                                color: AppColors.gold,
+                                size: 16,
+                              );
+                            } else if (index < rating.ceil() &&
+                                rating % 1 != 0) {
+                              return const Icon(
+                                Icons.star_half_rounded,
+                                color: AppColors.gold,
+                                size: 16,
+                              );
+                            } else {
+                              return Icon(
+                                Icons.star_outline_rounded,
+                                color: AppColors.gold.withOpacity(0.4),
+                                size: 16,
+                              );
+                            }
+                          }),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '(${venue.ratingCount})',
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.gray400,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 const Spacer(),
                 // Follow Button - Premium pill shape
                 AnimatedContainer(

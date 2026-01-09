@@ -180,7 +180,7 @@ class Venue {
           : DateTime.now(),
       rating: _toDouble(json['rating']),
       ratingCount: _toInt(json['review_count']),
-      distance: _toDouble(json['distance_meters']),
+      distance: _toDoubleNullable(json['distance_meters'] ?? json['distance']),
       provinceId: _toInt(json['province_id']),
       districtId: _toString(json['district_id']),
     );
@@ -189,8 +189,21 @@ class Venue {
   static double _toDouble(dynamic value) {
     if (value == null) return 0.0;
     if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0.0;
+    if (value is String) {
+      if (value.isEmpty) return 0.0;
+      return double.tryParse(value) ?? 0.0;
+    }
     return 0.0;
+  }
+
+  static double? _toDoubleNullable(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      if (value.isEmpty) return null;
+      return double.tryParse(value);
+    }
+    return null;
   }
 
   static int _toInt(dynamic value) {

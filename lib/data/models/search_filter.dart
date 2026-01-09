@@ -13,6 +13,7 @@ class SearchFilter {
   final bool onlyVerified;
   final bool onlyHygienic;
   final bool onlyPreferred;
+  final bool isOpenNow;
   final SortOption sortBy;
 
   const SearchFilter({
@@ -26,6 +27,7 @@ class SearchFilter {
     this.onlyVerified = false,
     this.onlyHygienic = false,
     this.onlyPreferred = false,
+    this.isOpenNow = false,
     this.sortBy = SortOption.recommended,
   });
 
@@ -44,6 +46,7 @@ class SearchFilter {
       onlyVerified ||
       onlyHygienic ||
       onlyPreferred ||
+      isOpenNow ||
       sortBy != SortOption.recommended;
 
   /// Aktif filtre sayısını döndürür
@@ -58,6 +61,7 @@ class SearchFilter {
     if (onlyVerified) count++;
     if (onlyHygienic) count++;
     if (onlyPreferred) count++;
+    if (isOpenNow) count++;
     return count;
   }
 
@@ -72,6 +76,7 @@ class SearchFilter {
     bool? onlyVerified,
     bool? onlyHygienic,
     bool? onlyPreferred,
+    bool? isOpenNow,
     SortOption? sortBy,
     bool clearProvince = false,
     bool clearDistrict = false,
@@ -94,6 +99,7 @@ class SearchFilter {
       onlyVerified: onlyVerified ?? this.onlyVerified,
       onlyHygienic: onlyHygienic ?? this.onlyHygienic,
       onlyPreferred: onlyPreferred ?? this.onlyPreferred,
+      isOpenNow: isOpenNow ?? this.isOpenNow,
       sortBy: sortBy ?? this.sortBy,
     );
   }
@@ -111,6 +117,7 @@ class SearchFilter {
       'onlyVerified': onlyVerified,
       'onlyHygienic': onlyHygienic,
       'onlyPreferred': onlyPreferred,
+      'isOpenNow': isOpenNow,
       'sortBy': sortBy.name,
     };
   }
@@ -136,6 +143,7 @@ class SearchFilter {
       onlyVerified: json['onlyVerified'] as bool? ?? false,
       onlyHygienic: json['onlyHygienic'] as bool? ?? false,
       onlyPreferred: json['onlyPreferred'] as bool? ?? false,
+      isOpenNow: json['isOpenNow'] as bool? ?? false,
       sortBy: SortOption.values.firstWhere(
         (e) => e.name == json['sortBy'],
         orElse: () => SortOption.recommended,
@@ -145,6 +153,6 @@ class SearchFilter {
 
   @override
   String toString() {
-    return 'SearchFilter(province: $province, district: $district, maxDistanceKm: $maxDistanceKm, serviceIds: $serviceIds, venueTypes: $venueTypes, venueCategoryId: $venueCategoryId, minRating: $minRating, onlyVerified: $onlyVerified, onlyHygienic: $onlyHygienic, onlyPreferred: $onlyPreferred, sortBy: $sortBy)';
+    return 'SearchFilter(province: $province, district: $district, maxDistanceKm: $maxDistanceKm, serviceIds: $serviceIds, venueTypes: $venueTypes, venueCategoryId: $venueCategoryId, minRating: $minRating, onlyVerified: $onlyVerified, onlyHygienic: $onlyHygienic, onlyPreferred: $onlyPreferred, isOpenNow: $isOpenNow, sortBy: $sortBy)';
   }
 }

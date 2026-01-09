@@ -26,6 +26,15 @@ class DiscoveryProvider extends ChangeNotifier {
   bool _isLoadingHome = false;
   bool _isLoadingCategories = false;
   bool _isLoadingNearby = false;
+  bool _isLoadingMoreNearby = false;
+  int _nearbyOffset = 0;
+  bool _hasMoreNearby = true;
+  static const int _nearbyPageSize = 10;
+
+  bool _isLoadingMoreFeatured = false;
+  int _featuredOffset = 0;
+  bool _hasMoreFeatured = true;
+  static const int _featuredPageSize = 10;
 
   Position? _currentPosition;
   String _currentLocationName = 'Konum belirleniyor...';
@@ -40,6 +49,9 @@ class DiscoveryProvider extends ChangeNotifier {
   // Map view state
   bool _isMapCarouselVisible = true;
 
+  // Location error state
+  String? _locationError;
+
   DiscoveryViewMode get viewMode => _viewMode;
   List<Venue> get venues => _filteredVenues;
   List<Venue> get featuredVenues => _featuredVenues;
@@ -48,6 +60,10 @@ class DiscoveryProvider extends ChangeNotifier {
   bool get isLoadingHome => _isLoadingHome;
   bool get isLoadingCategories => _isLoadingCategories;
   bool get isLoadingNearby => _isLoadingNearby;
+  bool get isLoadingMoreNearby => _isLoadingMoreNearby;
+  bool get hasMoreNearby => _hasMoreNearby;
+  bool get isLoadingMoreFeatured => _isLoadingMoreFeatured;
+  bool get hasMoreFeatured => _hasMoreFeatured;
   List<VenueCategory> get categories => _categories;
   String get currentLocationName => _currentLocationName;
   Position? get currentPosition => _currentPosition;
@@ -57,6 +73,14 @@ class DiscoveryProvider extends ChangeNotifier {
   String? get manualCity => _manualCity;
   String? get manualDistrict => _manualDistrict;
   bool get isMapCarouselVisible => _isMapCarouselVisible;
+  String? get locationError => _locationError;
+  bool get hasLocationError => _locationError != null;
+
+  /// Clear location error after it's been shown
+  void clearLocationError() {
+    _locationError = null;
+    notifyListeners();
+  }
 
   void toggleMapCarousel() {
     _isMapCarouselVisible = !_isMapCarouselVisible;
@@ -70,32 +94,121 @@ class DiscoveryProvider extends ChangeNotifier {
   Future<void> _initialize() async {
     debugPrint('DiscoveryProvider: Starting initialization...');
 
-    // 1. Load saved location from onboarding
+    // 1. Load saved location FIRST (needed for distance calculations)
     await _loadSavedLocation();
     debugPrint(
       'DiscoveryProvider: Saved location loaded. Position: $_currentPosition',
     );
 
-    // 2. Load categories and home data (featured venues)
-    await fetchCategories();
-    debugPrint('DiscoveryProvider: Categories loaded: ${_categories.length}');
+    // 2. PARALLEL LOADING: Load categories, featured, and nearby venues concurrently
+    // This significantly reduces startup time
+    await Future.wait([
+      _fetchCategoriesInternal(),
+      _loadHomeDataInternal(),
+      _fetchNearbyVenuesInternal(),
+    ], eagerError: false);
 
-    await loadHomeData();
     debugPrint(
-      'DiscoveryProvider: Featured venues loaded: ${_featuredVenues.length}',
+      'DiscoveryProvider: Parallel loading complete - '
+      'Categories: ${_categories.length}, '
+      'Featured: ${_featuredVenues.length}, '
+      'Nearby: ${_nearbyVenues.length}',
     );
 
-    // 3. Now fetch nearby venues
-    await fetchNearbyVenues();
-    debugPrint(
-      'DiscoveryProvider: Nearby venues loaded: ${_nearbyVenues.length}',
-    );
+    // Single notifyListeners after all parallel loads complete
+    notifyListeners();
 
-    // 4. Finally load the full list for map/list views
-    await _loadVenues(showLoading: false);
-    debugPrint(
-      'DiscoveryProvider: All venues loaded: ${_venues.length}, filtered: ${_filteredVenues.length}',
-    );
+    // 3. Load full venue list in background (for map/list views)
+    // Don't await - let this happen in background
+    _loadVenues(showLoading: false);
+  }
+
+  /// Internal category fetch without notifyListeners
+  Future<void> _fetchCategoriesInternal() async {
+    _isLoadingCategories = true;
+    try {
+      _categories = await _venueRepository.getVenueCategories();
+    } catch (e) {
+      debugPrint('Error fetching categories: $e');
+    } finally {
+      _isLoadingCategories = false;
+    }
+  }
+
+  /// Internal home data load without notifyListeners
+  Future<void> _loadHomeDataInternal() async {
+    _isLoadingHome = true;
+    _featuredOffset = 0;
+    _hasMoreFeatured = true;
+    try {
+      _featuredVenues = await _venueRepository.getFeaturedVenues(
+        lat: _currentPosition?.latitude,
+        lng: _currentPosition?.longitude,
+        limit: _featuredPageSize,
+        offset: _featuredOffset,
+      );
+
+      if (_featuredVenues.isEmpty && _currentPosition != null) {
+        _featuredVenues = await _venueRepository.getFeaturedVenues(
+          limit: _featuredPageSize,
+          offset: _featuredOffset,
+        );
+      }
+
+      _hasMoreFeatured = _featuredVenues.length >= _featuredPageSize;
+      _featuredOffset += _featuredVenues.length;
+
+      if (_currentPosition != null &&
+          _featuredVenues.isNotEmpty &&
+          _featuredVenues.first.distance == null) {
+        _updateAllDistances();
+      }
+    } catch (e) {
+      debugPrint('Error loading home data: $e');
+      if (_featuredVenues.isEmpty) {
+        try {
+          _featuredVenues = await _venueRepository.getFeaturedVenues();
+        } catch (_) {}
+      }
+    } finally {
+      _isLoadingHome = false;
+    }
+  }
+
+  /// Internal nearby venues fetch without notifyListeners
+  Future<void> _fetchNearbyVenuesInternal() async {
+    _isLoadingNearby = true;
+    try {
+      _nearbyOffset = 0;
+      _hasMoreNearby = true;
+      _nearbyVenues = await _venueRepository.getVenuesNearby(
+        _currentPosition?.latitude ?? 0,
+        _currentPosition?.longitude ?? 0,
+        50000, // 50km radius
+        limit: _nearbyPageSize,
+        offset: _nearbyOffset,
+      );
+
+      if (_nearbyVenues.isEmpty) {
+        // Fallback to search if nearby is empty (might happen in areas with no shops)
+        _nearbyVenues = await _venueRepository.searchVenues(
+          lat: _currentPosition?.latitude,
+          lng: _currentPosition?.longitude,
+          limit: _nearbyPageSize,
+        );
+      }
+
+      if (_nearbyVenues.isEmpty) {
+        _nearbyVenues = await _venueRepository.getVenues();
+      }
+
+      _hasMoreNearby = _nearbyVenues.length >= _nearbyPageSize;
+      _nearbyOffset += _nearbyVenues.length;
+    } catch (e) {
+      debugPrint('Error fetching nearby venues: $e');
+    } finally {
+      _isLoadingNearby = false;
+    }
   }
 
   /// Load saved location from LocationPreferences
@@ -163,6 +276,8 @@ class DiscoveryProvider extends ChangeNotifier {
 
   Future<void> loadHomeData() async {
     _isLoadingHome = true;
+    _featuredOffset = 0;
+    _hasMoreFeatured = true;
     notifyListeners();
 
     try {
@@ -170,6 +285,8 @@ class DiscoveryProvider extends ChangeNotifier {
       _featuredVenues = await _venueRepository.getFeaturedVenues(
         lat: _currentPosition?.latitude,
         lng: _currentPosition?.longitude,
+        limit: _featuredPageSize,
+        offset: _featuredOffset,
       );
 
       // Fallback: if search with coordinates returned nothing (e.g. strict filter or far from mock data),
@@ -178,13 +295,20 @@ class DiscoveryProvider extends ChangeNotifier {
         debugPrint(
           'loadHomeData: Search with coords was empty, falling back to all featured',
         );
-        _featuredVenues = await _venueRepository.getFeaturedVenues();
+        _featuredVenues = await _venueRepository.getFeaturedVenues(
+          limit: _featuredPageSize,
+          offset: _featuredOffset,
+        );
       }
+
+      _hasMoreFeatured = _featuredVenues.length >= _featuredPageSize;
+      _featuredOffset = _featuredVenues.length;
 
       // If position is available but distance is null (e.g. view didn't return it), calculate locally
       if (_currentPosition != null &&
           _featuredVenues.isNotEmpty &&
-          _featuredVenues.first.distance == null) {
+          (_featuredVenues.first.distance == null ||
+              _featuredVenues.first.distance == 0)) {
         _updateAllDistances();
       }
     } catch (e) {
@@ -199,6 +323,57 @@ class DiscoveryProvider extends ChangeNotifier {
       }
     } finally {
       _isLoadingHome = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadMoreFeaturedVenues() async {
+    if (_isLoadingMoreFeatured || !_hasMoreFeatured) return;
+
+    _isLoadingMoreFeatured = true;
+    notifyListeners();
+
+    try {
+      final newVenues = await _venueRepository.getFeaturedVenues(
+        lat: _currentPosition?.latitude,
+        lng: _currentPosition?.longitude,
+        limit: _featuredPageSize,
+        offset: _featuredOffset,
+      );
+
+      if (newVenues.isEmpty) {
+        _hasMoreFeatured = false;
+      } else {
+        // Update distances locally if we have current position
+        List<Venue> processedVenues = newVenues;
+        if (_currentPosition != null) {
+          final lat = _currentPosition!.latitude;
+          final lng = _currentPosition!.longitude;
+          processedVenues = newVenues.map((v) {
+            final distance = Geolocator.distanceBetween(
+              lat,
+              lng,
+              v.latitude,
+              v.longitude,
+            );
+            return v.copyWith(distance: distance);
+          }).toList();
+        }
+
+        // Remove duplicates
+        final existingIds = _featuredVenues.map((v) => v.id).toSet();
+        final uniqueNewVenues = processedVenues
+            .where((v) => !existingIds.contains(v.id))
+            .toList();
+
+        _featuredVenues.addAll(uniqueNewVenues);
+        _featuredOffset += newVenues.length;
+        _hasMoreFeatured = newVenues.length >= _featuredPageSize;
+      }
+    } catch (e) {
+      debugPrint('Error loading more featured venues: $e');
+    } finally {
+      _isLoadingMoreFeatured = false;
       notifyListeners();
     }
   }
@@ -221,12 +396,25 @@ class DiscoveryProvider extends ChangeNotifier {
     _isLoadingNearby = true;
     notifyListeners();
 
+    _nearbyOffset = 0;
+    _hasMoreNearby = true;
+
     try {
-      // 1. Try search (based on location if available)
-      _nearbyVenues = await _venueRepository.searchVenues(
-        lat: _currentPosition?.latitude,
-        lng: _currentPosition?.longitude,
+      _nearbyVenues = await _venueRepository.getVenuesNearby(
+        _currentPosition?.latitude ?? 0,
+        _currentPosition?.longitude ?? 0,
+        50000,
+        limit: _nearbyPageSize,
+        offset: _nearbyOffset,
       );
+
+      if (_nearbyVenues.isEmpty) {
+        _nearbyVenues = await _venueRepository.searchVenues(
+          lat: _currentPosition?.latitude,
+          lng: _currentPosition?.longitude,
+          limit: _nearbyPageSize,
+        );
+      }
 
       // 2. Fallback: if search returns nothing, fetch all venues
       if (_nearbyVenues.isEmpty) {
@@ -247,10 +435,8 @@ class DiscoveryProvider extends ChangeNotifier {
         _nearbyVenues = await _venueRepository.getVenues();
       }
 
-      // Final count limit
-      if (_nearbyVenues.length > 10) {
-        _nearbyVenues = _nearbyVenues.take(10).toList();
-      }
+      _hasMoreNearby = _nearbyVenues.length >= _nearbyPageSize;
+      _nearbyOffset = _nearbyVenues.length;
     } catch (e) {
       debugPrint('Error fetching nearby venues: $e');
       // Final fallback on error: try to use whatever we have
@@ -266,6 +452,58 @@ class DiscoveryProvider extends ChangeNotifier {
       }
     } finally {
       _isLoadingNearby = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadMoreNearbyVenues() async {
+    if (_isLoadingMoreNearby || !_hasMoreNearby) return;
+
+    _isLoadingMoreNearby = true;
+    notifyListeners();
+
+    try {
+      final newVenues = await _venueRepository.getVenuesNearby(
+        _currentPosition?.latitude ?? 0,
+        _currentPosition?.longitude ?? 0,
+        50000,
+        limit: _nearbyPageSize,
+        offset: _nearbyOffset,
+      );
+
+      if (newVenues.isEmpty) {
+        _hasMoreNearby = false;
+      } else {
+        // Update distances locally if we have current position
+        List<Venue> processedVenues = newVenues;
+        if (_currentPosition != null) {
+          final lat = _currentPosition!.latitude;
+          final lng = _currentPosition!.longitude;
+          processedVenues = newVenues.map((v) {
+            final distance = Geolocator.distanceBetween(
+              lat,
+              lng,
+              v.latitude,
+              v.longitude,
+            );
+            return v.copyWith(distance: distance);
+          }).toList();
+        }
+
+        // Remove duplicates if any (though offset should handle it)
+        final existingIds = _nearbyVenues.map((v) => v.id).toSet();
+        final uniqueNewVenues = processedVenues
+            .where((v) => !existingIds.contains(v.id))
+            .toList();
+
+        _nearbyVenues.addAll(uniqueNewVenues);
+        _nearbyOffset += newVenues.length;
+        _hasMoreNearby = newVenues.length >= _nearbyPageSize;
+      }
+    } catch (e) {
+      debugPrint('Error loading more nearby venues: $e');
+    } finally {
+      _isLoadingMoreNearby = false;
       notifyListeners();
     }
   }
@@ -356,7 +594,23 @@ class DiscoveryProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error updating location: $e');
-      // If location fails, we might still have the default or previous location
+      // Set location error message for UI to display
+      if (e.toString().contains('denied') ||
+          e.toString().contains('permission')) {
+        _locationError = 'Konum izni verilmedi. Lütfen konum ayarlarını açın.';
+        _currentLocationName = 'Konum alınamadı';
+      } else if (e.toString().contains('disabled') ||
+          e.toString().contains('service')) {
+        _locationError = 'Konum servisi kapalı. Lütfen konumu açın.';
+        _currentLocationName = 'Konum kapalı';
+      } else if (e.toString().contains('TimeoutException')) {
+        _locationError = 'Konum alınamadı. Lütfen tekrar deneyin.';
+        _currentLocationName = 'Konum zaman aşımı';
+      } else {
+        _locationError =
+            'Konum alınamadı. Lütfen konum ayarlarınızı kontrol edin.';
+        _currentLocationName = 'Konum alınamadı';
+      }
     } finally {
       // Always ensure loading is set to false
       _isLoading = false;

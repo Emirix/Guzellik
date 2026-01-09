@@ -13,6 +13,7 @@ import '../widgets/search/search_results_list.dart';
 import '../widgets/common/ad_banner_widget.dart';
 import '../../core/theme/app_colors.dart';
 import '../widgets/search/search_initial_view.dart';
+import '../widgets/search/search_shimmer_loading.dart';
 import '../../data/models/venue_category.dart';
 
 /// Arama ekranı
@@ -310,9 +311,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSearchContent(SearchProvider provider) {
-    // Loading state
+    // Loading state - use shimmer for better UX
     if (provider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const SearchShimmerLoading();
     }
 
     // Error state

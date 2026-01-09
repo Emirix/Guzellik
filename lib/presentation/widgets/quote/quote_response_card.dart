@@ -66,32 +66,33 @@ class QuoteResponseCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 16,
-                            color: Colors.amber,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            venue?.rating.toString() ?? '0.0',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.black,
+                      if ((venue?.ratingCount ?? 0) > 0)
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 16,
+                              color: Colors.amber,
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '(${venue?.ratingCount ?? 0})',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.gray500,
+                            const SizedBox(width: 4),
+                            Text(
+                              venue?.rating.toString() ?? '0.0',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.black,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '(${venue?.ratingCount ?? 0})',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.gray500,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
