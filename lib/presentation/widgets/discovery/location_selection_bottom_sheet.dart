@@ -827,6 +827,7 @@ class _LocationSelectionBottomSheetState
                   provinceName: _selectedProvince!.name,
                   districtName: _selectedDistrict!.name,
                   provinceId: _selectedProvince!.id,
+                  districtId: _selectedDistrict!.id,
                   latitude: _selectedProvince!.latitude,
                   longitude: _selectedProvince!.longitude,
                 );
@@ -837,6 +838,7 @@ class _LocationSelectionBottomSheetState
                   city: _selectedProvince!.name,
                   district: _selectedDistrict!.name,
                   provinceId: _selectedProvince!.id,
+                  districtId: _selectedDistrict!.id,
                   latitude: _selectedProvince!.latitude,
                   longitude: _selectedProvince!.longitude,
                 );

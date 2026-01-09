@@ -133,16 +133,26 @@ class LocationOnboardingProvider extends ChangeNotifier {
         return;
       }
 
-      // Try to find matching province in database
+      // Try to find matching province and district in database
       final province = await _locationRepository.findProvinceByName(
         locationData['province']!,
       );
+
+      String? districtId;
+      if (province != null) {
+        final district = await _locationRepository.findDistrictByName(
+          province.id,
+          locationData['district']!,
+        );
+        districtId = district?.id;
+      }
 
       // Create and save the user location
       final userLocation = UserLocation(
         provinceName: locationData['province']!,
         districtName: locationData['district']!,
         provinceId: province?.id,
+        districtId: districtId,
         latitude: position.latitude,
         longitude: position.longitude,
         isGPSBased: true,
@@ -185,6 +195,7 @@ class LocationOnboardingProvider extends ChangeNotifier {
     required String provinceName,
     required String districtName,
     int? provinceId,
+    String? districtId,
     double? latitude,
     double? longitude,
   }) async {
@@ -193,6 +204,7 @@ class LocationOnboardingProvider extends ChangeNotifier {
         provinceName: provinceName,
         districtName: districtName,
         provinceId: provinceId,
+        districtId: districtId,
         latitude: latitude,
         longitude: longitude,
         isGPSBased: false,

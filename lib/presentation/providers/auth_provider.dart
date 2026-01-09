@@ -57,12 +57,31 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Sign in with Google
+  Future<bool> signInWithGoogle() async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final response = await _authService.signInWithGoogle();
+      _currentUser = response.user;
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
   /// Sign up with email and password
   Future<bool> signUp({
     required String email,
     required String password,
     String? fullName,
     String? phone,
+    int? provinceId,
+    String? districtId,
   }) async {
     _setLoading(true);
     _clearError();
@@ -73,6 +92,8 @@ class AuthProvider with ChangeNotifier {
         password: password,
         fullName: fullName,
         phone: phone,
+        provinceId: provinceId,
+        districtId: districtId,
       );
 
       _currentUser = response.user;
@@ -121,6 +142,8 @@ class AuthProvider with ChangeNotifier {
     String? fullName,
     String? phone,
     String? avatarUrl,
+    int? provinceId,
+    String? districtId,
   }) async {
     _setLoading(true);
     _clearError();
@@ -130,6 +153,8 @@ class AuthProvider with ChangeNotifier {
         fullName: fullName,
         phone: phone,
         avatarUrl: avatarUrl,
+        provinceId: provinceId,
+        districtId: districtId,
       );
       _setLoading(false);
       return true;

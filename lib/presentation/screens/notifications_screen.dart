@@ -40,16 +40,19 @@ class NotificationsScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  shadowColor: Colors.black.withOpacity(0.1),
-                  elevation: 2,
+              if (Navigator.of(context).canPop())
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shadowColor: Colors.black.withOpacity(0.1),
+                      elevation: 2,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
               Text('Bildirimler', style: AppTextStyles.heading2),
             ],
           ),

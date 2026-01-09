@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.guzellik.guzellik_app"
+    namespace = "com.emx.guzellikharitam"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.guzellik.guzellik_app"
+        applicationId = "com.emx.guzellikharitam"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion // Updated to 21 for better compatibility, flutter.minSdkVersion might be lower

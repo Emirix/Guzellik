@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../providers/discovery_provider.dart';
+import '../providers/app_state_provider.dart';
 import '../widgets/discovery/map_view.dart';
 import '../widgets/discovery/venue_list_view.dart';
-import '../widgets/discovery/search_bar.dart';
 import '../widgets/discovery/view_toggle.dart';
 import '../widgets/discovery/location_selection_bottom_sheet.dart';
 import '../widgets/discovery/featured_venues.dart';
@@ -73,11 +74,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                       : null,
                 ),
                 child: Column(
-                  children: [
-                    _buildLocationHeader(context, provider),
-                    const SizedBox(height: 16),
-                    const DiscoverySearchBar(),
-                  ],
+                  children: [_buildLocationHeader(context, provider)],
                 ),
               ),
             ),
@@ -129,10 +126,10 @@ class _ExploreScreenState extends State<ExploreScreen>
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.location_on,
-                    color: AppColors.primary,
-                    size: 20,
+                  child: SvgPicture.asset(
+                    'assets/logo-transparent.svg',
+                    width: 28,
+                    height: 28,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -174,34 +171,40 @@ class _ExploreScreenState extends State<ExploreScreen>
             ),
           ),
         ),
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.gray100),
-          ),
-          child: Stack(
-            children: [
-              const Icon(
-                Icons.notifications_outlined,
-                color: AppColors.gray700,
-                size: 22,
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.white, width: 1.5),
+        InkWell(
+          onTap: () {
+            context.read<AppStateProvider>().setBottomNavIndex(2);
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.gray100),
+            ),
+            child: Stack(
+              children: [
+                const Icon(
+                  Icons.notifications_outlined,
+                  color: AppColors.gray700,
+                  size: 22,
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.white, width: 1.5),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -241,11 +244,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     child: Column(
-                      children: [
-                        _buildLocationHeader(context, provider),
-                        const SizedBox(height: 16),
-                        const DiscoverySearchBar(),
-                      ],
+                      children: [_buildLocationHeader(context, provider)],
                     ),
                   ),
                 ),

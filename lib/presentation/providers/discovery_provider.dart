@@ -5,6 +5,7 @@ import '../../data/models/venue_filter.dart';
 import '../../data/models/user_location.dart';
 import '../../data/models/venue_category.dart';
 import '../../data/repositories/venue_repository.dart';
+import '../../data/repositories/location_repository.dart';
 import '../../data/services/location_service.dart';
 import '../../data/services/location_preferences.dart';
 
@@ -293,20 +294,65 @@ class DiscoveryProvider extends ChangeNotifier {
       if (position != null) {
         _currentPosition = position;
         _updateAllDistances();
-        final address = await _locationService
-            .getAddressFromCoordinates(
+
+        // Extract province and district from coordinates (ilçe, not mahalle)
+        final locationData = await _locationService
+            .extractProvinceAndDistrictFromCoordinates(
               latitude: position.latitude,
               longitude: position.longitude,
             )
             .timeout(const Duration(seconds: 5));
 
-        if (address != null) {
-          _currentLocationName = _shortenAddress(address);
+        if (locationData != null) {
+          final provinceName = locationData['province']!;
+          final districtName = locationData['district']!;
+
+          _manualCity = provinceName;
+          _manualDistrict = districtName;
+          _currentLocationName = '$districtName, $provinceName';
+
+          // Try to find district ID from database
+          final repository = LocationRepository();
+          final province = await repository.findProvinceByName(provinceName);
+          String? districtId;
+
+          if (province != null) {
+            final district = await repository.findDistrictByName(
+              province.id,
+              districtName,
+            );
+            districtId = district?.id;
+          }
+
+          // Save location to preferences for persistence
+          final userLocation = UserLocation(
+            provinceName: provinceName,
+            districtName: districtName,
+            provinceId: province?.id,
+            districtId: districtId,
+            latitude: position.latitude,
+            longitude: position.longitude,
+            isGPSBased: true,
+          );
+          await _locationPreferences.saveLocation(userLocation);
+        } else {
+          // Fallback to old address method if extraction fails
+          final address = await _locationService
+              .getAddressFromCoordinates(
+                latitude: position.latitude,
+                longitude: position.longitude,
+              )
+              .timeout(const Duration(seconds: 5));
+
+          if (address != null) {
+            _currentLocationName = _shortenAddress(address);
+          }
+          _manualCity = null;
+          _manualDistrict = null;
         }
-        // Clear manual location when GPS is used
+
+        // Clear manual location flag when GPS is used
         _isUsingManualLocation = false;
-        _manualCity = null;
-        _manualDistrict = null;
       }
     } catch (e) {
       debugPrint('Error updating location: $e');
@@ -325,6 +371,7 @@ class DiscoveryProvider extends ChangeNotifier {
     required String city,
     required String district,
     int? provinceId,
+    String? districtId,
     double? latitude,
     double? longitude,
   }) async {
@@ -355,6 +402,7 @@ class DiscoveryProvider extends ChangeNotifier {
         provinceName: city,
         districtName: district,
         provinceId: provinceId,
+        districtId: districtId,
         latitude: latitude,
         longitude: longitude,
         isGPSBased: false,
