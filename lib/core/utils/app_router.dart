@@ -63,11 +63,14 @@ class AppRouter {
       GoRoute(
         path: '/favorites',
         name: 'favorites',
-        builder: (context, state) => const AuthGuard(
-          requiredFor: 'Favoriler',
-          redirectPath: '/favorites',
-          child: FavoritesScreen(),
-        ),
+        builder: (context, state) {
+          final tab = state.uri.queryParameters['tab'];
+          return AuthGuard(
+            requiredFor: 'Favoriler',
+            redirectPath: '/favorites',
+            child: FavoritesScreen(initialTab: tab),
+          );
+        },
       ),
       GoRoute(
         path: '/notifications',

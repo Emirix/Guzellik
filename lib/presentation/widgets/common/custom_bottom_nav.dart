@@ -7,7 +7,7 @@ import '../../providers/search_provider.dart';
 
 /// Custom bottom navigation bar
 /// Main navigation for the app
-/// Tabs: Keşfet(0), Ara(1), Favoriler(2), Bildirimler(3), Profil(4)
+/// Tabs: Keşfet(0), Ara(1), Bildirimler(2), Profil(3)
 class CustomBottomNav extends StatelessWidget {
   const CustomBottomNav({super.key});
 
@@ -44,11 +44,6 @@ class CustomBottomNav extends StatelessWidget {
               icon: Icon(Icons.search_outlined),
               activeIcon: Icon(Icons.search),
               label: 'Ara',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_outline),
-              activeIcon: Icon(Icons.favorite),
-              label: 'Favoriler',
             ),
             BottomNavigationBarItem(
               icon: Badge(

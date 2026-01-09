@@ -370,49 +370,117 @@ class _SearchFilterBottomSheetState extends State<SearchFilterBottomSheet> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: provider.categoryServices.map((service) {
-                final isSelected = _tempFilter.serviceIds.contains(service.id);
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      final newServiceIds = List<String>.from(
-                        _tempFilter.serviceIds,
-                      );
-                      if (isSelected) {
-                        newServiceIds.remove(service.id);
-                      } else {
-                        newServiceIds.add(service.id);
-                      }
-                      _tempFilter = _tempFilter.copyWith(
-                        serviceIds: newServiceIds,
-                      );
-                    });
+              children: [
+                // Tümünü Seç Chip
+                Builder(
+                  builder: (context) {
+                    final allServiceIds = provider.categoryServices
+                        .map((s) => s.id)
+                        .toList();
+                    final isAllSelected = allServiceIds.every(
+                      (id) => _tempFilter.serviceIds.contains(id),
+                    );
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          final newServiceIds = List<String>.from(
+                            _tempFilter.serviceIds,
+                          );
+                          if (isAllSelected) {
+                            // Tümünü kaldır
+                            for (final id in allServiceIds) {
+                              newServiceIds.remove(id);
+                            }
+                          } else {
+                            // Eksik olanları ekle
+                            for (final id in allServiceIds) {
+                              if (!newServiceIds.contains(id)) {
+                                newServiceIds.add(id);
+                              }
+                            }
+                          }
+                          _tempFilter = _tempFilter.copyWith(
+                            serviceIds: newServiceIds,
+                          );
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isAllSelected
+                              ? AppColors.primary
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isAllSelected
+                                ? AppColors.primary
+                                : AppColors.gray200,
+                          ),
+                        ),
+                        child: Text(
+                          'Tümünü Seç',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: isAllSelected
+                                ? Colors.white
+                                : AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    );
                   },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primary : Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.primary
-                            : AppColors.gray200,
+                ),
+                ...provider.categoryServices.map((service) {
+                  final isSelected = _tempFilter.serviceIds.contains(
+                    service.id,
+                  );
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        final newServiceIds = List<String>.from(
+                          _tempFilter.serviceIds,
+                        );
+                        if (isSelected) {
+                          newServiceIds.remove(service.id);
+                        } else {
+                          newServiceIds.add(service.id);
+                        }
+                        _tempFilter = _tempFilter.copyWith(
+                          serviceIds: newServiceIds,
+                        );
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.primary : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.gray200,
+                        ),
+                      ),
+                      child: Text(
+                        service.name,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: isSelected ? Colors.white : AppColors.gray700,
+                        ),
                       ),
                     ),
-                    child: Text(
-                      service.name,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: isSelected ? Colors.white : AppColors.gray700,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ],
             ),
           ],
         );

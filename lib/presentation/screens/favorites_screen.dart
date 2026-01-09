@@ -7,7 +7,9 @@ import '../widgets/search/search_result_card.dart';
 
 /// Favorites screen - Displays Favorited and Followed venues in tabs
 class FavoritesScreen extends StatefulWidget {
-  const FavoritesScreen({super.key});
+  final String? initialTab;
+
+  const FavoritesScreen({super.key, this.initialTab});
 
   @override
   State<FavoritesScreen> createState() => _FavoritesScreenState();
@@ -20,7 +22,13 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    // Set initial tab based on parameter: 'following' = 1, else = 0
+    final initialIndex = widget.initialTab == 'following' ? 1 : 0;
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
     _tabController.addListener(_handleTabChange);
 
     // Initial load

@@ -329,7 +329,7 @@ class SearchResultCard extends StatelessWidget {
   Widget _buildLocation() {
     return Row(
       children: [
-        Icon(Icons.location_on_outlined, size: 14, color: AppColors.gray400),
+        Icon(Icons.location_on_outlined, size: 14, color: AppColors.primary),
         const SizedBox(width: 4),
         Expanded(
           child: Text(

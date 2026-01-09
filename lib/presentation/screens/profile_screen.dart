@@ -44,11 +44,16 @@ class ProfileScreen extends StatelessWidget {
                       color: Color(0xFF1B0E11),
                     ),
                   ),
-                  TextButton(
+                  TextButton.icon(
                     onPressed: () {
                       // TODO: Navigate to edit profile
                     },
-                    child: const Text(
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
+                    label: const Text(
                       'Düzenle',
                       style: TextStyle(
                         fontSize: 14,
@@ -127,7 +132,15 @@ class ProfileScreen extends StatelessWidget {
                                   title: 'Favorilerim',
                                   isPrimary: true,
                                   onTap: () {
-                                    context.push('/favorites');
+                                    context.push('/favorites?tab=favorites');
+                                  },
+                                ),
+                                ProfileMenuItem(
+                                  icon: Icons.people_alt,
+                                  title: 'Takip Ettiklerim',
+                                  isPrimary: true,
+                                  onTap: () {
+                                    context.push('/favorites?tab=following');
                                   },
                                 ),
                                 ProfileMenuItem(

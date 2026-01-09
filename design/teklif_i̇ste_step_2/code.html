@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#EE2B5B",
+                        "gold": "#D4AF37",
+                        "background-light": "#FFFFFF",
+                        "background-soft": "#F8F9FA",
+                        "background-dark": "#1A1A1A",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#1A1A1A] dark:text-white">
+<nav class="sticky top-0 z-50 bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+<div class="flex items-center p-4 pb-2 justify-between">
+<div class="text-[#1A1A1A] dark:text-white flex size-12 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</div>
+<h2 class="text-[#1A1A1A] dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center font-display">Teklif İste</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex size-12 cursor-pointer items-center justify-center rounded-xl bg-transparent text-[#1A1A1A] dark:text-white">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-2 px-6 pb-4">
+<div class="flex justify-between items-center">
+<p class="text-[#1A1A1A] dark:text-white text-sm font-semibold font-display">Tarih ve Saat Seçimi</p>
+<p class="text-primary dark:text-pink-400 text-xs font-bold tracking-wider">Adım 2 / 3</p>
+</div>
+<div class="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full relative overflow-hidden transition-all duration-500" style="width: 66%;">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+</div>
+</div>
+</div>
+</nav>
+<main class="flex-1 pb-36">
+<section class="px-6 py-6">
+<h3 class="text-[#1A1A1A] dark:text-white tracking-tight text-2xl font-extrabold leading-tight font-display">Ne zaman hizmet almak istersiniz?</h3>
+<p class="text-gray-500 dark:text-gray-400 text-sm mt-2">Size uygun olan gün ve saati belirleyin.</p>
+</section>
+<div class="px-6 mb-8">
+<div class="flex justify-between items-center mb-4">
+<p class="text-sm font-bold text-gray-800 dark:text-gray-200 font-display">Ekim 2024</p>
+<span class="material-symbols-outlined text-gray-400 text-xl cursor-pointer">calendar_month</span>
+</div>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl border-2 border-primary bg-primary/5 text-primary">
+<p class="text-[10px] font-bold uppercase tracking-wider">Pzt</p>
+<p class="text-xl font-extrabold font-display">21</p>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
+<p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sal</p>
+<p class="text-xl font-extrabold text-gray-800 dark:text-gray-200 font-display">22</p>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
+<p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Çar</p>
+<p class="text-xl font-extrabold text-gray-800 dark:text-gray-200 font-display">23</p>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
+<p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Per</p>
+<p class="text-xl font-extrabold text-gray-800 dark:text-gray-200 font-display">24</p>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm opacity-50">
+<p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Cum</p>
+<p class="text-xl font-extrabold text-gray-800 dark:text-gray-200 font-display">25</p>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
+<p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Cmt</p>
+<p class="text-xl font-extrabold text-gray-800 dark:text-gray-200 font-display">26</p>
+</div>
+</div>
+</div>
+<div class="px-6 space-y-8">
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-amber-500 text-xl">light_mode</span>
+<h4 class="font-bold text-gray-800 dark:text-gray-200 font-display">Sabah</h4>
+<span class="h-px flex-1 bg-gray-100 dark:bg-gray-800 ml-2"></span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50 hover:border-primary/50 transition-colors">09:00</button>
+<button class="py-3 px-2 rounded-xl border-2 border-primary bg-primary/5 text-sm font-bold text-primary shadow-sm shadow-primary/10">10:00</button>
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">11:00</button>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-orange-500 text-xl">wb_sunny</span>
+<h4 class="font-bold text-gray-800 dark:text-gray-200 font-display">Öğle</h4>
+<span class="h-px flex-1 bg-gray-100 dark:bg-gray-800 ml-2"></span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">13:00</button>
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">14:00</button>
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">15:00</button>
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">16:00</button>
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">17:00</button>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-indigo-500 text-xl">dark_mode</span>
+<h4 class="font-bold text-gray-800 dark:text-gray-200 font-display">Akşam</h4>
+<span class="h-px flex-1 bg-gray-100 dark:bg-gray-800 ml-2"></span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">18:00</button>
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">19:00</button>
+<button class="py-3 px-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800/50">20:00</button>
+</div>
+</div>
+</div>
+<div class="px-6 mt-8">
+<div class="bg-background-soft dark:bg-gray-800/50 rounded-2xl p-4 flex gap-3 items-start border border-gray-100 dark:border-gray-700">
+<span class="material-symbols-outlined text-primary text-xl mt-0.5">info</span>
+<p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                    Seçtiğiniz tarih ve saat, salonlara tercihiniz olarak iletilecektir. Salonlar müsaitlik durumuna göre size özel tekliflerini sunacaktır.
+                </p>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-background-dark/90 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 p-6 pb-10 flex flex-col gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+<div class="flex justify-between items-center px-1">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">SEÇİLEN RANDEVU</span>
+<span class="text-sm font-bold text-gray-800 dark:text-white font-display">21 Ekim Pazartesi, 10:00</span>
+</div>
+<p class="text-xs font-bold text-primary font-display uppercase tracking-wider">2/3 Adım</p>
+</div>
+<button class="w-full bg-primary hover:bg-primary/95 text-white font-bold py-4.5 h-14 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] font-display flex items-center justify-center gap-2">
+<span>Devam Et</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+
+</body></html>
