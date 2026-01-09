@@ -32,7 +32,26 @@ The system SHALL provide a search bar to filter venues by name or category.
 - **THEN** both the Map markers and List items SHALL be filtered to show only matching venues.
 
 ### Requirement: User Geolocation
-The system SHALL center the map on the user's current location upon request if permissions are granted.
+Sistem, kullanıcının GPS konumunu almalı (SHALL) VE manuel konum girişine izin vermelidir (SHALL). Cihaz konumu kullanıldığında harita kamerası bu konuma odaklanmalıdır (SHALL).
+
+#### Scenario: Kullanıcı manuel konum seçer
+- **GIVEN** Keşfet veya Ana Sayfa ekranında
+- **WHEN** Sol üstteki konum bilgisine tıklar
+- **AND** Açılan listeden "İstanbul" ve "Beşiktaş" seçer
+- **THEN** Uygulama coğrafi odağını Beşiktaş, İstanbul olarak güncellemelidir.
+- **AND** Arama sonuçları bu yeni konuma göre güncellenmelidir.
+
+#### Scenario: Kullanıcı mevcut konumunu kullanır
+- **GIVEN** Konum seçim ekranında
+- **WHEN** "Mevcut Konumumu Kullan" butonuna tıklar
+- **THEN** Uygulama cihazın GPS verisini kullanarak konumu güncellemelidir.
+
+#### Scenario: Kullanıcı haritadan konum seçer
+- **GIVEN** Konum seçim ekranında
+- **WHEN** "Haritadan Seç" butonuna tıklar
+- **THEN** Kullanıcıya bir harita arayüzü sunulmalıdır.
+- **WHEN** Kullanıcı haritadan bir nokta seçip onayladığında
+- **THEN** Uygulama bu noktayı aktif discovery konumu olarak belirlemelidir.
 
 #### Scenario: User centers on current location
 - **GIVEN** location permissions are granted
@@ -40,7 +59,7 @@ The system SHALL center the map on the user's current location upon request if p
 - **THEN** the map camera SHALL animate to the user's current GPS coordinates.
 
 ### Requirement: Service-Based Search
-Sistem, kullanıcıların hizmet adlarına göre mekan araması yapabilmesini SAĞLAMALIDIR.
+Sistem, kullanıcıların hizmet adlarına göre mekan araması yapabilmesini SAĞLAMALIDIR (SHALL).
 
 #### Scenario: Tek hizmet araması
 - **GIVEN** kullanıcı keşfet ekranında
@@ -55,7 +74,7 @@ Sistem, kullanıcıların hizmet adlarına göre mekan araması yapabilmesini SA
 - **AND** her iki hizmeti de sunan mekanlar öncelikli olarak gösterilmeli
 
 ### Requirement: Category Filtering
-Sistem, kullanıcıların mekan kategorilerine göre filtreleme yapabilmesini SAĞLAMALIDIR.
+Sistem, kullanıcıların mekan kategorilerine göre filtreleme yapabilmesini SAĞLAMALIDIR (SHALL).
 
 #### Scenario: Tek kategori seçimi
 - **GIVEN** kullanıcı filtre panelini açtı
@@ -69,7 +88,7 @@ Sistem, kullanıcıların mekan kategorilerine göre filtreleme yapabilmesini SA
 - **THEN** her iki kategoriden mekanlar birlikte listelenmeli
 
 ### Requirement: Proximity-Based Filtering
-Sistem, kullanıcıların belirli bir yarıçap içindeki mekanları filtreleyebilmesini SAĞLAMALIDIR.
+Sistem, kullanıcıların belirli bir yarıçap içindeki mekanları filtreleyebilmesini SAĞLAMALIDIR (SHALL).
 
 #### Scenario: Yarıçap ayarlama
 - **GIVEN** kullanıcı filtre panelinde
@@ -84,7 +103,7 @@ Sistem, kullanıcıların belirli bir yarıçap içindeki mekanları filtreleyeb
 - **OR** konum izni istenmeli
 
 ### Requirement: Rating-Based Filtering
-Sistem, kullanıcıların minimum puan kriterine göre filtreleme yapabilmesini SAĞLAMALIDIR.
+Sistem, kullanıcıların minimum puan kriterine göre filtreleme yapabilmesini SAĞLAMALIDIR (SHALL).
 
 #### Scenario: Minimum puan belirleme
 - **GIVEN** kullanıcı filtre panelinde
@@ -92,7 +111,7 @@ Sistem, kullanıcıların minimum puan kriterine göre filtreleme yapabilmesini 
 - **THEN** sadece 4.0 ve üzeri puana sahip mekanlar listelenmeli
 
 ### Requirement: Trust Badge Filtering
-Sistem, kullanıcıların güven rozetlerine göre filtreleme yapabilmesini SAĞLAMALIDIR.
+Sistem, kullanıcıların güven rozetlerine göre filtreleme yapabilmesini SAĞLAMALIDIR (SHALL).
 
 #### Scenario: Onaylı mekan filtresi
 - **GIVEN** kullanıcı filtre panelinde
@@ -105,7 +124,7 @@ Sistem, kullanıcıların güven rozetlerine göre filtreleme yapabilmesini SAĞ
 - **THEN** her iki rozete de sahip mekanlar listelenmeli
 
 ### Requirement: Filter Persistence
-Sistem, kullanıcının seçtiği filtreleri oturum boyunca korumalıdır.
+Sistem, kullanıcının seçtiği filtreleri oturum boyunca korumalıdır (SHALL).
 
 #### Scenario: Filtre durumu korunması
 - **GIVEN** kullanıcı filtreleri ayarladı
@@ -114,7 +133,7 @@ Sistem, kullanıcının seçtiği filtreleri oturum boyunca korumalıdır.
 - **AND** aynı sonuçlar gösterilmeli
 
 ### Requirement: Filter Reset
-Sistem, kullanıcıların tüm filtreleri tek bir işlemle sıfırlayabilmesini SAĞLAMALIDIR.
+Sistem, kullanıcıların tüm filtreleri tek bir işlemle sıfırlayabilmesini SAĞLAMALIDIR (SHALL).
 
 #### Scenario: Filtreleri temizleme
 - **GIVEN** kullanıcı birden fazla filtre uygulamış
@@ -123,7 +142,7 @@ Sistem, kullanıcıların tüm filtreleri tek bir işlemle sıfırlayabilmesini 
 - **AND** tüm mekanlar tekrar gösterilmeli
 
 ### Requirement: Advanced Search Query
-Sistem, backend tarafında gelişmiş arama sorgularını desteklemelidir.
+Sistem, backend tarafında gelişmiş arama sorgularını desteklemelidir (SHALL).
 
 #### Scenario: RPC fonksiyonu ile arama
 - **GIVEN** Supabase'de `search_venues_advanced` RPC fonksiyonu mevcut

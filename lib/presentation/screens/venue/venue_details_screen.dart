@@ -10,6 +10,7 @@ import '../../widgets/venue/components/booking_bottom_bar.dart';
 import '../../widgets/venue/tabs/services_tab.dart';
 import '../../widgets/venue/tabs/experts_tab.dart';
 import '../../widgets/venue/tabs/reviews_tab.dart';
+import '../../widgets/common/ad_banner_widget.dart';
 import '../../../data/models/venue.dart';
 
 class VenueDetailsScreen extends StatefulWidget {
@@ -323,6 +324,14 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
                     ],
                   ),
                 ),
+              ),
+
+              // Ad Banner above bottom bar
+              const Positioned(
+                bottom: 80,
+                left: 0,
+                right: 0,
+                child: AdBannerWidget(),
               ),
 
               // Fixed Bottom Bar

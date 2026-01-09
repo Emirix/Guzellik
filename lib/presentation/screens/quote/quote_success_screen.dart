@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/services/ad_service.dart';
 
 class QuoteSuccessScreen extends StatelessWidget {
   const QuoteSuccessScreen({super.key});
+
+  /// Geçiş reklamı gösterip ardından navigasyon yap
+  void _showAdAndNavigate(BuildContext context, String route) {
+    AdService.instance.showInterstitialAd(
+      onAdClosed: () {
+        if (context.mounted) {
+          context.go(route);
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +119,7 @@ class QuoteSuccessScreen extends StatelessWidget {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      context.go('/my-quotes');
+                      _showAdAndNavigate(context, '/my-quotes');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
@@ -140,7 +152,7 @@ class QuoteSuccessScreen extends StatelessWidget {
                   height: 56,
                   child: OutlinedButton(
                     onPressed: () {
-                      context.go('/');
+                      _showAdAndNavigate(context, '/');
                     },
                     style: OutlinedButton.styleFrom(
                       backgroundColor: isDarkMode

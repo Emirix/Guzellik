@@ -10,6 +10,7 @@ import '../widgets/search/popular_services_section.dart';
 import '../widgets/search/search_categories_section.dart';
 import '../widgets/search/suggested_venues_section.dart';
 import '../widgets/search/search_results_list.dart';
+import '../widgets/common/ad_banner_widget.dart';
 import '../../core/theme/app_colors.dart';
 import '../widgets/search/search_initial_view.dart';
 import '../../data/models/venue_category.dart';
@@ -113,6 +114,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
                 // Filter chips row
                 const SearchFilterChips(),
+
+                // Ad Banner
+                const AdBannerWidget(),
 
                 // Content area
                 Expanded(

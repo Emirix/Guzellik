@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'config/app_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/app_router.dart';
+import 'core/services/ad_service.dart';
 import 'data/services/supabase_service.dart';
 import 'data/services/notification_service.dart';
 import 'data/services/location_service.dart';
@@ -59,6 +60,15 @@ void main() async {
   } catch (e) {
     print('Notification service initialization error: $e');
     // Continue without notifications for now
+  }
+
+  // Initialize AdMob
+  try {
+    await AdService.instance.initialize();
+    print('AdMob initialized successfully');
+  } catch (e) {
+    print('AdMob initialization error: $e');
+    // Continue without ads for now
   }
 
   runApp(const GuzellikApp());

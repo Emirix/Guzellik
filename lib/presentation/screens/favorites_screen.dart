@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../providers/favorites_provider.dart';
 import '../widgets/common/custom_header.dart';
+import '../widgets/common/ad_banner_widget.dart';
 import '../widgets/search/search_result_card.dart';
 
 /// Favorites screen - Displays Favorited and Followed venues in tabs
@@ -66,6 +67,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             subtitle: 'Kaydettiğiniz ve takip ettiğiniz mekanlar',
           ),
           _buildTabBar(),
+          const AdBannerWidget(),
           Expanded(child: _buildTabBarView()),
         ],
       ),

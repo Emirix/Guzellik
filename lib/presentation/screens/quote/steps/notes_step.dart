@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import '../../../providers/quote_provider.dart';
+import '../../../../core/services/ad_service.dart';
 
 class NotesStep extends StatefulWidget {
   final VoidCallback onBack;
@@ -15,6 +16,7 @@ class NotesStep extends StatefulWidget {
 
 class _NotesStepState extends State<NotesStep> {
   final TextEditingController _notesController = TextEditingController();
+  bool _isShowingAd = false;
 
   @override
   void initState() {
@@ -26,6 +28,50 @@ class _NotesStepState extends State<NotesStep> {
   void dispose() {
     _notesController.dispose();
     super.dispose();
+  }
+
+  /// Teklif gönderme işlemini başlat
+  Future<void> _submitQuote() async {
+    final quoteProvider = context.read<QuoteProvider>();
+
+    // Reklam hazırsa göster
+    if (AdService.instance.isRewardedReady) {
+      setState(() => _isShowingAd = true);
+
+      AdService.instance.showRewardedAd(
+        onUserEarnedReward: () async {
+          // Kullanıcı videoyu izledi, teklifi gönder
+          if (mounted) {
+            setState(() => _isShowingAd = false);
+            final success = await quoteProvider.createQuoteRequest();
+            if (success && mounted) {
+              context.go('/quote-success');
+            }
+          }
+        },
+        onAdClosed: () {
+          if (mounted) {
+            setState(() => _isShowingAd = false);
+          }
+        },
+        onAdNotReady: () async {
+          // Reklam hazır değil, direkt gönder
+          if (mounted) {
+            setState(() => _isShowingAd = false);
+            final success = await quoteProvider.createQuoteRequest();
+            if (success && mounted) {
+              context.go('/quote-success');
+            }
+          }
+        },
+      );
+    } else {
+      // Reklam hazır değil, direkt gönder
+      final success = await quoteProvider.createQuoteRequest();
+      if (success && mounted) {
+        context.go('/quote-success');
+      }
+    }
   }
 
   @override
@@ -70,6 +116,8 @@ class _NotesStepState extends State<NotesStep> {
                 _buildSummaryCard(),
                 const SizedBox(height: 24),
                 _buildSuccessInfo(),
+                const SizedBox(height: 16),
+                _buildAdInfo(),
               ],
             ),
           ),
@@ -224,8 +272,8 @@ class _NotesStepState extends State<NotesStep> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.verified, color: Colors.green, size: 20),
-          const SizedBox(width: 12),
-          const Expanded(
+          SizedBox(width: 12),
+          Expanded(
             child: Text(
               'Talebiniz uzman ekiplerimiz tarafından incelenecek ve en uygun fiyat teklifleri kısa süre içinde cebinize gelecek.',
               style: TextStyle(
@@ -241,8 +289,42 @@ class _NotesStepState extends State<NotesStep> {
     );
   }
 
+  Widget _buildAdInfo() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.amber.shade50.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.amber.shade100),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.play_circle_filled,
+            color: Colors.amber.shade700,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Teklif göndermek için kısa bir video izlemeniz gerekmektedir. Bu sayede hizmetimizi ücretsiz sunabiliyoruz.',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.amber.shade800,
+                fontWeight: FontWeight.w500,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBottomBar() {
     final quoteProvider = context.watch<QuoteProvider>();
+    final isLoading = quoteProvider.isCreating || _isShowingAd;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -286,14 +368,7 @@ class _NotesStepState extends State<NotesStep> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: quoteProvider.isCreating
-                  ? null
-                  : () async {
-                      final success = await quoteProvider.createQuoteRequest();
-                      if (success && mounted) {
-                        context.go('/quote-success');
-                      }
-                    },
+              onPressed: isLoading ? null : _submitQuote,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
@@ -303,20 +378,27 @@ class _NotesStepState extends State<NotesStep> {
                 elevation: 8,
                 shadowColor: Theme.of(context).primaryColor.withOpacity(0.4),
               ),
-              child: quoteProvider.isCreating
+              child: isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Row(
+                  : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Icon(
+                          AdService.instance.isRewardedReady
+                              ? Icons.play_circle_outline
+                              : Icons.send,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
                         Text(
-                          'Teklifi Gönder',
-                          style: TextStyle(
+                          AdService.instance.isRewardedReady
+                              ? 'Video İzle ve Gönder'
+                              : 'Teklifi Gönder',
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        const Icon(Icons.send),
                       ],
                     ),
             ),

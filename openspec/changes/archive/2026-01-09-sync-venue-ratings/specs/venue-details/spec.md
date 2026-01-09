@@ -1,6 +1,6 @@
 # venue-details Spec Delta
 
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: Real-Time Rating Display
 The system SHALL display accurate rating and review counts derived from actual user reviews.

@@ -1,7 +1,7 @@
 ## MODIFIED Requirements
 
 ### Requirement: User Geolocation
-Sistem, kullanıcının GPS konumunu alabilmeli VE manuel konum girişine izin vermelidir. Cihaz konumu kullanıldığında harita kamerası bu konuma odaklanmalıdır.
+Sistem, kullanıcının GPS konumunu almalı (SHALL) VE manuel konum girişine izin vermelidir (SHALL). Cihaz konumu kullanıldığında harita kamerası bu konuma odaklanmalıdır (SHALL).
 
 #### Scenario: Kullanıcı manuel konum seçer
 - **GIVEN** Keşfet veya Ana Sayfa ekranında

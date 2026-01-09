@@ -1,6 +1,6 @@
 # Sync Venue Ratings Proposal
 
-## Problem Description
+## Why
 
 Mekan listelerinde (arama sonuçları, öne çıkanlar, yakındakiler) gösterilen **değerlendirme puanı** ve **yorum sayısı** gerçek verileri yansıtmıyor. Statik/varsayılan değerler gösteriliyor ancak mekan detay sayfasına girildiğinde gerçek yorumlar bulunamıyor veya sayı uyuşmuyor.
 
@@ -20,7 +20,7 @@ Tek seferlik bir senkronizasyon migration'ı oluşturarak mevcut tüm yorumlarda
 > [!NOTE]
 > Cron job gerekli değil. Mevcut trigger mekanizması yeterli - sadece mevcut verilerin bir kez senkronize edilmesi yeterli.
 
-## Proposed Changes
+## What Changes
 
 ### Database Layer
 

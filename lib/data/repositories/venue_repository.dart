@@ -14,7 +14,7 @@ class VenueRepository {
         .from('venue_categories')
         .select()
         .eq('is_active', true)
-        .order('name', ascending: true);
+        .order('order', ascending: true);
     return (response as List)
         .map((json) => VenueCategory.fromJson(json))
         .toList();
@@ -139,13 +139,12 @@ class VenueRepository {
       return (response as List)
           .where((item) => item['venues_with_coords'] != null)
           .map((item) {
-            final venueJson = Map<String, dynamic>.from(
-              item['venues_with_coords'],
-            );
-            venueJson['is_following'] = true;
-            return Venue.fromJson(venueJson);
-          })
-          .toList();
+        final venueJson = Map<String, dynamic>.from(
+          item['venues_with_coords'],
+        );
+        venueJson['is_following'] = true;
+        return Venue.fromJson(venueJson);
+      }).toList();
     } catch (e) {
       print('Error getting followed venues: $e');
       return [];
@@ -222,13 +221,12 @@ class VenueRepository {
       return (response as List)
           .where((item) => item['venues_with_coords'] != null)
           .map((item) {
-            final venueJson = Map<String, dynamic>.from(
-              item['venues_with_coords'],
-            );
-            venueJson['is_favorited'] = true;
-            return Venue.fromJson(venueJson);
-          })
-          .toList();
+        final venueJson = Map<String, dynamic>.from(
+          item['venues_with_coords'],
+        );
+        venueJson['is_favorited'] = true;
+        return Venue.fromJson(venueJson);
+      }).toList();
     } catch (e) {
       print('Error getting favorite venues: $e');
       return [];
@@ -263,8 +261,8 @@ class VenueRepository {
     // Use categories directly as they now come from the database
     final List<String>? mappedCategories =
         (filter != null && filter.categories.isNotEmpty)
-        ? filter.categories
-        : null;
+            ? filter.categories
+            : null;
 
     try {
       final List<dynamic> response = await _supabase.rpc(
@@ -328,18 +326,16 @@ class VenueRepository {
           'p_lng': lng,
           'p_province_id': provinceId,
           'p_district_id': districtId,
-          'p_max_dist_meters': maxDistanceKm != null
-              ? maxDistanceKm * 1000
-              : null,
+          'p_max_dist_meters':
+              maxDistanceKm != null ? maxDistanceKm * 1000 : null,
           'p_only_verified': onlyVerified,
           'p_only_preferred': onlyPreferred,
           'p_only_hygienic': onlyHygienic,
           'p_min_rating': minRating,
           'p_sort_by': sortBy,
           'p_limit': limit,
-          'p_service_ids': (serviceIds?.isNotEmpty ?? false)
-              ? serviceIds
-              : null,
+          'p_service_ids':
+              (serviceIds?.isNotEmpty ?? false) ? serviceIds : null,
         },
       );
 
@@ -413,11 +409,10 @@ class VenueRepository {
 
       await _supabase
           .from('reviews')
-          .update({'rating': rating, 'comment': comment})
-          .match({
-            'id': reviewId,
-            'user_id': userId, // Ensure user owns the review
-          });
+          .update({'rating': rating, 'comment': comment}).match({
+        'id': reviewId,
+        'user_id': userId, // Ensure user owns the review
+      });
     } catch (e) {
       print('Error updating review: $e');
       rethrow;

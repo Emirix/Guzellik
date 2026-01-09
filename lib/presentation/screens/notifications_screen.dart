@@ -6,6 +6,7 @@ import '../../data/models/notification_model.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/notifications/notification_card.dart';
 import '../widgets/notifications/notification_filter_tabs.dart';
+import '../widgets/common/ad_banner_widget.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -21,6 +22,7 @@ class NotificationsScreen extends StatelessWidget {
           children: [
             _buildHeader(context, provider),
             const NotificationFilterTabs(),
+            const AdBannerWidget(),
             Expanded(
               child: provider.isLoading
                   ? const Center(child: CircularProgressIndicator())

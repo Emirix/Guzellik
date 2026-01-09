@@ -49,5 +49,16 @@
 	<string>Yakınınızdaki güzellik merkezlerini harita üzerinde görebilmek için konum izni gereklidir.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Size en yakın fırsatları sunabilmek için konumunuza ihtiyaç duyuyoruz.</string>
+	<!-- AdMob App ID (Test ID - Replace with real ID before production) -->
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<!-- SKAdNetwork for AdMob -->
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
 </dict>
 </plist>
