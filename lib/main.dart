@@ -84,7 +84,10 @@ class GuzellikApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(
-          create: (context) => QuoteProvider(context.read<QuoteRepository>()),
+          create: (context) => QuoteProvider(
+            context.read<QuoteRepository>(),
+            context.read<LocationRepository>(),
+          ),
         ),
         ChangeNotifierProvider(
           create: (_) => ReviewSubmissionProvider(VenueRepository()),

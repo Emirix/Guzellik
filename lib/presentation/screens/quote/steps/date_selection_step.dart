@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../providers/quote_provider.dart';
+import '../../../providers/auth_provider.dart';
 
 class DateSelectionStep extends StatefulWidget {
   final VoidCallback onNext;
@@ -20,11 +21,43 @@ class DateSelectionStep extends StatefulWidget {
 class _DateSelectionStepState extends State<DateSelectionStep> {
   final DateTime _today = DateTime.now();
   DateTime? _selectedDate;
+  int? _selectedProvinceId;
+  String? _selectedDistrictId;
 
   @override
   void initState() {
     super.initState();
-    _selectedDate = context.read<QuoteProvider>().preferredDate;
+    final quoteProvider = context.read<QuoteProvider>();
+    _selectedDate = quoteProvider.preferredDate;
+    _selectedProvinceId = quoteProvider.provinceId;
+    _selectedDistrictId = quoteProvider.districtId;
+
+    _initLocation();
+  }
+
+  Future<void> _initLocation() async {
+    final quoteProvider = context.read<QuoteProvider>();
+    await quoteProvider.loadLocations();
+
+    // If provider doesn't have location yet, check user profile
+    if (_selectedProvinceId == null) {
+      final authProvider = context.read<AuthProvider>();
+      final user = authProvider.currentUser;
+      if (user != null) {
+        final provinceId = user.userMetadata?['province_id'];
+        if (provinceId != null) {
+          final pId = provinceId is int
+              ? provinceId
+              : int.tryParse(provinceId.toString());
+          if (pId != null) {
+            setState(() {
+              _selectedProvinceId = pId;
+            });
+            quoteProvider.setLocation(pId, null);
+          }
+        }
+      }
+    }
   }
 
   @override
@@ -69,11 +102,13 @@ class _DateSelectionStepState extends State<DateSelectionStep> {
                         const SizedBox(height: 16),
                         _buildHorizontalCalendar(),
                         const SizedBox(height: 32),
-                        _buildTimeSlots(),
+                        _buildTimeDropdown(),
                       ],
                     ),
                   ),
                 ),
+                const SizedBox(height: 32),
+                _buildLocationSection(),
                 const SizedBox(height: 32),
                 _buildInfoCard(),
               ],
@@ -81,6 +116,140 @@ class _DateSelectionStepState extends State<DateSelectionStep> {
           ),
         ),
         _buildBottomBar(isFlexible),
+      ],
+    );
+  }
+
+  Widget _buildLocationSection() {
+    final quoteProvider = context.watch<QuoteProvider>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Hizmet Nerede Verilsin?',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: _buildDropdown<int>(
+                label: 'İl Seçin',
+                value: _selectedProvinceId,
+                items: quoteProvider.provinces.map((p) {
+                  return DropdownMenuItem(
+                    value: p.id,
+                    child: Text(p.name, style: const TextStyle(fontSize: 14)),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedProvinceId = value;
+                    _selectedDistrictId = null;
+                  });
+                  quoteProvider.setLocation(value, null);
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildDropdown<String>(
+                label: 'İlçe (Opsiyonel)',
+                value: _selectedDistrictId,
+                items: quoteProvider.districts.map((d) {
+                  return DropdownMenuItem(
+                    value: d.id,
+                    child: Text(d.name, style: const TextStyle(fontSize: 14)),
+                  );
+                }).toList(),
+                onChanged: _selectedProvinceId == null
+                    ? null
+                    : (value) {
+                        setState(() {
+                          _selectedDistrictId = value;
+                        });
+                        quoteProvider.setLocation(_selectedProvinceId, value);
+                      },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdown<T>({
+    required String label,
+    required T? value,
+    required List<DropdownMenuItem<T>> items,
+    required ValueChanged<T?>? onChanged,
+  }) {
+    return DropdownButtonFormField<T>(
+      value: value,
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(fontSize: 12, color: Colors.grey),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade100),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.pink, width: 2),
+        ),
+      ),
+      items: items,
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildTimeDropdown() {
+    final quoteProvider = context.watch<QuoteProvider>();
+    final List<String> timeSlots = [
+      '09:00',
+      '10:00',
+      '11:00',
+      '12:00',
+      '13:00',
+      '14:00',
+      '15:00',
+      '16:00',
+      '17:00',
+      '18:00',
+      '19:00',
+      '20:00',
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Saat Seçin',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 16),
+        _buildDropdown<String>(
+          label: 'Saat Seçin',
+          value: quoteProvider.preferredTimeSlot,
+          items: timeSlots.map((slot) {
+            return DropdownMenuItem(value: slot, child: Text(slot));
+          }).toList(),
+          onChanged: (value) {
+            quoteProvider.setPreferredTimeSlot(value);
+          },
+        ),
       ],
     );
   }
@@ -248,105 +417,6 @@ class _DateSelectionStepState extends State<DateSelectionStep> {
     );
   }
 
-  Widget _buildTimeSlots() {
-    return Column(
-      children: [
-        _buildTimeCategory('Sabah', Icons.light_mode, Colors.amber, [
-          '09:00',
-          '10:00',
-          '11:00',
-        ]),
-        const SizedBox(height: 32),
-        _buildTimeCategory('Öğle', Icons.wb_sunny, Colors.orange, [
-          '13:00',
-          '14:00',
-          '15:00',
-          '16:00',
-          '17:00',
-        ]),
-        const SizedBox(height: 32),
-        _buildTimeCategory('Akşam', Icons.dark_mode, Colors.indigo, [
-          '18:00',
-          '19:00',
-          '20:00',
-        ]),
-      ],
-    );
-  }
-
-  Widget _buildTimeCategory(
-    String title,
-    IconData icon,
-    Color color,
-    List<String> slots,
-  ) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(width: 12),
-            Expanded(child: Divider(color: Colors.grey.shade100)),
-          ],
-        ),
-        const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            childAspectRatio: 2.5,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-          ),
-          itemCount: slots.length,
-          itemBuilder: (context, index) {
-            final slot = slots[index];
-            final selectedSlot = context
-                .watch<QuoteProvider>()
-                .preferredTimeSlot;
-            final isSelected = selectedSlot == slot;
-
-            return GestureDetector(
-              onTap: () =>
-                  context.read<QuoteProvider>().setPreferredTimeSlot(slot),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? Theme.of(context).primaryColor.withOpacity(0.05)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey.shade200,
-                    width: isSelected ? 2 : 1,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  slot,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: isSelected
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey.shade600,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
   Widget _buildInfoCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -437,7 +507,10 @@ class _DateSelectionStepState extends State<DateSelectionStep> {
             height: 56,
             child: ElevatedButton(
               onPressed:
-                  (isFlexible || selectedSlot != null || _selectedDate != null)
+                  (isFlexible ||
+                          selectedSlot != null ||
+                          _selectedDate != null) &&
+                      _selectedProvinceId != null
                   ? widget.onNext
                   : null,
               style: ElevatedButton.styleFrom(

@@ -26,6 +26,8 @@ class QuoteRepository {
     required String? preferredTimeSlot,
     required String? notes,
     required List<String> serviceCategoryIds,
+    int? provinceId,
+    String? districtId,
   }) async {
     final response = await _client.rpc(
       'create_quote_request',
@@ -34,6 +36,8 @@ class QuoteRepository {
         'p_preferred_time_slot': preferredTimeSlot,
         'p_notes': notes,
         'p_service_category_ids': serviceCategoryIds,
+        'p_province_id': provinceId,
+        'p_district_id': districtId,
       },
     );
 

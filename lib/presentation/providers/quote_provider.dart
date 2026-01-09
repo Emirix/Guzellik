@@ -2,40 +2,88 @@ import 'package:flutter/material.dart';
 import '../../data/models/quote_request.dart';
 import '../../data/models/quote_response.dart';
 import '../../data/models/service_category.dart';
+import '../../data/models/province.dart';
+import '../../data/models/district.dart';
 import '../../data/repositories/quote_repository.dart';
+import '../../data/repositories/location_repository.dart';
 
 class QuoteProvider extends ChangeNotifier {
   final QuoteRepository _quoteRepository;
+  final LocationRepository _locationRepository;
 
-  QuoteProvider(this._quoteRepository);
+  QuoteProvider(this._quoteRepository, this._locationRepository);
 
   // State for creating a quote
   List<ServiceCategory> _selectedServices = [];
   DateTime? _preferredDate;
   String? _preferredTimeSlot;
   String? _notes;
+  int? _provinceId;
+  String? _districtId;
   bool _isCreating = false;
 
   List<ServiceCategory> get selectedServices => _selectedServices;
   DateTime? get preferredDate => _preferredDate;
   String? get preferredTimeSlot => _preferredTimeSlot;
   String? get notes => _notes;
+  int? get provinceId => _provinceId;
+  String? get districtId => _districtId;
   bool get isCreating => _isCreating;
+
+  // New location state
+  List<Province> _provinces = [];
+  List<District> _districts = [];
+  bool _isLoadingLocations = false;
+
+  List<Province> get provinces => _provinces;
+  List<District> get districts => _districts;
+  bool get isLoadingLocations => _isLoadingLocations;
 
   // State for viewing quotes
   List<QuoteRequest> _myQuotes = [];
   bool _isLoadingQuotes = false;
   String? _quotesError;
+  bool _hasCheckedQuotes = false;
 
   List<QuoteRequest> get myQuotes => _myQuotes;
   bool get isLoadingQuotes => _isLoadingQuotes;
   String? get quotesError => _quotesError;
+  bool get hasCheckedQuotes => _hasCheckedQuotes;
+  bool get hasAnyQuotes => _myQuotes.isNotEmpty;
 
   List<ServiceCategory> _allServiceCategories = [];
   bool _isLoadingServiceCategories = false;
 
   List<ServiceCategory> get allServiceCategories => _allServiceCategories;
   bool get isLoadingServiceCategories => _isLoadingServiceCategories;
+
+  Future<void> loadLocations() async {
+    _isLoadingLocations = true;
+    notifyListeners();
+    try {
+      _provinces = await _locationRepository.fetchProvinces();
+    } catch (e) {
+      debugPrint('Error loading provinces: $e');
+    } finally {
+      _isLoadingLocations = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadDistricts(int provinceId) async {
+    _isLoadingLocations = true;
+    notifyListeners();
+    try {
+      _districts = await _locationRepository.fetchDistrictsByProvince(
+        provinceId,
+      );
+    } catch (e) {
+      debugPrint('Error loading districts: $e');
+    } finally {
+      _isLoadingLocations = false;
+      notifyListeners();
+    }
+  }
 
   Future<void> loadServiceCategories() async {
     _isLoadingServiceCategories = true;
@@ -60,12 +108,12 @@ class QuoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setPreferredDate(DateTime date) {
+  void setPreferredDate(DateTime? date) {
     _preferredDate = date;
     notifyListeners();
   }
 
-  void setPreferredTimeSlot(String slot) {
+  void setPreferredTimeSlot(String? slot) {
     _preferredTimeSlot = slot;
     notifyListeners();
   }
@@ -75,11 +123,24 @@ class QuoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setLocation(int? provinceId, String? districtId) {
+    _provinceId = provinceId;
+    _districtId = districtId;
+    if (provinceId != null) {
+      loadDistricts(provinceId);
+    } else {
+      _districts = [];
+    }
+    notifyListeners();
+  }
+
   void resetForm() {
     _selectedServices = [];
     _preferredDate = null;
     _preferredTimeSlot = null;
     _notes = null;
+    _provinceId = null;
+    _districtId = null;
     notifyListeners();
   }
 
@@ -92,10 +153,12 @@ class QuoteProvider extends ChangeNotifier {
 
     try {
       await _quoteRepository.createQuoteRequest(
-        preferredDate: _preferredDate!,
+        preferredDate: _preferredDate,
         preferredTimeSlot: _preferredTimeSlot,
         notes: _notes,
         serviceCategoryIds: _selectedServices.map((s) => s.id).toList(),
+        provinceId: _provinceId,
+        districtId: _districtId,
       );
       resetForm();
       await fetchMyQuotes();
@@ -116,6 +179,7 @@ class QuoteProvider extends ChangeNotifier {
 
     try {
       _myQuotes = await _quoteRepository.getMyQuoteRequests();
+      _hasCheckedQuotes = true;
     } catch (e) {
       _quotesError = 'Teklifler yüklenirken bir hata oluştu.';
       debugPrint('Error fetching quotes: $e');

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../providers/discovery_provider.dart';
 import '../providers/app_state_provider.dart';
@@ -130,10 +131,10 @@ class _ExploreScreenState extends State<ExploreScreen>
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.location_on,
-                    color: AppColors.primary,
-                    size: 20,
+                  child: SvgPicture.asset(
+                    'assets/logo-transparent.svg',
+                    width: 28,
+                    height: 28,
                   ),
                 ),
                 const SizedBox(width: 12),

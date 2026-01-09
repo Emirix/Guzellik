@@ -57,7 +57,7 @@ class FeaturedVenues extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             SizedBox(
-              height: 220,
+              height: 260,
               child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 scrollDirection: Axis.horizontal,

@@ -18,7 +18,7 @@ class CustomBottomNav extends StatelessWidget {
         final selectedIndex = appState.selectedBottomNavIndex;
 
         return BottomAppBar(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           height: 65,
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           shape: const CircularNotchedRectangle(),
@@ -29,7 +29,7 @@ class CustomBottomNav extends StatelessWidget {
               // Left side
               Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildNavItem(
                       context,
@@ -52,12 +52,12 @@ class CustomBottomNav extends StatelessWidget {
               ),
 
               // Middle gap for FAB
-              const SizedBox(width: 60),
+              const SizedBox(width: 48),
 
               // Right side
               Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildNavItem(
                       context,

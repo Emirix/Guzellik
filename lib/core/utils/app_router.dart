@@ -14,6 +14,7 @@ import '../../presentation/screens/location_onboarding_screen.dart';
 import '../../presentation/screens/quote/quote_request_screen.dart';
 import '../../presentation/screens/quote/my_quotes_screen.dart';
 import '../../presentation/screens/quote/quote_detail_screen.dart';
+import '../../presentation/screens/quote/quote_success_screen.dart';
 import '../../data/models/quote_request.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
@@ -112,6 +113,11 @@ class AppRouter {
           redirectPath: '/my-quotes',
           child: MyQuotesScreen(),
         ),
+      ),
+      GoRoute(
+        path: '/quote-success',
+        name: 'quote-success',
+        builder: (context, state) => const QuoteSuccessScreen(),
       ),
       GoRoute(
         path: '/quote-detail',

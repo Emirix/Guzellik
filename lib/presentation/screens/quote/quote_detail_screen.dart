@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/quote_request.dart';
 import '../../../data/models/quote_response.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../providers/quote_provider.dart';
 import '../../widgets/quote/quote_response_card.dart';
 
@@ -40,36 +41,57 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFBFB),
+      backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Talep Detayı',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            letterSpacing: -0.5,
+          ),
         ),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        foregroundColor: AppColors.black,
         elevation: 0,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildRequestInfo(),
-            _buildStatusHeader(),
-            _buildResponsesList(),
-          ],
+      body: RefreshIndicator(
+        onRefresh: _loadResponses,
+        color: AppColors.primary,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildRequestInfoCard(),
+              const SizedBox(height: 32),
+              _buildStatusHeader(),
+              const SizedBox(height: 16),
+              _buildResponsesList(),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildRequestInfo() {
+  Widget _buildRequestInfoCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(color: Color(0xFFF3E8EA))),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppColors.primary.withOpacity(0.08)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,66 +99,95 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'TALEP BİLGİLERİ',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.pink.shade300,
-                  letterSpacing: 1.2,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'TALEP BİLGİLERİ',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primary,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
               Text(
                 '#${widget.quote.id.substring(0, 8)}',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.gray400,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildInfoRow(
-            Icons.spa_outlined,
+          const SizedBox(height: 24),
+          _buildInfoRowV2(
+            Icons.spa_rounded,
             'Hizmetler',
             widget.quote.services.map((s) => s.name).join(', '),
           ),
-          const SizedBox(height: 12),
-          _buildInfoRow(
-            Icons.calendar_today_outlined,
+          const SizedBox(height: 20),
+          _buildInfoRowV2(
+            Icons.calendar_today_rounded,
             'Tercih Edilen Zaman',
-            '${DateFormat('d MMMM EEEE', 'tr_TR').format(widget.quote.preferredDate)} • ${widget.quote.preferredTimeSlot}',
+            widget.quote.preferredDate != null
+                ? '${DateFormat('d MMMM EEEE', 'tr_TR').format(widget.quote.preferredDate!)}${widget.quote.preferredTimeSlot != null ? ' • ${widget.quote.preferredTimeSlot}' : ''}'
+                : 'Farketmez',
           ),
           if (widget.quote.notes != null && widget.quote.notes!.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _buildInfoRow(Icons.notes, 'Notlarım', widget.quote.notes!),
+            const SizedBox(height: 20),
+            _buildInfoRowV2(
+              Icons.notes_rounded,
+              'Notlarım',
+              widget.quote.notes!,
+            ),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRowV2(IconData icon, String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: Colors.pink.shade200),
-        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.backgroundLight,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 18, color: AppColors.primary),
+        ),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                label,
+                label.toUpperCase(),
                 style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade500,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                  color: AppColors.gray400,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.8,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 value,
                 style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.black,
                   height: 1.4,
                 ),
               ),
@@ -150,37 +201,40 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
   Widget _buildStatusHeader() {
     final isActive = widget.quote.status == QuoteStatus.active;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'TEKLİFLER',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54,
-                  letterSpacing: 1.2,
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Gelen Teklifler',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.black,
+                letterSpacing: -0.5,
               ),
-              const SizedBox(height: 4),
-              Text(
-                _isLoading
-                    ? 'Yükleniyor...'
-                    : '${_responses?.length ?? 0} Salon Teklif Verdi',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _isLoading
+                  ? 'Kontrol ediliyor...'
+                  : _responses != null && _responses!.isNotEmpty
+                  ? '${_responses!.length} Salon Yanıt Verdi'
+                  : 'Henüz yanıt gelmedi',
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.gray600,
+                fontWeight: FontWeight.w500,
               ),
-            ],
-          ),
-          if (isActive)
-            TextButton.icon(
+            ),
+          ],
+        ),
+        if (isActive)
+          Container(
+            height: 40,
+            child: TextButton.icon(
               onPressed: () async {
                 final confirmed = await _showCloseDialog();
                 if (confirmed && mounted) {
@@ -190,43 +244,76 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
                   Navigator.pop(context);
                 }
               },
-              icon: const Icon(Icons.close, size: 18),
-              label: const Text('Talebi Kapat'),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              icon: const Icon(Icons.close_rounded, size: 16),
+              label: const Text(
+                'Talebi Kapat',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.error,
+                backgroundColor: AppColors.error.withOpacity(0.08),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 
   Widget _buildResponsesList() {
     if (_isLoading) {
-      return const Padding(
-        padding: EdgeInsets.all(40.0),
-        child: CircularProgressIndicator(),
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40.0),
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
       );
     }
 
     if (_responses == null || _responses!.isEmpty) {
-      return Padding(
+      return Container(
         padding: const EdgeInsets.all(40.0),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: AppColors.gray100),
+        ),
         child: Column(
           children: [
-            Icon(Icons.hourglass_empty, size: 48, color: Colors.grey.shade300),
-            const SizedBox(height: 16),
-            const Text(
-              'Henüz teklif gelmedi',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.grey,
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.backgroundLight,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.hourglass_empty_rounded,
+                size: 40,
+                color: AppColors.primary,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 24),
             const Text(
-              'Salonlar talebinizi inceliyor. Teklif geldiğinde bildirim alacaksınız.',
+              'Teklifler Hazırlanıyor',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: AppColors.black,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'En iyi salonlar talebini inceliyor. Yeni bir teklif geldiğinde sana bildirim göndereceğiz.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(
+                color: AppColors.gray600,
+                fontSize: 14,
+                height: 1.5,
+              ),
             ),
           ],
         ),
@@ -236,7 +323,6 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
       itemCount: _responses!.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) =>
@@ -248,18 +334,47 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Talebi Kapat'),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+            ),
+            title: const Text(
+              'Talebi Kapat',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             content: const Text(
               'Bu talebi kapatmak istediğinize emin misiniz? Artık yeni teklif alamazsınız.',
+              style: TextStyle(height: 1.5),
+            ),
+            actionsPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('VAZGEÇ'),
+                child: const Text(
+                  'VAZGEÇ',
+                  style: TextStyle(
+                    color: AppColors.gray600,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('KAPAT', style: TextStyle(color: Colors.red)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'KAPAT',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),

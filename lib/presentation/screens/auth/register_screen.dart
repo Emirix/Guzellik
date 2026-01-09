@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/models/province.dart';
+import '../../../data/repositories/location_repository.dart';
 import '../../providers/auth_provider.dart';
 
 /// Register screen - Design based on design/login.html style
@@ -21,6 +23,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+
+  List<Province> _provinces = [];
+  int? _selectedProvinceId;
+  bool _isLoadingProvinces = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProvinces();
+  }
+
+  Future<void> _loadProvinces() async {
+    setState(() => _isLoadingProvinces = true);
+    try {
+      final repo = context.read<LocationRepository>();
+      final provinces = await repo.fetchProvinces();
+      setState(() {
+        _provinces = provinces;
+        _isLoadingProvinces = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingProvinces = false);
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -42,6 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         phone: _phoneController.text.trim().isNotEmpty
             ? _phoneController.text.trim()
             : null,
+        provinceId: _selectedProvinceId,
       );
 
       if (mounted) {
@@ -195,6 +224,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hint: '05XX XXX XX XX',
                         keyboardType: TextInputType.phone,
                       ),
+                      const SizedBox(height: 20),
+
+                      // Province Selection
+                      _buildProvinceDropdown(),
                       const SizedBox(height: 20),
 
                       // Password Input
@@ -449,6 +482,75 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           validator: validator,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProvinceDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 8),
+          child: Text(
+            'Yaşadığınız Şehir',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF1B0E11),
+            ),
+          ),
+        ),
+        DropdownButtonFormField<int>(
+          value: _selectedProvinceId,
+          isExpanded: true,
+          decoration: InputDecoration(
+            hintText: _isLoadingProvinces ? 'Yükleniyor...' : 'Şehir Seçin',
+            hintStyle: TextStyle(
+              color: const Color(0xFF955062).withOpacity(0.6),
+            ),
+            prefixIcon: const Icon(
+              Icons.location_city,
+              color: Color(0xFF955062),
+              size: 20,
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(28),
+              borderSide: const BorderSide(color: Color(0xFFE6D1D6)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(28),
+              borderSide: const BorderSide(color: Color(0xFFE6D1D6)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(28),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 16,
+            ),
+          ),
+          items: _provinces.map((p) {
+            return DropdownMenuItem(
+              value: p.id,
+              child: Text(p.name, style: const TextStyle(fontSize: 14)),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedProvinceId = value;
+            });
+          },
+          validator: (value) {
+            if (value == null) {
+              return 'Şehir seçimi gerekli';
+            }
+            return null;
+          },
         ),
       ],
     );

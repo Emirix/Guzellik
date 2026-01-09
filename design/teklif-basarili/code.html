@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#EE2B5B",
+                        "gold": "#D4AF37",
+                        "soft-pink": "#FFF0F3",
+                        "nude": "#FDF7F2",
+                        "background-light": "#fcf8f9",
+                        "background-dark": "#1b0e11",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Manrope', sans-serif;
+                -webkit-tap-highlight-color: transparent;
+                min-height: 100dvh;
+            }
+        }
+        .premium-shadow {
+            box-shadow: 0 10px 30px -5px rgba(212, 175, 55, 0.15);
+        }
+        .success-glow {
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-nude dark:bg-background-dark text-[#1b0e11] dark:text-white flex flex-col items-center justify-center min-h-screen">
+    <main class="w-full max-w-md px-6 flex flex-col items-center text-center animate-fade-in">
+        <div class="relative w-full aspect-square max-w-[280px] mb-8 flex items-center justify-center">
+            <div class="absolute inset-0 bg-soft-pink dark:bg-pink-900/10 rounded-full scale-75 blur-2xl opacity-50">
+            </div>
+            <div class="relative z-10 flex flex-col items-center">
+                <div class="bg-white dark:bg-[#2d181d] p-8 rounded-full shadow-2xl mb-4 border border-gold/10">
+                    <span class="material-symbols-outlined text-gold text-7xl success-glow leading-none select-none">
+                        verified
+                    </span>
+                </div>
+
+            </div>
+        </div>
+        <div class="space-y-3 mb-8">
+            <h1 class="text-2xl font-extrabold tracking-tight font-display text-[#1b0e11] dark:text-white">
+                Teklifiniz Başarıyla Alındı!
+            </h1>
+            <p class="text-[#994d60] dark:text-pink-200 text-base font-medium max-w-[280px] mx-auto">
+                İşletmeler en kısa sürede size geri dönüş yapacaktır.
+            </p>
+        </div>
+
+        <div class="w-full flex flex-col gap-4">
+            <button
+                class="w-full bg-primary hover:bg-[#d42650] text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] font-display flex items-center justify-center gap-2 h-14">
+                <span>Tekliflerime Git</span>
+                <span class="material-symbols-outlined text-xl">arrow_forward</span>
+            </button>
+            <button
+                class="w-full bg-white dark:bg-[#2d181d] border border-[#f3e7ea] dark:border-[#321a20] text-[#994d60] dark:text-pink-100 font-bold py-4 rounded-2xl transition-all active:scale-[0.98] font-display h-14">
+                Ana Sayfaya Dön
+            </button>
+        </div>
+    </main>
+    <div class="fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gold/30 to-transparent"></div>
+
+</body>
+
+</html>

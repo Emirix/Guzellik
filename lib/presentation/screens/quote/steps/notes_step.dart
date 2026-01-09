@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import '../../../providers/quote_provider.dart';
 
 class NotesStep extends StatefulWidget {
@@ -153,7 +154,9 @@ class _NotesStepState extends State<NotesStep> {
           ),
           _buildSummaryItem(
             'Tercih Edilen Zaman',
-            '${DateFormat('d MMMM, EEEE', 'tr_TR').format(quoteProvider.preferredDate!)} • ${quoteProvider.preferredTimeSlot}',
+            quoteProvider.preferredDate != null
+                ? '${DateFormat('d MMMM, EEEE', 'tr_TR').format(quoteProvider.preferredDate!)}${quoteProvider.preferredTimeSlot != null ? ' • ${quoteProvider.preferredTimeSlot}' : ''}'
+                : 'Farketmez (Herhangi bir zaman)',
             Icons.calendar_today,
             Colors.amber.shade700,
           ),
@@ -288,14 +291,7 @@ class _NotesStepState extends State<NotesStep> {
                   : () async {
                       final success = await quoteProvider.createQuoteRequest();
                       if (success && mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Teklif talebiniz başarıyla oluşturuldu.',
-                            ),
-                          ),
-                        );
+                        context.go('/quote-success');
                       }
                     },
               style: ElevatedButton.styleFrom(

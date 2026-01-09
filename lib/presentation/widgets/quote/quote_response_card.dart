@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../data/models/quote_response.dart';
+import '../../../core/theme/app_colors.dart';
 
 class QuoteResponseCard extends StatelessWidget {
   final QuoteResponse response;
@@ -13,28 +14,28 @@ class QuoteResponseCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.pink.shade50),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primary.withOpacity(0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppColors.primary.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.nudeLight,
+                    borderRadius: BorderRadius.circular(16),
                     image: venue?.imageUrl != null
                         ? DecorationImage(
                             image: NetworkImage(venue!.imageUrl!),
@@ -43,7 +44,11 @@ class QuoteResponseCard extends StatelessWidget {
                         : null,
                   ),
                   child: venue?.imageUrl == null
-                      ? const Icon(Icons.store, color: Colors.grey)
+                      ? const Icon(
+                          Icons.storefront_rounded,
+                          color: AppColors.primary,
+                          size: 30,
+                        )
                       : null,
                 ),
                 const SizedBox(width: 16),
@@ -55,27 +60,34 @@ class QuoteResponseCard extends StatelessWidget {
                         venue?.name ?? 'Mekan Adı',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 18,
+                          color: AppColors.black,
+                          letterSpacing: -0.5,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.star, size: 14, color: Colors.amber),
+                          const Icon(
+                            Icons.star_rounded,
+                            size: 16,
+                            color: Colors.amber,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             venue?.rating.toString() ?? '0.0',
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
+                              color: AppColors.black,
                             ),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '(${venue?.ratingCount ?? 0})',
                             style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
+                              fontSize: 13,
+                              color: AppColors.gray500,
                             ),
                           ),
                         ],
@@ -85,74 +97,113 @@ class QuoteResponseCard extends StatelessWidget {
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+                    horizontal: 14,
+                    vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.pink.shade50,
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
                     '${response.price.toStringAsFixed(0)} TL',
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.pink,
-                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.primary,
+                      fontSize: 18,
                     ),
                   ),
                 ),
               ],
             ),
             if (response.message != null && response.message!.isNotEmpty) ...[
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  response.message!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade700,
-                    fontStyle: FontStyle.italic,
+                  color: AppColors.backgroundLight,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(0.05),
                   ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.format_quote_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        response.message!,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.gray700,
+                          height: 1.5,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // TODO: Navigate to venue details
-                    },
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    height: 52,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        // TODO: Navigate to venue details
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: AppColors.primary.withOpacity(0.2),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        foregroundColor: AppColors.primary,
+                      ),
+                      child: const Text(
+                        'Profili Gör',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                    child: const Text('Profili Gör'),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Navigate to chat
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pink,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // TODO: Navigate to chat
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'Randevu Al',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                    child: const Text('Randevu Al / Mesaj'),
                   ),
                 ),
               ],
