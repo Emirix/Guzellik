@@ -369,7 +369,7 @@ class DiscoveryProvider extends ChangeNotifier {
 
   Future<void> updateManualLocation({
     required String city,
-    required String district,
+    String district = '',
     int? provinceId,
     String? districtId,
     double? latitude,

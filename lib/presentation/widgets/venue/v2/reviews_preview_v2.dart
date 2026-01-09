@@ -24,6 +24,7 @@ class ReviewsPreviewV2 extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Header with title and "See All" button
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -36,129 +37,161 @@ class ReviewsPreviewV2 extends StatelessWidget {
             ),
             TextButton(
               onPressed: onSeeAll,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
               child: Text(
                 'Tümünü Gör (${venue.ratingCount})',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
+        // Review Card or Empty State
         if (latestReview == null)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.nude),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.rate_review_outlined,
-                  color: AppColors.gray300,
-                  size: 32,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Henüz değerlendirme yok',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.gray500,
-                  ),
-                ),
-              ],
-            ),
-          )
+          _buildEmptyState()
         else
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.nude),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x05000000),
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
+          _buildReviewCard(latestReview),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.nude),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.rate_review_outlined, color: AppColors.gray300, size: 40),
+          const SizedBox(height: 12),
+          Text(
+            'Henüz değerlendirme yok',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.gray500,
+              fontWeight: FontWeight.w500,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundImage: latestReview.userAvatarUrl != null
-                              ? NetworkImage(latestReview.userAvatarUrl!)
-                              : null,
-                          backgroundColor: AppColors.gray100,
-                          child: latestReview.userAvatarUrl == null
-                              ? const Icon(
-                                  Icons.person,
-                                  size: 16,
-                                  color: AppColors.gray400,
-                                )
-                              : null,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          latestReview.userFullName ?? 'Anonim Kullanıcı',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.gray900,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'İlk değerlendirmeyi siz yapın!',
+            style: AppTextStyles.caption.copyWith(color: AppColors.gray400),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewCard(Review review) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.nude),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // User info and date row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  // User Avatar
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.gray100,
+                    ),
+                    child: review.userAvatarUrl != null
+                        ? ClipOval(
+                            child: Image.network(
+                              review.userAvatarUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Icon(
+                                Icons.person,
+                                size: 18,
+                                color: AppColors.gray400,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            Icons.person,
+                            size: 18,
+                            color: AppColors.gray400,
                           ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      _formatDate(latestReview.createdAt),
-                      style: const TextStyle(
-                        color: AppColors.gray400,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: List.generate(
-                    5,
-                    (index) => Icon(
-                      index < latestReview.rating.round()
-                          ? Icons.star_rounded
-                          : Icons.star_outline_rounded,
-                      color: AppColors.gold,
-                      size: 16,
-                    ),
                   ),
-                ),
-                if (latestReview.comment != null &&
-                    latestReview.comment!.isNotEmpty) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(width: 10),
+                  // User Name
                   Text(
-                    latestReview.comment!,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.gray600,
-                      height: 1.5,
-                      fontSize: 13,
+                    review.userFullName ?? 'Anonim Kullanıcı',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.gray900,
+                      fontSize: 14,
                     ),
                   ),
                 ],
-              ],
+              ),
+              // Date
+              Text(
+                _formatDate(review.createdAt),
+                style: TextStyle(color: AppColors.gray400, fontSize: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Star Rating
+          Row(
+            children: List.generate(
+              5,
+              (index) => Icon(
+                index < review.rating.round()
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
+                color: AppColors.gold,
+                size: 16,
+              ),
             ),
           ),
-      ],
+          // Comment
+          if (review.comment != null && review.comment!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              review.comment!,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.gray600,
+                height: 1.5,
+                fontSize: 14,
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -169,6 +202,8 @@ class ReviewsPreviewV2 extends StatelessWidget {
     if (difference.inDays == 0) return 'Bugün';
     if (difference.inDays == 1) return 'Dün';
     if (difference.inDays < 7) return '${difference.inDays} gün önce';
+    if (difference.inDays < 30)
+      return '${(difference.inDays / 7).floor()} hafta önce';
     return '${date.day}.${date.month}.${date.year}';
   }
 }

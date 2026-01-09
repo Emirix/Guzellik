@@ -74,6 +74,18 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Handle bar
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: AppColors.gray200,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -85,60 +97,113 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
                     color: AppColors.black,
                   ),
                 ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AppColors.gray100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, size: 18),
+                    padding: EdgeInsets.zero,
+                    color: AppColors.gray600,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF25D366).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.chat_bubble_outline,
-                  color: Color(0xFF25D366),
-                ),
-              ),
-              title: const Text(
-                'WhatsApp ile Yaz',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: const Text('Hızlı yanıt için WhatsApp hattımız'),
+            // WhatsApp Option
+            _buildContactOption(
+              icon: Icons.chat_bubble_outline,
+              iconColor: const Color(0xFF25D366),
+              title: 'WhatsApp ile Yaz',
+              subtitle: 'Hızlı yanıt için WhatsApp hattımız',
               onTap: () {
                 Navigator.pop(context);
-                _launchUrl('https://wa.me/905000000000');
+                final phone =
+                    venue.socialLinks['phone']?.toString() ??
+                    venue.socialLinks['whatsapp']?.toString() ??
+                    "905000000000";
+                _launchUrl('https://wa.me/$phone');
               },
             ),
-            const SizedBox(height: 8),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.call_outlined,
-                  color: AppColors.primary,
-                ),
-              ),
-              title: const Text(
-                'Ara',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: const Text('Doğrudan bilgi almak için bizi arayın'),
+            const SizedBox(height: 12),
+            // Call Option
+            _buildContactOption(
+              icon: Icons.call_outlined,
+              iconColor: AppColors.primary,
+              title: 'Ara',
+              subtitle: 'Doğrudan bilgi almak için bizi arayın',
               onTap: () {
                 Navigator.pop(context);
-                _launchUrl('tel:+905000000000');
+                final phone =
+                    venue.socialLinks['phone']?.toString() ??
+                    venue.socialLinks['whatsapp']?.toString() ??
+                    "905000000000";
+                _launchUrl('tel:+$phone');
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactOption({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.gray50,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: iconColor, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(fontSize: 13, color: AppColors.gray500),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: AppColors.gray400),
+            ],
+          ),
         ),
       ),
     );
@@ -151,16 +216,61 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
       body: Consumer<VenueDetailsProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.venue == null) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            );
           }
 
           if (provider.error != null && provider.venue == null) {
-            return Center(child: Text('Hata: ${provider.error}'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 48, color: AppColors.gray400),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Bir hata oluştu',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.gray700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => provider.loadVenueDetails(widget.venueId),
+                    child: Text('Tekrar Dene'),
+                  ),
+                ],
+              ),
+            );
           }
 
           final venue = provider.venue;
           if (venue == null) {
-            return const Center(child: Text('Mekan bulunamadı'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.location_off_outlined,
+                    size: 48,
+                    color: AppColors.gray400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Mekan bulunamadı',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.gray700,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
 
           return Stack(
@@ -170,13 +280,24 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
                     VenueHeroV2(venue: venue),
+                    // Rounded top overlay that goes over the hero image
                     SliverToBoxAdapter(
-                      child: Container(
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: AppColors.backgroundLight,
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(32),
+                      child: Transform.translate(
+                        offset: const Offset(0, -24),
+                        child: Container(
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: AppColors.backgroundLight,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(28),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 10,
+                                offset: const Offset(0, -4),
+                              ),
+                            ],
                           ),
                         ),
                       ),

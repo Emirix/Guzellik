@@ -17,45 +17,61 @@ class VenueQuickActionsV2 extends StatelessWidget {
     }
   }
 
+  String? get _phoneNumber {
+    // Try to get phone from socialLinks
+    if (venue.socialLinks.containsKey('phone')) {
+      return venue.socialLinks['phone']?.toString();
+    }
+    if (venue.socialLinks.containsKey('whatsapp')) {
+      return venue.socialLinks['whatsapp']?.toString();
+    }
+    return null;
+  }
+
+  String? get _instagramHandle {
+    if (venue.socialLinks.containsKey('instagram')) {
+      return venue.socialLinks['instagram']?.toString();
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildActionButton(
           icon: FontAwesomeIcons.whatsapp,
           label: 'WhatsApp',
-          backgroundColor: const Color(0xFF25D366),
-          iconColor: Colors.white,
-          onTap: () => _launchUrl(
-            'https://wa.me/905000000000',
-          ), // Replace with real phone
-        ),
-        _buildActionButton(
-          icon: Icons.call,
-          label: 'Ara',
-          backgroundColor: AppColors.primaryLight,
-          iconColor: AppColors.primary,
+          iconColor: const Color(0xFF25D366),
           onTap: () =>
-              _launchUrl('tel:+905000000000'), // Replace with real phone
+              _launchUrl('https://wa.me/${_phoneNumber ?? "905000000000"}'),
         ),
+        const SizedBox(width: 12),
         _buildActionButton(
-          icon: Icons.near_me,
+          icon: Icons.call_outlined,
+          label: 'Ara',
+          iconColor: AppColors.primary,
+          onTap: () => _launchUrl('tel:+${_phoneNumber ?? "905000000000"}'),
+        ),
+        const SizedBox(width: 12),
+        _buildActionButton(
+          icon: Icons.near_me_outlined,
           label: 'Yol Tarifi',
-          backgroundColor: const Color(0xFFE3F2FD),
           iconColor: const Color(0xFF1976D2),
           onTap: () => _launchUrl(
             'https://maps.google.com/?q=${venue.latitude},${venue.longitude}',
           ),
         ),
+        const SizedBox(width: 12),
         _buildActionButton(
           icon: FontAwesomeIcons.instagram,
           label: 'Instagram',
-          backgroundColor: AppColors.primaryLight,
-          iconColor: AppColors.primary,
+          iconColor: const Color(0xFFE1306C),
           onTap: () => _launchUrl(
-            'https://instagram.com/linaestetik',
-          ), // Replace with real IG
+            _instagramHandle != null
+                ? 'https://instagram.com/$_instagramHandle'
+                : 'https://instagram.com',
+          ),
         ),
       ],
     );
@@ -64,41 +80,46 @@ class VenueQuickActionsV2 extends StatelessWidget {
   Widget _buildActionButton({
     required IconData icon,
     required String label,
-    required Color backgroundColor,
     required Color iconColor,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x08000000),
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-              ],
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          children: [
+            // Icon Container - White with border, matching design
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.nude, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(child: Icon(icon, color: iconColor, size: 24)),
             ),
-            child: Icon(icon, color: iconColor, size: 26),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.gray700,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+            const SizedBox(height: 8),
+            // Label
+            Text(
+              label,
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.gray600,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -67,4 +67,21 @@ class AuthRepository {
 
   User? get currentUser => _supabase.currentUser;
   bool get isAuthenticated => _supabase.isAuthenticated;
+
+  /// Fetch user profile from database
+  Future<Map<String, dynamic>?> getProfile() async {
+    final userId = _supabase.currentUser?.id;
+    if (userId == null) return null;
+
+    try {
+      return await _supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+    } catch (e) {
+      print('Error fetching profile: $e');
+      return null;
+    }
+  }
 }

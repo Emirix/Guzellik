@@ -67,9 +67,9 @@ class SupabaseService {
     try {
       // Web Client ID is required for Supabase authentication
       const webClientId =
-          '759286962132-q35pra3foeb4h0fvdgv66ib06kass5vt.apps.googleusercontent.com';
+          '803888389890-u5uejjs8o8margekl0tckfd05v48fijp.apps.googleusercontent.com';
       const iosClientId =
-          '759286962132-q35pra3foeb4h0fvdgv66ib06kass5vt.apps.googleusercontent.com'; // Genelde aynı proje için benzerdir
+          '803888389890-u5uejjs8o8margekl0tckfd05v48fijp.apps.googleusercontent.com'; // Genelde aynı proje için benzerdir
 
       final GoogleSignIn googleSignIn = GoogleSignIn(
         clientId: iosClientId,

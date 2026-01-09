@@ -100,7 +100,25 @@ class AuthService {
       if (districtId != null) metadata['district_id'] = districtId;
 
       if (metadata.isNotEmpty) {
+        // Update Auth Metadata
         await _supabaseService.updateUserMetadata(metadata);
+
+        // Update profiles table in public schema
+        final userId = _supabaseService.currentUser?.id;
+        if (userId != null) {
+          final profileData = <String, dynamic>{};
+          if (fullName != null) profileData['full_name'] = fullName;
+          if (avatarUrl != null) profileData['avatar_url'] = avatarUrl;
+          if (provinceId != null) profileData['province_id'] = provinceId;
+          if (districtId != null) profileData['district_id'] = districtId;
+
+          if (profileData.isNotEmpty) {
+            await _supabaseService
+                .from('profiles')
+                .update(profileData)
+                .eq('id', userId);
+          }
+        }
       }
     } catch (e) {
       throw _handleAuthError(e);
@@ -115,6 +133,23 @@ class AuthService {
 
   /// Get user ID
   String? get userId => currentUser?.id;
+
+  /// Get user profile from database
+  Future<Map<String, dynamic>?> getProfile() async {
+    final uid = userId;
+    if (uid == null) return null;
+
+    try {
+      return await _supabaseService
+          .from('profiles')
+          .select()
+          .eq('id', uid)
+          .maybeSingle();
+    } catch (e) {
+      print('Error fetching profile: $e');
+      return null;
+    }
+  }
 
   /// Handle authentication errors
   String _handleAuthError(dynamic error) {

@@ -165,6 +165,21 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Check if user profile is complete (e.g. has province_id and district_id)
+  Future<bool> isProfileComplete() async {
+    try {
+      final profileData = await _authService.getProfile();
+      if (profileData == null) return false;
+
+      final provinceId = profileData['province_id'];
+      final districtId = profileData['district_id'];
+      return provinceId != null && districtId != null;
+    } catch (e) {
+      print('Error checking profile completion: $e');
+      return true; // Return true on error to avoid loops, but ideally handle properly
+    }
+  }
+
   /// Set loading state
   void _setLoading(bool value) {
     _isLoading = value;

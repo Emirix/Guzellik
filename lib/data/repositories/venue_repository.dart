@@ -14,7 +14,7 @@ class VenueRepository {
         .from('venue_categories')
         .select()
         .eq('is_active', true)
-        .order('order', ascending: true);
+        .order('name', ascending: true);
     return (response as List)
         .map((json) => VenueCategory.fromJson(json))
         .toList();

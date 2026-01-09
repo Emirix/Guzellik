@@ -8,6 +8,7 @@ import '../../presentation/screens/profile_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/auth/password_reset_screen.dart';
+import '../../presentation/screens/auth/complete_profile_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
 import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../presentation/screens/location_onboarding_screen.dart';
@@ -49,6 +50,14 @@ class AppRouter {
         path: '/password-reset',
         name: 'password-reset',
         builder: (context, state) => const PasswordResetScreen(),
+      ),
+      GoRoute(
+        path: '/complete-profile',
+        name: 'complete-profile',
+        builder: (context, state) {
+          final redirect = state.uri.queryParameters['redirect'];
+          return CompleteProfileScreen(redirectPath: redirect);
+        },
       ),
 
       // Main App Routes (Public)

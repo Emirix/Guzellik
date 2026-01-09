@@ -193,7 +193,7 @@ class LocationOnboardingProvider extends ChangeNotifier {
   /// Complete manual selection and finish onboarding
   Future<void> completeManualSelection({
     required String provinceName,
-    required String districtName,
+    String districtName = '',
     int? provinceId,
     String? districtId,
     double? latitude,

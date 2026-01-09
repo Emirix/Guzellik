@@ -22,10 +22,10 @@ class _VenueTabSwitcherDelegate extends SliverPersistentHeaderDelegate {
   _VenueTabSwitcherDelegate(this.tabController);
 
   @override
-  double get minExtent => 60;
+  double get minExtent => 56;
 
   @override
-  double get maxExtent => 60;
+  double get maxExtent => 56;
 
   @override
   Widget build(
@@ -35,18 +35,17 @@ class _VenueTabSwitcherDelegate extends SliverPersistentHeaderDelegate {
   ) {
     return Container(
       color: AppColors.backgroundLight,
-      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Container(
         height: 44,
-        margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.nude),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppColors.nude, width: 1),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowLight,
-              blurRadius: 4,
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
               offset: const Offset(0, 2),
             ),
           ],
@@ -56,27 +55,28 @@ class _VenueTabSwitcherDelegate extends SliverPersistentHeaderDelegate {
           labelColor: Colors.white,
           unselectedLabelColor: AppColors.gray600,
           indicator: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(20),
             color: AppColors.primary,
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
-                blurRadius: 4,
+                color: AppColors.primary.withOpacity(0.25),
+                blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
             ],
           ),
           indicatorSize: TabBarIndicatorSize.tab,
           dividerColor: Colors.transparent,
-          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
           labelPadding: EdgeInsets.zero,
+          padding: const EdgeInsets.all(3),
           labelStyle: AppTextStyles.subtitle2.copyWith(
             fontWeight: FontWeight.bold,
-            fontSize: 13,
+            fontSize: 12,
           ),
           unselectedLabelStyle: AppTextStyles.subtitle2.copyWith(
             fontWeight: FontWeight.w500,
-            fontSize: 13,
+            fontSize: 12,
           ),
           tabs: const [
             Tab(text: 'Hakkında'),

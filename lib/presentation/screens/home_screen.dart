@@ -55,34 +55,31 @@ class HomeScreen extends StatelessWidget {
               }
             },
             backgroundColor: Theme.of(context).primaryColor,
-            elevation: 8,
+            elevation: 4,
             shape: const CircleBorder(),
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    const Color(0xFFD4AF37), // Gold accent
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: const Icon(
-                Icons.request_quote,
-                color: Colors.white,
-                size: 28,
-              ),
+            child: const Icon(
+              Icons.request_quote,
+              color: Colors.white,
+              size: 28,
             ),
           ),
           floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
+              const _CustomFloatingActionButtonLocation(12),
           bottomNavigationBar: const CustomBottomNav(),
         );
       },
     );
+  }
+}
+
+class _CustomFloatingActionButtonLocation extends FloatingActionButtonLocation {
+  final double offsetY;
+  const _CustomFloatingActionButtonLocation(this.offsetY);
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final Offset standardOffset = FloatingActionButtonLocation.centerDocked
+        .getOffset(scaffoldGeometry);
+    return Offset(standardOffset.dx, standardOffset.dy + offsetY);
   }
 }

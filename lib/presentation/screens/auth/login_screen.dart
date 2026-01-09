@@ -38,6 +38,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (mounted) {
         if (success) {
+          // Check if profile is complete
+          final isComplete = await authProvider.isProfileComplete();
+          if (!mounted) return;
+
+          if (!isComplete) {
+            context.go(
+              '/complete-profile${widget.redirectPath != null ? "?redirect=${widget.redirectPath}" : ""}',
+            );
+            return;
+          }
+
           // Navigate to redirect path or home
           if (widget.redirectPath != null) {
             context.go(widget.redirectPath!);
@@ -59,13 +70,30 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleGoogleLogin() async {
     final authProvider = context.read<AuthProvider>();
 
-    // Yükleme animasyonunu göstermek için state'i güncelleyebiliriz
+    // Start loading
     final success = await authProvider.signInWithGoogle();
 
     if (!mounted) return;
 
     if (success) {
-      debugPrint('✅ Google Login Success - Redirecting...');
+      debugPrint('✅ Google Login Success - Checking profile completion...');
+
+      // Check if profile is complete
+      final isComplete = await authProvider.isProfileComplete();
+
+      if (!mounted) return;
+
+      if (!isComplete) {
+        debugPrint(
+          '⚠️ Profile incomplete - Redirecting to profile completion...',
+        );
+        context.go(
+          '/complete-profile${widget.redirectPath != null ? "?redirect=${widget.redirectPath}" : ""}',
+        );
+        return;
+      }
+
+      debugPrint('✅ Profile complete - Redirecting to destination...');
       // Başarılı girişte kesin yönlendirme
       if (widget.redirectPath != null) {
         context.go(widget.redirectPath!);

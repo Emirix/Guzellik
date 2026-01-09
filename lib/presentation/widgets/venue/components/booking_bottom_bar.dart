@@ -3,17 +3,19 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 /// Fixed bottom bar with booking button
-/// Displays total price (if available) and booking action button
+/// Displays starting price and booking action button
 class BookingBottomBar extends StatelessWidget {
   final VoidCallback onBookingTap;
   final double? rating;
   final int? reviewCount;
+  final double? startingPrice;
 
   const BookingBottomBar({
     super.key,
     required this.onBookingTap,
     this.rating,
     this.reviewCount,
+    this.startingPrice,
   });
 
   @override
@@ -22,7 +24,7 @@ class BookingBottomBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         border: Border(
-          top: BorderSide(color: AppColors.gray100.withOpacity(0.5), width: 1),
+          top: BorderSide(color: AppColors.gray100, width: 1),
         ),
         boxShadow: [
           BoxShadow(
@@ -33,47 +35,51 @@ class BookingBottomBar extends StatelessWidget {
         ],
       ),
       padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 20,
-        bottom: 20 + MediaQuery.of(context).padding.bottom,
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: 16 + MediaQuery.of(context).padding.bottom,
       ),
       child: Row(
         children: [
-          // Elegant Rating Section
+          // Price Section - Premium Design
           Expanded(
             flex: 2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
+                Text(
+                  'Hizmet Başlangıç',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.gray500,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: [
-                    const Icon(
-                      Icons.star_rounded,
-                      color: AppColors.gold,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 4),
                     Text(
-                      (rating ?? 0.0).toStringAsFixed(1),
+                      '₺${(startingPrice ?? 750).toStringAsFixed(0)}',
                       style: AppTextStyles.heading2.copyWith(
-                        color: AppColors.black,
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w800,
-                        fontSize: 22,
+                        fontSize: 20,
                         letterSpacing: -0.5,
                       ),
                     ),
+                    Text(
+                      '/seans',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.gray400,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${reviewCount ?? 0} Değerlendirme',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.gray500,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 11,
-                  ),
                 ),
               ],
             ),
@@ -81,17 +87,17 @@ class BookingBottomBar extends StatelessWidget {
 
           const SizedBox(width: 16),
 
-          // Action Button
+          // Action Button - Premium Gradient
           Expanded(
             flex: 3,
             child: Container(
-              height: 56,
+              height: 52,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 gradient: LinearGradient(
                   colors: [
                     AppColors.primary,
-                    AppColors.primary.withOpacity(0.85),
+                    AppColors.primary.withOpacity(0.9),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -99,42 +105,39 @@ class BookingBottomBar extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primary.withOpacity(0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 6),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: ElevatedButton(
-                onPressed: onBookingTap,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: AppColors.white,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onBookingTap,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.calendar_month_outlined,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Randevu Oluştur',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  elevation: 0,
-                  padding: EdgeInsets.zero,
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.chat_bubble_outline_rounded,
-                      size: 22,
-                      color: Colors.white,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'İletişime Geç',
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 16,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),
