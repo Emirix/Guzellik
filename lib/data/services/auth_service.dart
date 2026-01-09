@@ -30,6 +30,15 @@ class AuthService {
     }
   }
 
+  /// Sign in with Google
+  Future<AuthResponse> signInWithGoogle() async {
+    try {
+      return await _supabaseService.signInWithGoogle();
+    } catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
   /// Sign up with email and password
   Future<AuthResponse> signUp({
     required String email,
@@ -121,6 +130,6 @@ class AuthService {
           return error.message;
       }
     }
-    return 'Bir hata oluştu. Lütfen tekrar deneyin';
+    return error.toString();
   }
 }

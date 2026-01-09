@@ -58,7 +58,15 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            // Safely navigate back - check if we can pop first
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              // If cannot pop (this is the only route), go to login
+              context.go('/login');
+            }
+          },
         ),
       ),
       body: SafeArea(

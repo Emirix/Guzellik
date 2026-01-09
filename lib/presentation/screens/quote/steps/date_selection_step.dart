@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../providers/quote_provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../widgets/common/searchable_location_dropdown.dart';
 
 class DateSelectionStep extends StatefulWidget {
   final VoidCallback onNext;
@@ -126,54 +127,55 @@ class _DateSelectionStepState extends State<DateSelectionStep> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Hizmet Nerede Verilsin?',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(
-              child: _buildDropdown<int>(
-                label: 'İl Seçin',
-                value: _selectedProvinceId,
-                items: quoteProvider.provinces.map((p) {
-                  return DropdownMenuItem(
-                    value: p.id,
-                    child: Text(p.name, style: const TextStyle(fontSize: 14)),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedProvinceId = value;
-                    _selectedDistrictId = null;
-                  });
-                  quoteProvider.setLocation(value, null);
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildDropdown<String>(
-                label: 'İlçe (Opsiyonel)',
-                value: _selectedDistrictId,
-                items: quoteProvider.districts.map((d) {
-                  return DropdownMenuItem(
-                    value: d.id,
-                    child: Text(d.name, style: const TextStyle(fontSize: 14)),
-                  );
-                }).toList(),
-                onChanged: _selectedProvinceId == null
-                    ? null
-                    : (value) {
-                        setState(() {
-                          _selectedDistrictId = value;
-                        });
-                        quoteProvider.setLocation(_selectedProvinceId, value);
-                      },
-              ),
+            const Icon(Icons.location_on, color: Colors.pink, size: 20),
+            const SizedBox(width: 8),
+            const Text(
+              'Hizmet Nerede Verilsin?',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+        // Province Selection
+        SearchableLocationDropdown<int>(
+          label: 'İl',
+          hint: 'İl Seçiniz',
+          value: _selectedProvinceId,
+          prefixIcon: Icons.location_city,
+          items: quoteProvider.provinces.map((p) {
+            return SearchableDropdownItem(value: p.id, label: p.name);
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedProvinceId = value;
+              _selectedDistrictId = null;
+            });
+            quoteProvider.setLocation(value, null);
+          },
+          validator: (value) {
+            if (value == null) return 'İl seçimi zorunludur';
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+        // District Selection
+        SearchableLocationDropdown<String>(
+          label: 'İlçe (Opsiyonel)',
+          hint: _selectedProvinceId == null ? 'Önce il seçin' : 'İlçe Seçiniz',
+          value: _selectedDistrictId,
+          prefixIcon: Icons.apartment,
+          enabled: _selectedProvinceId != null,
+          items: quoteProvider.districts.map((d) {
+            return SearchableDropdownItem(value: d.id, label: d.name);
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedDistrictId = value;
+            });
+            quoteProvider.setLocation(_selectedProvinceId, value);
+          },
         ),
       ],
     );

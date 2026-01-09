@@ -1,4 +1,4 @@
-package com.guzellik.guzellik_app
+package com.emx.guzellikharitam
 
 import io.flutter.embedding.android.FlutterActivity
 

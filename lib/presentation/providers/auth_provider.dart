@@ -57,6 +57,23 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Sign in with Google
+  Future<bool> signInWithGoogle() async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final response = await _authService.signInWithGoogle();
+      _currentUser = response.user;
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
   /// Sign up with email and password
   Future<bool> signUp({
     required String email,

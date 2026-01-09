@@ -34,7 +34,15 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back),
-                    onPressed: () => context.pop(),
+                    onPressed: () {
+                      // Safely navigate back - check if we can pop first
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        // If cannot pop (this is the only route), go to home
+                        context.go('/');
+                      }
+                    },
                   ),
                   const Text(
                     'Profilim',
@@ -218,11 +226,10 @@ class ProfileScreen extends StatelessWidget {
                                 width: double.infinity,
                                 height: 56,
                                 child: OutlinedButton(
-                                  onPressed: () async {
-                                    await authProvider.signOut();
-                                    if (context.mounted) {
-                                      context.go('/');
-                                    }
+                                  onPressed: () {
+                                    // Önce login'e yönlendir, sonra signOut
+                                    context.go('/login');
+                                    authProvider.signOut();
                                   },
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.primary,

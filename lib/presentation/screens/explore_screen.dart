@@ -5,7 +5,6 @@ import '../providers/discovery_provider.dart';
 import '../providers/app_state_provider.dart';
 import '../widgets/discovery/map_view.dart';
 import '../widgets/discovery/venue_list_view.dart';
-import '../widgets/discovery/search_bar.dart';
 import '../widgets/discovery/view_toggle.dart';
 import '../widgets/discovery/location_selection_bottom_sheet.dart';
 import '../widgets/discovery/featured_venues.dart';
@@ -75,11 +74,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                       : null,
                 ),
                 child: Column(
-                  children: [
-                    _buildLocationHeader(context, provider),
-                    const SizedBox(height: 16),
-                    const DiscoverySearchBar(),
-                  ],
+                  children: [_buildLocationHeader(context, provider)],
                 ),
               ),
             ),
@@ -249,11 +244,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     child: Column(
-                      children: [
-                        _buildLocationHeader(context, provider),
-                        const SizedBox(height: 16),
-                        const DiscoverySearchBar(),
-                      ],
+                      children: [_buildLocationHeader(context, provider)],
                     ),
                   ),
                 ),

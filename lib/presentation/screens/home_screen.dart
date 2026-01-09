@@ -9,14 +9,24 @@ import 'search_screen.dart';
 import 'notifications_screen.dart';
 import 'profile_screen.dart';
 
+import '../../core/widgets/auth_guard.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   final List<Widget> _screens = const [
     ExploreScreen(),
     SearchScreen(),
-    NotificationsScreen(),
-    ProfileScreen(),
+    AuthGuard(
+      requiredFor: 'Bildirimler',
+      redirectPath: '/notifications',
+      child: NotificationsScreen(),
+    ),
+    AuthGuard(
+      requiredFor: 'Profilim',
+      redirectPath: '/profile',
+      child: ProfileScreen(),
+    ),
   ];
 
   @override
