@@ -35,43 +35,65 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize Firebase
-  try {
-    await Firebase.initializeApp();
-    print('Firebase initialized successfully');
-  } catch (e) {
-    print('Firebase initialization error: $e');
-    // Continue without Firebase for now
-  }
+  // ============================================
+  // OPTIMIZED: Parallel Service Initialization
+  // ============================================
 
-  // Initialize Supabase
-  try {
-    await SupabaseService.initialize();
-    print('Supabase initialized successfully');
-  } catch (e) {
-    print('Supabase initialization error: $e');
-    // Continue without Supabase for now
-  }
+  // Phase 1: Core services (Firebase & Supabase) - paralel başlatma
+  await Future.wait([_initFirebase(), _initSupabase()], eagerError: false);
 
-  // Initialize Notification Service
-  try {
-    await NotificationService.instance.initialize();
-    print('Notification service initialized successfully');
-  } catch (e) {
-    print('Notification service initialization error: $e');
-    // Continue without notifications for now
-  }
-
-  // Initialize AdMob
-  try {
-    await AdService.instance.initialize();
-    print('AdMob initialized successfully');
-  } catch (e) {
-    print('AdMob initialization error: $e');
-    // Continue without ads for now
-  }
+  // Phase 2: Dependent services - paralel başlatma
+  await Future.wait([_initNotifications(), _initAdMob()], eagerError: false);
 
   runApp(const GuzellikApp());
+}
+
+/// Firebase başlatma (izole hata yönetimi)
+Future<bool> _initFirebase() async {
+  try {
+    await Firebase.initializeApp();
+    debugPrint('✓ Firebase initialized');
+    return true;
+  } catch (e) {
+    debugPrint('✗ Firebase error: $e');
+    return false;
+  }
+}
+
+/// Supabase başlatma (izole hata yönetimi)
+Future<bool> _initSupabase() async {
+  try {
+    await SupabaseService.initialize();
+    debugPrint('✓ Supabase initialized');
+    return true;
+  } catch (e) {
+    debugPrint('✗ Supabase error: $e');
+    return false;
+  }
+}
+
+/// Notification servisi başlatma
+Future<bool> _initNotifications() async {
+  try {
+    await NotificationService.instance.initialize();
+    debugPrint('✓ Notifications initialized');
+    return true;
+  } catch (e) {
+    debugPrint('✗ Notifications error: $e');
+    return false;
+  }
+}
+
+/// AdMob başlatma
+Future<bool> _initAdMob() async {
+  try {
+    await AdService.instance.initialize();
+    debugPrint('✓ AdMob initialized');
+    return true;
+  } catch (e) {
+    debugPrint('✗ AdMob error: $e');
+    return false;
+  }
 }
 
 class GuzellikApp extends StatelessWidget {

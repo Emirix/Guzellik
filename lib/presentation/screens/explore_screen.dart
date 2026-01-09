@@ -40,11 +40,13 @@ class _ExploreScreenState extends State<ExploreScreen>
         // Show map or list view
         return Stack(
           children: [
-            // 1. Content (Map or List)
+            // 1. Content (Map or List) - RepaintBoundary ile optimize
             Positioned.fill(
-              child: provider.viewMode == DiscoveryViewMode.map
-                  ? const DiscoveryMapView()
-                  : const VenueListView(),
+              child: RepaintBoundary(
+                child: provider.viewMode == DiscoveryViewMode.map
+                    ? const DiscoveryMapView()
+                    : const VenueListView(),
+              ),
             ),
 
             // 2. Top Header & Search Bar
@@ -65,8 +67,9 @@ class _ExploreScreenState extends State<ExploreScreen>
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.white.withOpacity(0.9),
-                            Colors.white.withOpacity(0.5),
+                            // Performans: withOpacity yerine const Color
+                            const Color.fromRGBO(255, 255, 255, 0.9),
+                            const Color.fromRGBO(255, 255, 255, 0.5),
                             Colors.transparent,
                           ],
                         )
@@ -125,7 +128,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: SvgPicture.asset(
@@ -220,7 +223,8 @@ class _ExploreScreenState extends State<ExploreScreen>
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              // Performans: withOpacity yerine const Color
+              color: const Color.fromRGBO(0, 0, 0, 0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -309,7 +313,8 @@ class _ExploreScreenState extends State<ExploreScreen>
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          // Performans: withOpacity yerine const Color
+                          color: const Color.fromRGBO(0, 0, 0, 0.2),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),

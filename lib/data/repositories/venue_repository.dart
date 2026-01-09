@@ -5,19 +5,44 @@ import '../models/review.dart';
 import '../models/venue_photo.dart';
 import '../models/venue_category.dart';
 import '../services/supabase_service.dart';
+import '../../core/services/cache_service.dart';
 
+/// Venue verilerini yöneten repository
+/// Singleton pattern - uygulama genelinde tek instance
 class VenueRepository {
-  final SupabaseService _supabase = SupabaseService.instance;
+  // Singleton pattern
+  static final VenueRepository _instance = VenueRepository._internal();
+  static VenueRepository get instance => _instance;
+  factory VenueRepository() => _instance;
+  VenueRepository._internal();
 
+  final SupabaseService _supabase = SupabaseService.instance;
+  final CacheService _cache = CacheService.instance;
+
+  /// Kategorileri cache'den veya API'den getirir (30 dk cache)
   Future<List<VenueCategory>> getVenueCategories() async {
+    // Cache'den kontrol et
+    final cached = _cache.get<List<VenueCategory>>(CacheService.categoriesKey);
+    if (cached != null) return cached;
+
+    // API'den çek
     final response = await _supabase
         .from('venue_categories')
         .select()
         .eq('is_active', true)
         .order('order', ascending: true);
-    return (response as List)
+    final categories = (response as List)
         .map((json) => VenueCategory.fromJson(json))
         .toList();
+
+    // Cache'e kaydet
+    _cache.set(
+      CacheService.categoriesKey,
+      categories,
+      ttlSeconds: CacheService.categoriesTTL,
+    );
+
+    return categories;
   }
 
   Future<List<Venue>> getVenues() async {
@@ -27,28 +52,56 @@ class VenueRepository {
     return (response as List).map((json) => Venue.fromJson(json)).toList();
   }
 
+  /// Featured venues - konum varsa hesaplanır, yoksa cache kullanılır (5 dk)
   Future<List<Venue>> getFeaturedVenues({double? lat, double? lng}) async {
     if (lat != null && lng != null) {
-      // Use searchVenues to get distances if we have a location
+      // Konum varsa distance hesaplaması gerekir, cache kullanma
       return searchVenues(
         lat: lat,
         lng: lng,
         filter: VenueFilter(minRating: 0.0),
       );
     }
+
+    // Cache'den kontrol et (konum olmadan)
+    final cached = _cache.get<List<Venue>>(CacheService.featuredVenuesKey);
+    if (cached != null) return cached;
+
     final response = await _supabase
         .from('featured_venues')
         .select('*, venue_categories(*)');
-    return (response as List).map((json) => Venue.fromJson(json)).toList();
+    final venues = (response as List)
+        .map((json) => Venue.fromJson(json))
+        .toList();
+
+    // Cache'e kaydet
+    _cache.set(
+      CacheService.featuredVenuesKey,
+      venues,
+      ttlSeconds: CacheService.featuredVenuesTTL,
+    );
+
+    return venues;
   }
 
+  /// Venue detayları - 2 dk cache
   Future<Venue?> getVenueById(String id) async {
+    // Cache'den kontrol et
+    final cacheKey = CacheService.venueDetailKey(id);
+    final cached = _cache.get<Venue>(cacheKey);
+    if (cached != null) return cached;
+
     final response = await _supabase
         .from('venues_with_coords')
         .select('*, venue_categories(*)')
         .eq('id', id)
         .single();
-    return Venue.fromJson(response);
+    final venue = Venue.fromJson(response);
+
+    // Cache'e kaydet
+    _cache.set(cacheKey, venue, ttlSeconds: CacheService.venueDetailsTTL);
+
+    return venue;
   }
 
   Future<List<Venue>> getVenuesNearby(
@@ -139,12 +192,13 @@ class VenueRepository {
       return (response as List)
           .where((item) => item['venues_with_coords'] != null)
           .map((item) {
-        final venueJson = Map<String, dynamic>.from(
-          item['venues_with_coords'],
-        );
-        venueJson['is_following'] = true;
-        return Venue.fromJson(venueJson);
-      }).toList();
+            final venueJson = Map<String, dynamic>.from(
+              item['venues_with_coords'],
+            );
+            venueJson['is_following'] = true;
+            return Venue.fromJson(venueJson);
+          })
+          .toList();
     } catch (e) {
       print('Error getting followed venues: $e');
       return [];
@@ -221,12 +275,13 @@ class VenueRepository {
       return (response as List)
           .where((item) => item['venues_with_coords'] != null)
           .map((item) {
-        final venueJson = Map<String, dynamic>.from(
-          item['venues_with_coords'],
-        );
-        venueJson['is_favorited'] = true;
-        return Venue.fromJson(venueJson);
-      }).toList();
+            final venueJson = Map<String, dynamic>.from(
+              item['venues_with_coords'],
+            );
+            venueJson['is_favorited'] = true;
+            return Venue.fromJson(venueJson);
+          })
+          .toList();
     } catch (e) {
       print('Error getting favorite venues: $e');
       return [];
@@ -261,8 +316,8 @@ class VenueRepository {
     // Use categories directly as they now come from the database
     final List<String>? mappedCategories =
         (filter != null && filter.categories.isNotEmpty)
-            ? filter.categories
-            : null;
+        ? filter.categories
+        : null;
 
     try {
       final List<dynamic> response = await _supabase.rpc(
@@ -326,16 +381,18 @@ class VenueRepository {
           'p_lng': lng,
           'p_province_id': provinceId,
           'p_district_id': districtId,
-          'p_max_dist_meters':
-              maxDistanceKm != null ? maxDistanceKm * 1000 : null,
+          'p_max_dist_meters': maxDistanceKm != null
+              ? maxDistanceKm * 1000
+              : null,
           'p_only_verified': onlyVerified,
           'p_only_preferred': onlyPreferred,
           'p_only_hygienic': onlyHygienic,
           'p_min_rating': minRating,
           'p_sort_by': sortBy,
           'p_limit': limit,
-          'p_service_ids':
-              (serviceIds?.isNotEmpty ?? false) ? serviceIds : null,
+          'p_service_ids': (serviceIds?.isNotEmpty ?? false)
+              ? serviceIds
+              : null,
         },
       );
 
@@ -409,10 +466,11 @@ class VenueRepository {
 
       await _supabase
           .from('reviews')
-          .update({'rating': rating, 'comment': comment}).match({
-        'id': reviewId,
-        'user_id': userId, // Ensure user owns the review
-      });
+          .update({'rating': rating, 'comment': comment})
+          .match({
+            'id': reviewId,
+            'user_id': userId, // Ensure user owns the review
+          });
     } catch (e) {
       print('Error updating review: $e');
       rethrow;
