@@ -19,7 +19,7 @@
   - `test`: Test ekleme/düzenleme
   - `build`: Yapılandırma/bağımlılık değişikliği (pubspec vb.)
   - `chore`: Diğer yardımcı değişiklikler
-- **ZORUNLU Otomatik Commit**: HER görev (task) veya anlamlı işlem tamamlandığında, yapılan değişiklikleri açıklayan bir git commit'i yukarıdaki kurallara uygun olarak **DERHAL** atılmalıdır. Bu kural her işlemden sonra uygulanmalıdır.
+- **ZORUNLU Otomatik Commit**: HER görev (task) veya anlamlı işlem tamamlandığında, yapılan değişiklikleri açıklayan bir git commit'i yukarıdaki kurallara uygun olarak **DERHAL** ve **Kullanıcı Onayı Beklemeden** (`SafeToAutoRun: true` kullanarak) atılmalıdır. Bu kural her işlemden sonra istisnasız uygulanmalıdır.
 - **Kurallar**: 
   - Açıklama küçük harfle başlamalıdır.
   - Satır sonuna nokta konulmamalıdır.
