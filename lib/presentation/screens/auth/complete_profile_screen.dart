@@ -203,7 +203,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'En uygun teklifleri sunabilmemiz için konum bilgilerinizi seçiniz.',
+                      'Size en yakın yerleri gösterebilmemiz için konum bilgilerinizi seçiniz.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,

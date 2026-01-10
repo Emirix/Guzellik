@@ -11,7 +11,7 @@ import '../widgets/discovery/location_selection_bottom_sheet.dart';
 import '../widgets/discovery/featured_venues.dart';
 import '../widgets/discovery/category_icons.dart';
 import '../widgets/discovery/nearby_venues.dart';
-import '../widgets/discovery/map_preview_card.dart';
+import '../widgets/discovery/campaign_slider.dart';
 import '../widgets/common/ad_banner_widget.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -331,11 +331,11 @@ class _ExploreScreenState extends State<ExploreScreen>
                   ),
                 ),
 
-                // Map Preview Card - Harita Görünümü
+                // Campaign Slider
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.only(bottom: 24),
-                    child: MapPreviewCard(),
+                    child: CampaignSlider(),
                   ),
                 ),
 

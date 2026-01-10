@@ -11,8 +11,10 @@ class Province {
     this.latitude,
     this.longitude,
   });
+  
+  
 
-  factory Province.fromJson(Map<String, dynamic> json) {
+  factory Province.fromJson(Map<String, dynamic> json) {  
     return Province(
       id: json['id'] as int,
       name: json['name'] as String,

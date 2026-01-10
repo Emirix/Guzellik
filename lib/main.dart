@@ -13,7 +13,6 @@ import 'data/services/location_service.dart';
 import 'data/services/location_preferences.dart';
 import 'data/repositories/venue_repository.dart';
 import 'data/repositories/location_repository.dart';
-import 'data/repositories/quote_repository.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/app_state_provider.dart';
 import 'presentation/providers/discovery_provider.dart';
@@ -23,8 +22,8 @@ import 'presentation/providers/review_submission_provider.dart';
 import 'presentation/providers/search_provider.dart';
 import 'presentation/providers/location_onboarding_provider.dart';
 import 'presentation/providers/category_provider.dart';
-import 'presentation/providers/quote_provider.dart';
 import 'presentation/providers/favorites_provider.dart';
+import 'presentation/providers/campaign_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -106,21 +105,13 @@ class GuzellikApp extends StatelessWidget {
         Provider(create: (_) => LocationService()),
         Provider(create: (_) => LocationPreferences()),
         Provider(create: (_) => LocationRepository()),
-        Provider(
-          create: (_) => QuoteRepository(SupabaseService.instance.client),
-        ),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AppStateProvider()),
         ChangeNotifierProvider(create: (_) => DiscoveryProvider()),
         ChangeNotifierProvider(create: (_) => VenueDetailsProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
-        ChangeNotifierProvider(
-          create: (context) => QuoteProvider(
-            context.read<QuoteRepository>(),
-            context.read<LocationRepository>(),
-          ),
-        ),
+        ChangeNotifierProvider(create: (_) => CampaignProvider()),
         ChangeNotifierProvider(
           create: (_) => ReviewSubmissionProvider(VenueRepository()),
         ),

@@ -5,6 +5,7 @@ import '../../presentation/screens/explore_screen.dart';
 import '../../presentation/screens/favorites_screen.dart';
 import '../../presentation/screens/notifications_screen.dart';
 import '../../presentation/screens/profile_screen.dart';
+import '../../presentation/screens/campaigns_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/auth/password_reset_screen.dart';
@@ -12,11 +13,6 @@ import '../../presentation/screens/auth/complete_profile_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
 import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../presentation/screens/location_onboarding_screen.dart';
-import '../../presentation/screens/quote/quote_request_screen.dart';
-import '../../presentation/screens/quote/my_quotes_screen.dart';
-import '../../presentation/screens/quote/quote_detail_screen.dart';
-import '../../presentation/screens/quote/quote_success_screen.dart';
-import '../../data/models/quote_request.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
 
@@ -104,42 +100,6 @@ class AppRouter {
           child: ProfileScreen(),
         ),
       ),
-      GoRoute(
-        path: '/quote-request',
-        name: 'quote-request',
-        builder: (context, state) => const AuthGuard(
-          requiredFor: 'Teklif İste',
-          redirectPath: '/quote-request',
-          child: QuoteRequestScreen(),
-        ),
-      ),
-
-      GoRoute(
-        path: '/my-quotes',
-        name: 'my-quotes',
-        builder: (context, state) => const AuthGuard(
-          requiredFor: 'Tekliflerim',
-          redirectPath: '/my-quotes',
-          child: MyQuotesScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/quote-success',
-        name: 'quote-success',
-        builder: (context, state) => const QuoteSuccessScreen(),
-      ),
-      GoRoute(
-        path: '/quote-detail',
-        name: 'quote-detail',
-        builder: (context, state) {
-          final quote = state.extra as QuoteRequest;
-          return AuthGuard(
-            requiredFor: 'Teklif Detayı',
-            redirectPath: '/my-quotes',
-            child: QuoteDetailScreen(quote: quote),
-          );
-        },
-      ),
       // Venue Details (Public)
       GoRoute(
         path: '/venue/:id',
@@ -148,6 +108,16 @@ class AppRouter {
           final venueId = state.pathParameters['id']!;
           final venue = state.extra as Venue?;
           return VenueDetailsScreen(venueId: venueId, initialVenue: venue);
+        },
+      ),
+
+      // Campaigns (Public)
+      GoRoute(
+        path: '/campaigns',
+        name: 'campaigns',
+        builder: (context, state) {
+          final venueId = state.uri.queryParameters['venueId'];
+          return CampaignsScreen(venueId: venueId);
         },
       ),
     ],
