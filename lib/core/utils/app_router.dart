@@ -120,6 +120,30 @@ class AppRouter {
           return CampaignsScreen(venueId: venueId);
         },
       ),
+
+      // Business Routes (Require Business Account)
+      GoRoute(
+        path: '/business/subscription',
+        name: 'business-subscription',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Abonelik',
+          redirectPath: '/business/subscription',
+          child: Scaffold(
+            body: Center(child: Text('Subscription Screen - Coming Soon')),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/business/store',
+        name: 'business-store',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Mağaza',
+          redirectPath: '/business/store',
+          child: Scaffold(
+            body: Center(child: Text('Store Screen - Coming Soon')),
+          ),
+        ),
+      ),
     ],
 
     // Error handling

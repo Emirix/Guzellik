@@ -24,6 +24,8 @@ import 'presentation/providers/location_onboarding_provider.dart';
 import 'presentation/providers/category_provider.dart';
 import 'presentation/providers/favorites_provider.dart';
 import 'presentation/providers/campaign_provider.dart';
+import 'presentation/providers/business_provider.dart';
+import 'presentation/providers/subscription_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -128,6 +130,8 @@ class GuzellikApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => FavoritesProvider(venueRepository: VenueRepository()),
         ),
+        ChangeNotifierProvider(create: (_) => BusinessProvider()),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
       ],
       child: Consumer<AppStateProvider>(
         builder: (context, appState, _) {

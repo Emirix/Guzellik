@@ -1,0 +1,112 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/app_state_provider.dart';
+
+/// Business bottom navigation bar
+/// Shows 3 tabs: Profilim, Abonelik, Mağaza
+class BusinessBottomNav extends StatelessWidget {
+  const BusinessBottomNav({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AppStateProvider>(
+      builder: (context, appState, _) {
+        final selectedIndex = appState.selectedBottomNavIndex;
+
+        return BottomAppBar(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          height: 65,
+          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              _buildNavItem(
+                context,
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
+                label: 'Profilim',
+                isSelected: selectedIndex == 0,
+                onTap: () => _handleTap(context, appState, 0),
+              ),
+              _buildNavItem(
+                context,
+                icon: Icons.card_membership_outlined,
+                activeIcon: Icons.card_membership,
+                label: 'Abonelik',
+                isSelected: selectedIndex == 1,
+                onTap: () => _handleTap(context, appState, 1),
+              ),
+              _buildNavItem(
+                context,
+                icon: Icons.store_outlined,
+                activeIcon: Icons.store,
+                label: 'Mağaza',
+                isSelected: selectedIndex == 2,
+                onTap: () => _handleTap(context, appState, 2),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNavItem(
+    BuildContext context, {
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final color = isSelected
+        ? Theme.of(context).primaryColor
+        : Theme.of(context).hintColor;
+
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          height: double.infinity,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(isSelected ? activeIcon : icon, color: color, size: 26),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleTap(BuildContext context, AppStateProvider appState, int index) {
+    appState.setBottomNavIndex(index);
+
+    // Navigate based on index
+    switch (index) {
+      case 0:
+        // Profile - already handled by main navigation
+        break;
+      case 1:
+        // Subscription
+        Navigator.of(context).pushNamed('/business/subscription');
+        break;
+      case 2:
+        // Store
+        Navigator.of(context).pushNamed('/business/store');
+        break;
+    }
+  }
+}

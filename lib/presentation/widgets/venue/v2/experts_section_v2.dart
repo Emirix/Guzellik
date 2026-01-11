@@ -78,7 +78,7 @@ class ExpertsSectionV2 extends StatelessWidget {
         const SizedBox(height: 12),
         // Horizontal scrolling expert list
         SizedBox(
-          height: 120,
+          height: 145,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
