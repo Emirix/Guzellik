@@ -6,6 +6,7 @@ import '../../providers/subscription_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/business/subscription_card.dart';
 import '../../../config/admin_config.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Subscription screen for business accounts
 /// Shows subscription details and quick actions
@@ -70,8 +71,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFE8B4BC), Color(0xFFD4A5A5)],
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.primary,
+                          AppColors.primary.withOpacity(0.7),
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -106,9 +110,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Yönetim panelinize erişmek için hazırsınız.',
-                    style: TextStyle(fontSize: 14, color: Color(0xFFE8B4BC)),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.primary.withOpacity(0.7),
+                    ),
                   ),
                   const SizedBox(height: 32),
 
@@ -145,7 +152,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       child: ElevatedButton(
                         onPressed: () => _openAdminPanel(context, venue?.id),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE8B4BC),
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -219,7 +226,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         child: const Text(
                           'YARDIM',
                           style: TextStyle(
-                            color: Color(0xFFE8B4BC),
+                            color: AppColors.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -236,7 +243,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         child: const Text(
                           'DESTEK',
                           style: TextStyle(
-                            color: Color(0xFFE8B4BC),
+                            color: AppColors.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -247,7 +254,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         child: const Text(
                           'ÇIKIŞ YAP',
                           style: TextStyle(
-                            color: Color(0xFFE8B4BC),
+                            color: AppColors.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -341,7 +348,7 @@ class _QuickActionCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 32, color: const Color(0xFFE8B4BC)),
+            Icon(icon, size: 32, color: AppColors.primary),
             const SizedBox(height: 8),
             Text(
               label,

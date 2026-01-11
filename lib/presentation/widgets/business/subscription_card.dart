@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Subscription card widget
 /// Displays subscription details with progress bar
@@ -51,7 +52,7 @@ class SubscriptionCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? const Color(0xFFE8B4BC).withOpacity(0.2)
+                      ? AppColors.primary.withOpacity(0.1)
                       : Colors.grey.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -60,7 +61,7 @@ class SubscriptionCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: isActive ? const Color(0xFFE8B4BC) : Colors.grey,
+                    color: isActive ? AppColors.primary : Colors.grey,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -68,7 +69,7 @@ class SubscriptionCard extends StatelessWidget {
               const Spacer(),
               Icon(
                 Icons.verified,
-                color: isActive ? const Color(0xFFE8B4BC) : Colors.grey,
+                color: isActive ? AppColors.primary : Colors.grey,
                 size: 24,
               ),
             ],
@@ -111,7 +112,7 @@ class SubscriptionCard extends StatelessWidget {
               minHeight: 8,
               backgroundColor: Colors.grey.shade200,
               valueColor: AlwaysStoppedAnimation<Color>(
-                daysRemaining < 7 ? Colors.orange : const Color(0xFFE8B4BC),
+                daysRemaining < 7 ? AppColors.warning : AppColors.primary,
               ),
             ),
           ),
