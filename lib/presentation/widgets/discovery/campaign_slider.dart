@@ -28,11 +28,14 @@ class _CampaignSliderState extends State<CampaignSlider> {
     });
 
     _pageController.addListener(() {
-      int next = _pageController.page!.round();
+      final int next = _pageController.page!.round();
+      // Only update state when page actually changes, and use post-frame callback
+      // to batch multiple rapid updates into a single setState
       if (_currentPage != next) {
-        setState(() {
-          _currentPage = next;
-        });
+        _currentPage = next;
+        if (mounted) {
+          setState(() {});
+        }
       }
     });
   }

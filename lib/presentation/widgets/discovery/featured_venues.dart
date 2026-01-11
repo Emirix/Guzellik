@@ -45,7 +45,7 @@ class _FeaturedVenuesState extends State<FeaturedVenues> {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         if (provider.isLoadingHome && provider.featuredVenues.isEmpty) {
-          return const FeaturedVenuesShimmer();
+          return const RepaintBoundary(child: FeaturedVenuesShimmer());
         }
 
         if (provider.featuredVenues.isEmpty) {
@@ -131,6 +131,7 @@ class _FeaturedVenuesShimmerCardState extends State<FeaturedVenuesShimmerCard>
   void initState() {
     super.initState();
     initShimmer();
+    startAnimation();
   }
 
   @override
@@ -141,52 +142,59 @@ class _FeaturedVenuesShimmerCardState extends State<FeaturedVenuesShimmerCard>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: shimmerAnimation,
-      builder: (context, child) {
-        return Container(
-          width: 280,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              begin: Alignment(shimmerAnimation.value - 1, 0),
-              end: Alignment(shimmerAnimation.value + 1, 0),
-              colors: [AppColors.gray100, AppColors.gray50, AppColors.gray100],
-            ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                bottom: 20,
-                left: 20,
-                right: 20,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 180,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: AppColors.gray200,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 120,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: AppColors.gray200,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ],
-                ),
+    // PERF: Wrap with RepaintBoundary to isolate shimmer animation repaints
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: shimmerAnimation,
+        builder: (context, child) {
+          return Container(
+            width: 280,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                begin: Alignment(shimmerAnimation.value - 1, 0),
+                end: Alignment(shimmerAnimation.value + 1, 0),
+                colors: [
+                  AppColors.gray100,
+                  AppColors.gray50,
+                  AppColors.gray100,
+                ],
               ),
-            ],
-          ),
-        );
-      },
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 180,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: AppColors.gray200,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: 120,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: AppColors.gray200,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
