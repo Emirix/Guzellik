@@ -33,6 +33,7 @@ import 'presentation/providers/admin_campaigns_provider.dart';
 import 'presentation/providers/admin_basic_info_provider.dart';
 import 'presentation/providers/admin_working_hours_provider.dart';
 import 'presentation/providers/admin_location_provider.dart';
+import 'presentation/providers/credit_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -146,6 +147,7 @@ class GuzellikApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdminBasicInfoProvider()),
         ChangeNotifierProvider(create: (_) => AdminWorkingHoursProvider()),
         ChangeNotifierProvider(create: (_) => AdminLocationProvider()),
+        ChangeNotifierProvider(create: (_) => CreditProvider()),
       ],
       child: Consumer<AppStateProvider>(
         builder: (context, appState, _) {

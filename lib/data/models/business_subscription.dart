@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 /// Represents a business account's subscription status and features
 class BusinessSubscription {
   final String id;
-  final String profileId;
+  final String venueId;
   final String subscriptionType;
   final String status;
   final DateTime startedAt;
@@ -16,7 +16,7 @@ class BusinessSubscription {
 
   BusinessSubscription({
     required this.id,
-    required this.profileId,
+    required this.venueId,
     required this.subscriptionType,
     required this.status,
     required this.startedAt,
@@ -82,18 +82,26 @@ class BusinessSubscription {
   /// Create from JSON
   factory BusinessSubscription.fromJson(Map<String, dynamic> json) {
     return BusinessSubscription(
-      id: json['id'] as String,
-      profileId: json['profile_id'] as String,
-      subscriptionType: json['subscription_type'] as String,
-      status: json['status'] as String,
-      startedAt: DateTime.parse(json['started_at'] as String),
+      id: json['id']?.toString() ?? '',
+      venueId:
+          json['venue_id']?.toString() ??
+          (json['profile_id']?.toString() ?? ''),
+      subscriptionType: json['subscription_type']?.toString() ?? 'standard',
+      status: json['status']?.toString() ?? 'active',
+      startedAt: DateTime.parse(
+        json['started_at'] ?? DateTime.now().toIso8601String(),
+      ),
       expiresAt: json['expires_at'] != null
           ? DateTime.parse(json['expires_at'] as String)
           : null,
       features: json['features'] as Map<String, dynamic>? ?? {},
       paymentMethod: json['payment_method'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updated_at'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 
@@ -101,7 +109,7 @@ class BusinessSubscription {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'profile_id': profileId,
+      'venue_id': venueId,
       'subscription_type': subscriptionType,
       'status': status,
       'started_at': startedAt.toIso8601String(),
@@ -116,7 +124,7 @@ class BusinessSubscription {
   /// Copy with
   BusinessSubscription copyWith({
     String? id,
-    String? profileId,
+    String? venueId,
     String? subscriptionType,
     String? status,
     DateTime? startedAt,
@@ -128,7 +136,7 @@ class BusinessSubscription {
   }) {
     return BusinessSubscription(
       id: id ?? this.id,
-      profileId: profileId ?? this.profileId,
+      venueId: venueId ?? this.venueId,
       subscriptionType: subscriptionType ?? this.subscriptionType,
       status: status ?? this.status,
       startedAt: startedAt ?? this.startedAt,
@@ -146,7 +154,7 @@ class BusinessSubscription {
 
     return other is BusinessSubscription &&
         other.id == id &&
-        other.profileId == profileId &&
+        other.venueId == venueId &&
         other.subscriptionType == subscriptionType &&
         other.status == status &&
         other.startedAt == startedAt &&
@@ -161,7 +169,7 @@ class BusinessSubscription {
   int get hashCode {
     return Object.hash(
       id,
-      profileId,
+      venueId,
       subscriptionType,
       status,
       startedAt,

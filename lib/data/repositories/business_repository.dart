@@ -45,19 +45,19 @@ class BusinessRepository {
   /// Get subscription for a user
   Future<BusinessSubscription?> getSubscription(String userId) async {
     try {
-      final response = await _supabase.rpc(
-        'get_business_subscription',
-        params: {'p_profile_id': userId},
-      );
+      // First get the venue ID for this user
+      final venue = await getBusinessVenue(userId);
+      if (venue == null) return null;
 
-      if (response == null || (response is List && response.isEmpty)) {
-        return null;
-      }
+      final response = await _supabase
+          .from('venues_subscription')
+          .select()
+          .eq('venue_id', venue.id)
+          .maybeSingle();
 
-      final subscriptionData = response is List ? response.first : response;
-      return BusinessSubscription.fromJson(
-        subscriptionData as Map<String, dynamic>,
-      );
+      if (response == null) return null;
+
+      return BusinessSubscription.fromJson(response);
     } catch (e) {
       print('Error getting subscription: $e');
       return null;
@@ -133,6 +133,17 @@ class BusinessRepository {
       return true;
     } catch (e) {
       print('Error updating working hours: $e');
+      return false;
+    }
+  }
+
+  /// Update venue FAQ
+  Future<bool> updateVenueFaq(String venueId, List<dynamic> faq) async {
+    try {
+      await _supabase.from('venues').update({'faq': faq}).eq('id', venueId);
+      return true;
+    } catch (e) {
+      print('Error updating FAQ: $e');
       return false;
     }
   }

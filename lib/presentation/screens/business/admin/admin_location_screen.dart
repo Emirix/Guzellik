@@ -128,6 +128,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
+      backgroundColor: Colors.transparent,
       builder: (context) => AdminMapPicker(
         initialLocation: LatLng(lat, lng),
         onLocationSelected: (location, address) async {
@@ -195,18 +196,25 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
     try {
       await provider.saveLocation(venueId);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Konum bilgileri kaydedildi')),
-        );
+        _showSnackBar('Konum bilgileri başarıyla kaydedildi');
         await businessProvider.refreshVenue(venueId);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
-        );
+        _showSnackBar('Hata: $e', isError: true);
       }
     }
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: isError ? Colors.redAccent : AppColors.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   @override
@@ -220,7 +228,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFCFCFC),
+      backgroundColor: const Color(0xFFFBFBFB),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -230,205 +238,150 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
           style: TextStyle(
             color: Color(0xFF1B0E11),
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Color(0xFF1B0E11),
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          Consumer<AdminLocationProvider>(
-            builder: (context, provider, _) => IconButton(
-              icon: provider.isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.check_circle, color: AppColors.primary),
-              onPressed: provider.isLoading ? null : _saveChanges,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F4F6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Color(0xFF1B0E11),
+                size: 16,
+              ),
+              onPressed: () => context.pop(),
             ),
           ),
-        ],
+        ),
       ),
       body: Consumer<AdminLocationProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading && provider.address.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           return Form(
             key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                // İl Seçimi
-                const Text(
-                  'Bölge Bilgileri',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B0E11),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<Province>(
-                  value: _selectedProvince,
-                  decoration: _buildInputDecoration('İl', Icons.map),
-                  items: _provinces
-                      .map(
-                        (p) => DropdownMenuItem(value: p, child: Text(p.name)),
-                      )
-                      .toList(),
-                  onChanged: _isLoadingLocations
-                      ? null
-                      : (province) {
-                          setState(() {
-                            _selectedProvince = province;
-                            _selectedDistrict = null;
-                          });
-                          if (province != null) {
-                            _loadDistricts(province.id, null);
-                          }
-                        },
-                  validator: (value) =>
-                      value == null ? 'İl seçimi zorunludur' : null,
-                ),
-                const SizedBox(height: 16),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Map Preview Section
+                  _buildMapPreviewCard(),
+                  const SizedBox(height: 32),
 
-                // İlçe Seçimi
-                DropdownButtonFormField<District>(
-                  value: _selectedDistrict,
-                  decoration: _buildInputDecoration(
-                    'İlçe',
-                    Icons.location_city,
-                  ),
-                  items: _districts
-                      .map(
-                        (d) => DropdownMenuItem(value: d, child: Text(d.name)),
-                      )
-                      .toList(),
-                  onChanged: _isLoadingLocations
-                      ? null
-                      : (district) {
-                          setState(() => _selectedDistrict = district);
-                        },
-                  validator: (value) =>
-                      value == null ? 'İlçe seçimi zorunludur' : null,
-                ),
-                const SizedBox(height: 32),
-
-                // Açık Adres
-                const Text(
-                  'Açık Adres',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B0E11),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _addressController,
-                  maxLines: 3,
-                  decoration: _buildInputDecoration('Adres Detayı', Icons.home),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Adres zorunludur'
-                      : null,
-                ),
-                const SizedBox(height: 24),
-
-                // Harita Seçim Butonu
-                OutlinedButton.icon(
-                  onPressed: _openMapPicker,
-                  icon: const Icon(Icons.map_outlined),
-                  label: const Text('HARİTA ÜZERİNDEN SEÇ'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                    side: const BorderSide(color: AppColors.primary),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-
-                // Koordinatlar
-                const Text(
-                  'Harita Koordinatları',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B0E11),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Müşterilerinizin sizi haritada bulabilmesi için koordinatları girin.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _latitudeController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
+                  // Region Selection Section
+                  _buildSectionTitle('Bölge Bilgileri'),
+                  const SizedBox(height: 16),
+                  _buildCard(
+                    child: Column(
+                      children: [
+                        _buildDropdownField(
+                          label: 'İl',
+                          icon: Icons.map_outlined,
+                          child: _buildProvinceDropdown(),
                         ),
-                        decoration: _buildInputDecoration(
-                          'Enlem (Lat)',
-                          Icons.explore,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Divider(height: 1),
                         ),
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'Zorunlu' : null,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _longitudeController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
+                        _buildDropdownField(
+                          label: 'İlçe',
+                          icon: Icons.location_city_outlined,
+                          child: _buildDistrictDropdown(),
                         ),
-                        decoration: _buildInputDecoration(
-                          'Boylam (Lng)',
-                          Icons.explore,
-                        ),
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'Zorunlu' : null,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 48),
-
-                // Save Button Helper
-                SizedBox(
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: provider.isLoading ? null : _saveChanges,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'DEĞİŞİKLİKLERİ KAYDET',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 40),
-              ],
+                  const SizedBox(height: 32),
+
+                  // Address Section
+                  _buildSectionTitle('Açık Adres'),
+                  const SizedBox(height: 16),
+                  _buildCard(
+                    child: _buildInputField(
+                      controller: _addressController,
+                      label: 'Adres Detayı',
+                      hint: 'Sokak, cadde, bina ve daire numarası...',
+                      icon: Icons.home_outlined,
+                      maxLines: 3,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Adres zorunludur'
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Coordinates Section
+                  _buildSectionTitle('Harita Koordinatları'),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Müşterilerinizin sizi haritada bulabilmesi için konum seçin',
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildCard(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildInputField(
+                                controller: _latitudeController,
+                                label: 'Enlem (Lat)',
+                                hint: '41.0082',
+                                icon: Icons.explore_outlined,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                    ? 'Zorunlu'
+                                    : null,
+                              ),
+                            ),
+                            Container(
+                              width: 1,
+                              height: 80,
+                              color: Colors.grey.shade200,
+                            ),
+                            Expanded(
+                              child: _buildInputField(
+                                controller: _longitudeController,
+                                label: 'Boylam (Lng)',
+                                hint: '28.9784',
+                                icon: Icons.explore_outlined,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                    ? 'Zorunlu'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+
+                  // Save Button
+                  _buildSaveButton(provider.isLoading),
+                  const SizedBox(height: 60),
+                ],
+              ),
             ),
           );
         },
@@ -436,21 +389,441 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String label, IconData icon) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon, color: AppColors.primary),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+  Widget _buildMapPreviewCard() {
+    final lat = double.tryParse(_latitudeController.text) ?? 0;
+    final lng = double.tryParse(_longitudeController.text) ?? 0;
+    final hasLocation = lat != 0 && lng != 0;
+
+    return GestureDetector(
+      onTap: _openMapPicker,
+      child: Container(
+        height: 200,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Map Background or Placeholder
+              hasLocation
+                  ? Image.network(
+                      'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=15&size=600x400&maptype=roadmap&markers=color:red%7C$lat,$lng&key=YOUR_API_KEY',
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _buildMapPlaceholder(),
+                    )
+                  : _buildMapPlaceholder(),
+
+              // Gradient Overlay
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+                  ),
+                ),
+              ),
+
+              // Content
+              Positioned(
+                bottom: 16,
+                left: 16,
+                right: 16,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Haritadan Konum Seç',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            hasLocation
+                                ? 'Konum belirlendi • Değiştirmek için dokunun'
+                                : 'Henüz konum seçilmedi',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.8),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Location Pin if has location
+              if (hasLocation)
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'Konum Aktif',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+    );
+  }
+
+  Widget _buildMapPlaceholder() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withOpacity(0.1),
+            AppColors.primary.withOpacity(0.05),
+          ],
+        ),
       ),
-      filled: true,
-      fillColor: Colors.white,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.map_outlined,
+                size: 40,
+                color: AppColors.primary.withOpacity(0.5),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title.toUpperCase(),
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        color: Color(0xFF9CA3AF),
+        letterSpacing: 1.2,
+      ),
+    );
+  }
+
+  Widget _buildCard({required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required IconData icon,
+    required Widget child,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF4B5563),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(icon, size: 18, color: AppColors.primary.withOpacity(0.8)),
+              const SizedBox(width: 12),
+              Expanded(child: child),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProvinceDropdown() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<Province>(
+        value: _selectedProvince,
+        hint: Text(
+          'İl seçin',
+          style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+        ),
+        isExpanded: true,
+        icon: _isLoadingLocations
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.primary,
+                ),
+              )
+            : Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Colors.grey.shade400,
+              ),
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF1B0E11),
+        ),
+        items: _provinces
+            .map((p) => DropdownMenuItem(value: p, child: Text(p.name)))
+            .toList(),
+        onChanged: _isLoadingLocations
+            ? null
+            : (province) {
+                setState(() {
+                  _selectedProvince = province;
+                  _selectedDistrict = null;
+                });
+                if (province != null) {
+                  _loadDistricts(province.id, null);
+                }
+              },
+      ),
+    );
+  }
+
+  Widget _buildDistrictDropdown() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<District>(
+        value: _selectedDistrict,
+        hint: Text(
+          _selectedProvince == null ? 'Önce il seçin' : 'İlçe seçin',
+          style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+        ),
+        isExpanded: true,
+        icon: _isLoadingLocations
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.primary,
+                ),
+              )
+            : Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Colors.grey.shade400,
+              ),
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF1B0E11),
+        ),
+        items: _districts
+            .map((d) => DropdownMenuItem(value: d, child: Text(d.name)))
+            .toList(),
+        onChanged: _isLoadingLocations || _selectedProvince == null
+            ? null
+            : (district) {
+                setState(() => _selectedDistrict = district);
+              },
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    int maxLines = 1,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF4B5563),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            keyboardType: keyboardType,
+            validator: validator,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1B0E11),
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: const TextStyle(
+                color: Color(0xFF9CA3AF),
+                fontSize: 14,
+              ),
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              border: InputBorder.none,
+              prefixIconConstraints: const BoxConstraints(minWidth: 32),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: AppColors.primary.withOpacity(0.8),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSaveButton(bool isLoading) {
+    return Container(
+      width: double.infinity,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.85)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.35),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: isLoading ? null : _saveChanges,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.save_rounded, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'KONUMU KAYDET',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }

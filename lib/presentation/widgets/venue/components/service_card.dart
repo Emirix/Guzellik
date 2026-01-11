@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../data/models/service.dart';
@@ -24,16 +23,13 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl =
-        service.imageUrl ?? service.afterPhotoUrl ?? service.beforePhotoUrl;
-    final hasImage = imageUrl != null;
     final hasPrice = service.price != null && service.price! > 0;
 
     return InkWell(
       onTap: () => _showDetailSheet(context),
       borderRadius: BorderRadius.circular(24),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
@@ -52,45 +48,6 @@ class ServiceCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Image Container - only show if image exists
-            if (hasImage)
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  bottomLeft: Radius.circular(24),
-                ),
-                child: SizedBox(
-                  width: 100,
-                  height: 120,
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: AppColors.gray100,
-                      child: const Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: AppColors.gray100,
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        color: AppColors.gray400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
             // Service Details
             Expanded(
               child: Padding(
@@ -109,27 +66,6 @@ class ServiceCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-
-                    if (service.category != null) ...[
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          service.category!,
-                          style: AppTextStyles.caption.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
 
                     const SizedBox(height: 12),
 
@@ -168,32 +104,48 @@ class ServiceCard extends StatelessWidget {
 
                         const Spacer(),
 
-                        // Price - only show if > 0
-                        if (hasPrice)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
+                        // Price and Action
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            if (hasPrice)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Text(
+                                  '₺${service.price!.toStringAsFixed(0)}',
+                                  style: AppTextStyles.heading4.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ],
-                            ),
-                            child: Text(
-                              '₺${service.price!.toStringAsFixed(0)}',
-                              style: AppTextStyles.heading4.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                              ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                'Randevu Al',
+                                style: AppTextStyles.button.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                             ),
-                          ),
+                          ],
+                        ),
                       ],
                     ),
                   ],

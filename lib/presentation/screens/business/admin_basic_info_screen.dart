@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../providers/admin_basic_info_provider.dart';
 import '../../providers/business_provider.dart';
@@ -56,7 +57,6 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
       final provider = context.read<AdminBasicInfoProvider>();
       await provider.loadVenueBasicInfo(venueId);
 
-      // Populate controllers
       _nameController.text = provider.name;
       _descriptionController.text = provider.description;
       _phoneController.text = provider.phone;
@@ -94,6 +94,23 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
 
     final provider = context.read<AdminBasicInfoProvider>();
 
+    String cleanInstagram(String value) {
+      String clean = value.trim();
+      if (clean.contains('instagram.com/')) {
+        clean = clean.split('instagram.com/').last;
+      }
+      if (clean.startsWith('@')) {
+        clean = clean.substring(1);
+      }
+      if (clean.contains('?')) {
+        clean = clean.split('?').first;
+      }
+      if (clean.endsWith('/')) {
+        clean = clean.substring(0, clean.length - 1);
+      }
+      return clean;
+    }
+
     try {
       await provider.updateBasicInfo(
         venueId: venueId,
@@ -102,7 +119,7 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
         phone: _phoneController.text.trim(),
         email: _emailController.text.trim(),
         socialLinks: {
-          'instagram': _instagramController.text.trim(),
+          'instagram': cleanInstagram(_instagramController.text),
           'whatsapp': _whatsappController.text.trim(),
           'facebook': _facebookController.text.trim(),
           'website': _websiteController.text.trim(),
@@ -110,8 +127,7 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
       );
 
       if (mounted) {
-        _showSnackBar('Değişiklikler kaydedildi');
-        // Refresh business provider to update venue details
+        _showSnackBar('Değişiklikler başarıyla kaydedildi');
         final authProvider = context.read<AuthProvider>();
         if (authProvider.currentUser != null) {
           await businessProvider.refreshVenue(authProvider.currentUser!.id);
@@ -128,8 +144,9 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: isError ? Colors.redAccent : AppColors.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -137,9 +154,9 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFCFCFC),
+      backgroundColor: const Color(0xFFFBFBFB),
       appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0.8),
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         title: const Text(
@@ -147,241 +164,139 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
           style: TextStyle(
             color: Color(0xFF1B0E11),
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Color(0xFF1B0E11),
-            size: 20,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F4F6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Color(0xFF1B0E11),
+                size: 16,
+              ),
+              onPressed: () => context.pop(),
+            ),
           ),
-          onPressed: () => context.pop(),
         ),
-        actions: [
-          Consumer<AdminBasicInfoProvider>(
-            builder: (context, provider, child) {
-              return IconButton(
-                icon: provider.isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.check_circle, color: AppColors.primary),
-                onPressed: provider.isLoading ? null : _saveChanges,
-              );
-            },
-          ),
-        ],
       ),
       body: Consumer<AdminBasicInfoProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.venueData == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           return Form(
             key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                // İşletme Adı
-                _buildTextField(
-                  controller: _nameController,
-                  label: 'İşletme Adı',
-                  hint: 'Örn: Güzellik Salonu',
-                  icon: Icons.store,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'İşletme adı zorunludur';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Tanıtım Yazısı
-                _buildTextField(
-                  controller: _descriptionController,
-                  label: 'Tanıtım Yazısı',
-                  hint: 'İşletmenizi tanıtın...',
-                  icon: Icons.description,
-                  maxLines: 5,
-                ),
-                const SizedBox(height: 16),
-
-                // Telefon
-                _buildTextField(
-                  controller: _phoneController,
-                  label: 'Telefon',
-                  hint: '+90 555 123 45 67',
-                  icon: Icons.phone,
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value != null &&
-                        value.isNotEmpty &&
-                        !provider.validatePhone(value)) {
-                      return 'Geçerli bir telefon numarası girin';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // E-posta
-                _buildTextField(
-                  controller: _emailController,
-                  label: 'E-posta',
-                  hint: 'ornek@email.com',
-                  icon: Icons.email,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value != null &&
-                        value.isNotEmpty &&
-                        !provider.validateEmail(value)) {
-                      return 'Geçerli bir e-posta adresi girin';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-
-                // Sosyal Medya Başlığı
-                const Text(
-                  'Sosyal Medya',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B0E11),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Instagram
-                _buildTextField(
-                  controller: _instagramController,
-                  label: 'Instagram',
-                  hint: 'https://instagram.com/kullaniciadi',
-                  icon: Icons.camera_alt,
-                  keyboardType: TextInputType.url,
-                  validator: (value) {
-                    if (value != null &&
-                        value.isNotEmpty &&
-                        !provider.validateUrl(value)) {
-                      return 'Geçerli bir URL girin';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // WhatsApp
-                _buildTextField(
-                  controller: _whatsappController,
-                  label: 'WhatsApp',
-                  hint: '+90 555 123 45 67',
-                  icon: Icons.chat,
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value != null &&
-                        value.isNotEmpty &&
-                        !provider.validatePhone(value)) {
-                      return 'Geçerli bir telefon numarası girin';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Facebook
-                _buildTextField(
-                  controller: _facebookController,
-                  label: 'Facebook (Opsiyonel)',
-                  hint: 'https://facebook.com/sayfa',
-                  icon: Icons.facebook,
-                  keyboardType: TextInputType.url,
-                  validator: (value) {
-                    if (value != null &&
-                        value.isNotEmpty &&
-                        !provider.validateUrl(value)) {
-                      return 'Geçerli bir URL girin';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Website
-                _buildTextField(
-                  controller: _websiteController,
-                  label: 'Website (Opsiyonel)',
-                  hint: 'https://example.com',
-                  icon: Icons.language,
-                  keyboardType: TextInputType.url,
-                  validator: (value) {
-                    if (value != null &&
-                        value.isNotEmpty &&
-                        !provider.validateUrl(value)) {
-                      return 'Geçerli bir URL girin';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-
-                // Alt Menü Butonları (Çalışma Saatleri & Konum)
-                _buildSubMenuButton(
-                  title: 'Çalışma Saatlerini Düzenle',
-                  subtitle: 'Haftalık açılış ve kapanış saatleri',
-                  icon: Icons.schedule,
-                  onTap: () => context.push('/business/admin/working-hours'),
-                ),
-                const SizedBox(height: 12),
-                _buildSubMenuButton(
-                  title: 'Konum ve Adres Düzenle',
-                  subtitle: 'Harita konumu ve açık adres',
-                  icon: Icons.location_on,
-                  onTap: () => context.push('/business/admin/location'),
-                ),
-                const SizedBox(height: 32),
-
-                // Save Button
-                SizedBox(
-                  height: 56,
-                  child: ElevatedButton.icon(
-                    onPressed: provider.isLoading ? null : _saveChanges,
-                    icon: provider.isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.save, size: 20),
-                    label: Text(
-                      provider.isLoading ? 'KAYDEDİLİYOR...' : 'KAYDET',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 8,
-                      shadowColor: AppColors.primary.withOpacity(0.4),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle('Görünüm ve Tanıtım'),
+                  const SizedBox(height: 16),
+                  _buildCard(
+                    child: Column(
+                      children: [
+                        _buildInputField(
+                          controller: _nameController,
+                          label: 'İşletme Adı',
+                          hint: 'Örn: Hair Salon Vibe',
+                          icon: Icons.storefront_rounded,
+                          validator: (v) =>
+                              v?.isEmpty == true ? 'Zorunlu alan' : null,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Divider(height: 1),
+                        ),
+                        _buildInputField(
+                          controller: _descriptionController,
+                          label: 'Hakkında',
+                          hint: 'İşletmenizi kısaca tanıtın...',
+                          icon: Icons.subject_rounded,
+                          maxLines: 4,
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 100),
-              ],
+                  const SizedBox(height: 32),
+                  _buildSectionTitle('İletişim Kanalları'),
+                  const SizedBox(height: 16),
+                  _buildCard(
+                    child: Column(
+                      children: [
+                        _buildInputField(
+                          controller: _phoneController,
+                          label: 'Telefon Numarası',
+                          hint: '+90 5xx ...',
+                          icon: Icons.phone_iphone_rounded,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Divider(height: 1),
+                        ),
+                        _buildInputField(
+                          controller: _emailController,
+                          label: 'E-Posta Adresi',
+                          hint: 'hello@isletme.com',
+                          icon: Icons.alternate_email_rounded,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  _buildSectionTitle('Sosyal Medya & Web'),
+                  const SizedBox(height: 16),
+                  _buildCard(
+                    child: Column(
+                      children: [
+                        _buildInputField(
+                          controller: _instagramController,
+                          label: 'Instagram Kullanıcı Adı',
+                          hint: 'kullanici_adi',
+                          icon: FontAwesomeIcons.instagram,
+                          isFa: true,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Divider(height: 1),
+                        ),
+                        _buildInputField(
+                          controller: _whatsappController,
+                          label: 'WhatsApp Hattı',
+                          hint: '+90 5xx ...',
+                          icon: FontAwesomeIcons.whatsapp,
+                          isFa: true,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Divider(height: 1),
+                        ),
+                        _buildInputField(
+                          controller: _websiteController,
+                          label: 'Web Sitesi',
+                          hint: 'www.isletme.com',
+                          icon: Icons.language_rounded,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  _buildSaveButton(provider.isLoading),
+                  const SizedBox(height: 60),
+                ],
+              ),
             ),
           );
         },
@@ -389,108 +304,138 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
     );
   }
 
-  Widget _buildTextField({
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title.toUpperCase(),
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        color: Color(0xFF9CA3AF),
+        letterSpacing: 1.2,
+      ),
+    );
+  }
+
+  Widget _buildCard({required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildInputField({
     required TextEditingController controller,
     required String label,
     required String hint,
     required IconData icon,
+    bool isFa = false,
     int maxLines = 1,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
   }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: Icon(icon, color: AppColors.primary),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-      ),
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      validator: validator,
-    );
-  }
-
-  Widget _buildSubMenuButton({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF4B5563),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            keyboardType: keyboardType,
+            validator: validator,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1B0E11),
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: const TextStyle(
+                color: Color(0xFF9CA3AF),
+                fontSize: 14,
+              ),
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              border: InputBorder.none,
+              prefixIconConstraints: const BoxConstraints(minWidth: 32),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: AppColors.primary.withOpacity(0.8),
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: AppColors.primary, size: 24),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1B0E11),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(Icons.chevron_right, color: Colors.grey[400]),
-              ],
-            ),
+    );
+  }
+
+  Widget _buildSaveButton(bool isLoading) {
+    return Container(
+      width: double.infinity,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.85)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.35),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: isLoading ? null : _saveChanges,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
+        child: isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : const Text(
+                'AYARLARI GÜNCELLE',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
       ),
     );
   }

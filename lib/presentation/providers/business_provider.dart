@@ -166,6 +166,26 @@ class BusinessProvider with ChangeNotifier {
     }
   }
 
+  /// Update FAQ
+  Future<bool> updateFaq(List<dynamic> faq) async {
+    if (_businessVenue == null) return false;
+
+    _setLoading(true);
+    try {
+      final success = await _repository.updateVenueFaq(_businessVenue!.id, faq);
+      if (success) {
+        _businessVenue = _businessVenue!.copyWith(faq: faq);
+        notifyListeners();
+      }
+      _setLoading(false);
+      return success;
+    } catch (e) {
+      _setError('Sıkça Sorulan Sorular güncellenirken hata oluştu: $e');
+      _setLoading(false);
+      return false;
+    }
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();

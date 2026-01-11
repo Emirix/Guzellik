@@ -8,6 +8,7 @@ import 'working_hours_card_v2.dart';
 import 'map_preview_v2.dart';
 import 'trust_badges_grid_v2.dart';
 import 'reviews_preview_v2.dart';
+import 'faq_section_v2.dart';
 import '../photo_gallery_viewer.dart';
 import '../../../providers/venue_details_provider.dart';
 import 'package:provider/provider.dart';
@@ -184,6 +185,17 @@ class VenueOverviewV2 extends StatelessWidget {
             onSeeAll: onSeeAll,
           ),
         ),
+        const SizedBox(height: 16),
+
+        // Grey Spacer
+        if (venue.faq.isNotEmpty) ...[
+          Container(height: 8, color: AppColors.nude.withOpacity(0.3)),
+          const SizedBox(height: 24),
+
+          // 8. FAQ Section
+          FaqSectionV2(faq: venue.faq),
+          const SizedBox(height: 16),
+        ],
 
         // Adding bottom padding for the fixed bar
         const SizedBox(height: 120),

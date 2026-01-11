@@ -324,6 +324,13 @@ class AdminDashboardScreen extends StatelessWidget {
             subtitle: 'Salon Görselleri, Video Tanıtımı',
             onTap: () => context.push('/business/admin/gallery'),
           ),
+          _buildListItem(
+            context,
+            icon: Icons.help_outline,
+            title: 'Sıkça Sorulan Sorular',
+            subtitle: 'Müşterileriniz için SSS yönetimi',
+            onTap: () => context.push('/business/admin/faq'),
+          ),
         ],
       ),
     );

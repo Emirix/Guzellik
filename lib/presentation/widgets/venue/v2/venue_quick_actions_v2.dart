@@ -74,8 +74,8 @@ class VenueQuickActionsV2 extends StatelessWidget {
             ),
           ),
           _buildActionButton(
-            icon: Icons.camera_alt,
-            label: 'SOSYAL',
+            icon: FontAwesomeIcons.instagram,
+            label: 'INSTAGRAM',
             iconColor: const Color(0xFFE1306C),
             onTap: () => _launchUrl(
               _instagramHandle != null

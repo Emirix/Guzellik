@@ -23,6 +23,7 @@ import '../../presentation/screens/business/admin/admin_gallery_screen.dart';
 import '../../presentation/screens/business/admin/admin_campaigns_screen.dart';
 import '../../presentation/screens/business/admin/admin_working_hours_screen.dart';
 import '../../presentation/screens/business/admin/admin_location_screen.dart';
+import '../../presentation/screens/business/admin/admin_faq_screen.dart';
 import '../../presentation/screens/business/admin_basic_info_screen.dart';
 import '../../presentation/widgets/common/business_bottom_nav.dart';
 import '../../presentation/providers/business_provider.dart';
@@ -241,6 +242,15 @@ class AppRouter {
           requiredFor: 'Konum Yönetimi',
           redirectPath: '/business/admin/location',
           child: AdminLocationScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/business/admin/faq',
+        name: 'admin-faq',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'SSS Yönetimi',
+          redirectPath: '/business/admin/faq',
+          child: AdminFaqScreen(),
         ),
       ),
     ],

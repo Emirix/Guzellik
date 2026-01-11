@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/enums/business_mode.dart';
+import '../../../config/admin_config.dart';
 import '../../providers/business_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/business/subscription_card.dart';
-import '../../../config/admin_config.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/enums/business_mode.dart';
 import '../../widgets/common/business_bottom_nav.dart';
 
-/// Subscription screen for business accounts
-/// Shows subscription details and quick actions
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
 
@@ -30,7 +27,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Future<void> _loadSubscription() async {
     final authProvider = context.read<AuthProvider>();
     final userId = authProvider.currentUser?.id;
-
     if (userId != null) {
       await context.read<SubscriptionProvider>().loadSubscription(userId);
     }
@@ -39,24 +35,35 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: const Color(0xFFFBFBFB),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         title: const Text(
-          'Abonelik',
+          'Abonelik Planı',
           style: TextStyle(
             color: Color(0xFF1B0E11),
-            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
           ),
         ),
-        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color(0xFF1B0E11),
+            size: 18,
+          ),
+          onPressed: () => context.pop(),
+        ),
       ),
       bottomNavigationBar: const BusinessBottomNav(),
       body: Consumer2<SubscriptionProvider, BusinessProvider>(
         builder: (context, subscriptionProvider, businessProvider, _) {
           if (subscriptionProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           final subscription = subscriptionProvider.subscription;
@@ -64,249 +71,495 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
           return RefreshIndicator(
             onRefresh: _loadSubscription,
-            child: SingleChildScrollView(
+            color: AppColors.primary,
+            child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-
-                  // Business Logo/Icon
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primary,
-                          AppColors.primary.withOpacity(0.7),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(40),
+              slivers: [
+                // Main Content
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 24,
                     ),
-                    child: const Icon(
-                      Icons.business_center,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Business Name
-                  Text(
-                    venue?.name ?? 'İşletme',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1B0E11),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Welcome Message
-                  const Text(
-                    'Hoş Geldiniz',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1B0E11),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Yönetim panelinize erişmek için hazırsınız.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.primary.withOpacity(0.7),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Subscription Card
-                  if (subscription != null)
-                    SubscriptionCard(
-                      subscriptionType: subscription.subscriptionType,
-                      subscriptionName: subscription.displayName,
-                      daysRemaining: subscription.daysRemaining,
-                      expiresAt: subscription.expiresAt,
-                      isActive: subscription.isActive,
-                    )
-                  else
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        'Abonelik bilgisi bulunamadı',
-                        style: TextStyle(color: Color(0xFF6B6B6B)),
-                      ),
-                    ),
-                  const SizedBox(height: 24),
-
-                  // Admin Panel Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () => _openAdminPanel(context, venue?.id),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Admin Panele Git',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward, size: 20),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Switch to Normal Account Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: OutlinedButton(
-                        onPressed: () => _switchToNormalAccount(context),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          side: BorderSide(color: AppColors.primary),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.person_outline, size: 20),
-                            SizedBox(width: 8),
-                            Text(
-                              'Normal Hesaba Geç',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Quick Actions
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: _QuickActionCard(
-                            icon: Icons.bar_chart,
-                            label: 'Raporlar',
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Yakında...')),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _QuickActionCard(
-                            icon: Icons.settings,
-                            label: 'Ayarlar',
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Yakında...')),
-                              );
-                            },
-                          ),
-                        ),
+                        // Subscription Card
+                        _buildSubscriptionCard(subscription),
+                        const SizedBox(height: 24),
+
+                        // Features Section
+                        _buildFeaturesSection(subscription),
+                        const SizedBox(height: 24),
+
+                        // Action Buttons
+                        _buildActionButtons(venue?.id),
+                        const SizedBox(height: 24),
+
+                        // Quick Stats
+                        _buildQuickStats(),
+                        const SizedBox(height: 80),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
-
-                  // Bottom Tabs
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Yardım sayfası yakında...'),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'YARDIM',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 24),
-                      TextButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Destek sayfası yakında...'),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'DESTEK',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 24),
-                      TextButton(
-                        onPressed: () => _showLogoutDialog(context),
-                        child: const Text(
-                          'ÇIKIŞ YAP',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },
       ),
     );
+  }
+
+  Widget _buildSubscriptionCard(dynamic subscription) {
+    if (subscription == null) {
+      return Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.red,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Abonelik Bulunamadı',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1B0E11),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Lütfen destek ekibiyle iletişime geçin.',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final int days = subscription.daysRemaining;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Badge and Shield Icon
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFDEEF2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  'AKTİF ABONELİK',
+                  style: TextStyle(
+                    color: Color(0xFFEE2B5B),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.verified_user_rounded,
+                color: Color(0xFFFDC5D3),
+                size: 26,
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Subscription Title
+          Text(
+            subscription.displayName,
+            style: const TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF1B0E11),
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Days Remaining
+          Row(
+            children: [
+              const Icon(
+                Icons.calendar_month_outlined,
+                color: Color(0xFF903247),
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '$days Gün Kaldı',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF903247),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Progress Bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: (days % 30) / 30, // Simplified for demonstration
+              minHeight: 8,
+              backgroundColor: const Color(0xFFF3F4F6),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFFEE2B5B),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Renewal Date
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              'Yenileme Tarihi: ${subscription.expiresAt != null ? _formatDate(subscription.expiresAt!) : '-'}',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[500],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeaturesSection(dynamic subscription) {
+    final features = [
+      {
+        'icon': Icons.inventory_2_outlined,
+        'title': 'Sınırsız Hizmet',
+        'desc': 'Dilediğiniz kadar hizmet ekleyin',
+      },
+      {
+        'icon': Icons.people_outline_rounded,
+        'title': 'Uzman Ekip',
+        'desc': 'Ekip üyelerinizi yönetin',
+      },
+      {
+        'icon': Icons.analytics_outlined,
+        'title': 'Analitik',
+        'desc': 'Detaylı raporlar ve istatistikler',
+      },
+      {
+        'icon': Icons.support_agent_rounded,
+        'title': 'Öncelikli Destek',
+        'desc': '7/24 hızlı yardım',
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 16),
+          child: Text(
+            'ÖZELLİKLER',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF9CA3AF),
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            children: features.asMap().entries.map((entry) {
+              final isLast = entry.key == features.length - 1;
+              final feature = entry.value;
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          feature['icon'] as IconData,
+                          color: AppColors.primary,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              feature['title'] as String,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1B0E11),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              feature['desc'] as String,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.green[400],
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                  if (!isLast) ...[
+                    const SizedBox(height: 16),
+                    Divider(height: 1, color: Colors.grey[100]),
+                    const SizedBox(height: 16),
+                  ],
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(String? venueId) {
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: () => _openAdminPanel(context, venueId),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shadowColor: AppColors.primary.withOpacity(0.3),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.dashboard_rounded, size: 20),
+                SizedBox(width: 10),
+                Text(
+                  'Yönetim Paneline Git',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: OutlinedButton(
+            onPressed: () => _switchToNormalAccount(context),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF6B7280),
+              side: BorderSide(color: Colors.grey[300]!),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.person_outline_rounded, size: 20),
+                SizedBox(width: 10),
+                Text(
+                  'Normal Hesaba Geç',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickStats() {
+    final stats = [
+      {
+        'label': 'Toplam Görüntülenme',
+        'value': '1.2K',
+        'icon': Icons.visibility_outlined,
+      },
+      {
+        'label': 'Favori Eklenme',
+        'value': '89',
+        'icon': Icons.favorite_border_rounded,
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 16),
+          child: Text(
+            'BU AY',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF9CA3AF),
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        Row(
+          children: stats.map((stat) {
+            return Expanded(
+              child: Container(
+                margin: EdgeInsets.only(right: stat == stats.first ? 12 : 0),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      stat['icon'] as IconData,
+                      color: AppColors.primary,
+                      size: 24,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      stat['value'] as String,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF1B0E11),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      stat['label'] as String,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'Oca',
+      'Şub',
+      'Mar',
+      'Nis',
+      'May',
+      'Haz',
+      'Tem',
+      'Ağu',
+      'Eyl',
+      'Eki',
+      'Kas',
+      'Ara',
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
   Future<void> _openAdminPanel(BuildContext context, String? venueId) async {
@@ -316,14 +569,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       ).showSnackBar(const SnackBar(content: Text('Mekan bilgisi bulunamadı')));
       return;
     }
-
     final url = AdminConfig.getAdminUrl(venueId);
     final uri = Uri.parse(url);
-
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Admin panel açılamadı')));
@@ -334,86 +585,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Future<void> _switchToNormalAccount(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
     final userId = authProvider.currentUser?.id;
-
     if (userId != null) {
       final businessProvider = context.read<BusinessProvider>();
       await businessProvider.switchMode(BusinessMode.normal, userId);
-      
-      if (context.mounted) {
-        // Reset navigation to initial route using GoRouter
-        context.go('/');
-      }
+      if (mounted) context.go('/');
     }
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Çıkış Yap'),
-        content: const Text('Çıkış yapmak istediğinizden emin misiniz?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('İptal'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<AuthProvider>().signOut();
-            },
-            child: const Text('Çıkış Yap', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickActionCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _QuickActionCard({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 32, color: AppColors.primary),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1B0E11),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

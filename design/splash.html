@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#dcad2e",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#201c12",
+                        "brand-pink": "#d88c8c",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .nude-gradient {
+            background: radial-gradient(circle at center, #ffffff 0%, #fdf5f2 40%, #f7ebe1 100%);
+        }
+
+        .soft-glow {
+            filter: drop-shadow(0 0 15px rgba(220, 173, 46, 0.2));
+        }
+
+        .line-pattern {
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="font-display">
+    <!-- Main Splash Container -->
+    <div
+        class="relative flex h-screen w-full flex-col items-center justify-between overflow-hidden nude-gradient dark:bg-background-dark">
+        <!-- Top Left Floral Pattern -->
+        <div class="absolute -top-10 -left-10 w-48 h-48 line-pattern">
+            <svg fill="none" stroke="#dcad2e" stroke-width="0.5" viewbox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M10,90 Q40,40 90,10 M30,80 Q50,50 80,30 M50,70 Q60,60 70,50"></path>
+                <circle cx="90" cy="10" fill="#dcad2e" r="2"></circle>
+                <circle cx="80" cy="30" fill="#dcad2e" r="1.5"></circle>
+            </svg>
+        </div>
+        <!-- Top Status Bar Spacer (iOS Style) -->
+        <div class="h-12 w-full"></div>
+        <!-- Logo Section -->
+        <div class="flex flex-col items-center justify-center flex-grow space-y-8">
+            <div class="relative group">
+                <!-- Outer Glow -->
+                <div class="absolute inset-0 bg-primary/10 rounded-full blur-3xl scale-150"></div>
+                <!-- Logo Graphic -->
+                <div
+                    class="relative w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-2xl shadow-primary/10 border border-primary/5 soft-glow">
+                    <span class="material-symbols-outlined text-6xl text-primary"
+                        style="font-variation-settings: 'FILL' 1, 'wght' 200;">
+                        spa
+                    </span>
+                </div>
+            </div>
+            <!-- Brand Name & Tagline -->
+            <div class="text-center space-y-3 px-8">
+                <h1 class="text-3xl font-bold tracking-[0.2em] text-[#2d2a26] uppercase">Estelia</h1>
+                <p class="text-brand-pink text-sm font-medium tracking-[0.3em] uppercase opacity-80">Güzelliğin Modern
+                    Adresi</p>
+            </div>
+        </div>
+        <!-- Bottom Loading & Accents Section -->
+        <div class="w-full max-w-xs px-8 pb-24 flex flex-col items-center gap-8">
+            <!-- Elegant Loading Bar -->
+            <div class="w-full flex flex-col gap-3">
+                <div class="h-[1px] w-full bg-primary/20 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full" style="width: 65%;"></div>
+                </div>
+                <p class="text-[10px] text-primary/60 tracking-[0.2em] uppercase text-center font-semibold">Yükleniyor
+                </p>
+            </div>
+        </div>
+        <!-- Bottom Right Floral Pattern -->
+        <div class="absolute -bottom-12 -right-12 w-64 h-64 line-pattern rotate-180">
+            <svg fill="none" stroke="#dcad2e" stroke-width="0.3" viewbox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M50,90 C20,80 10,50 40,20 C60,40 90,50 50,90 Z"></path>
+                <path d="M45,85 C15,75 5,45 35,15"></path>
+                <path d="M55,85 C85,75 95,45 65,15"></path>
+            </svg>
+        </div>
+        <!-- Image Reference (Invisible/Hidden for System but present in DOM) -->
+        <div class="hidden">
+            <img data-alt="Abstract soft silk texture with gold threads"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpnJvgs0PdhW2r2rC_PXTIrzmHgRKA02N-upMKKgXPDjheF_AmqGAtH5-dAjYWagK6xQqazzhjVs5B-5vwsbgHri7LugcYa3PZQvEuayiYmCPPpCBWmMd-O5tZcMIxfiOosxuMg79fUjMgt6Ppcc8cNmWi-_0TcvXbrX1c9MsEIEMVa4wd1QFDhXS2zD7jXkrm6wreGhUYbA4uqa2QmZgJ6kXhl0qAAJxeSEK3YyBQNBxl_IfNBjAgobrrT3SRsTUebiBfBLEXmA" />
+        </div>
+    </div>
+</body>
+
+</html>
