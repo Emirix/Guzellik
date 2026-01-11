@@ -19,6 +19,7 @@ class BusinessProvider with ChangeNotifier {
   BusinessMode get currentMode => _currentMode;
   bool get isBusinessMode => _currentMode == BusinessMode.business;
   Venue? get businessVenue => _businessVenue;
+  Venue? get currentVenue => _businessVenue; // Alias for admin screens
   BusinessSubscription? get subscription => _subscription;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -139,6 +140,29 @@ class BusinessProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('Error refreshing venue: $e');
+    }
+  }
+
+  /// Update working hours
+  Future<bool> updateWorkingHours(Map<String, dynamic> workingHours) async {
+    if (_businessVenue == null) return false;
+
+    _setLoading(true);
+    try {
+      final success = await _repository.updateVenueWorkingHours(
+        _businessVenue!.id,
+        workingHours,
+      );
+      if (success) {
+        _businessVenue = _businessVenue!.copyWith(workingHours: workingHours);
+        notifyListeners();
+      }
+      _setLoading(false);
+      return success;
+    } catch (e) {
+      _setError('Çalışma saatleri güncellenirken hata oluştu: $e');
+      _setLoading(false);
+      return false;
     }
   }
 

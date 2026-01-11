@@ -38,7 +38,9 @@ Future<void> _openAdminPanel(BuildContext context, String? venueId) async {
 
 /// Profile screen - Redesigned based on design/profilim.php
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final bool isEmbedded;
+
+  const ProfileScreen({super.key, this.isEmbedded = false});
 
   @override
   Widget build(BuildContext context) {
@@ -46,19 +48,24 @@ class ProfileScreen extends StatelessWidget {
     // Check if we are in business mode AND not in the home screen shell
     // If we are in the home index stack, the shell provides the nav
     // If we are navigated to directly (e.g. from business nav), we need to provide it
-    final showBusinessNav = businessProvider.isBusinessMode;
+    final bool showBusinessNav = businessProvider.isBusinessMode;
+    final bool embedded = isEmbedded;
 
     // If in business mode, show venue details as "Profile"
     if (showBusinessNav && businessProvider.businessVenue?.id != null) {
       return VenueDetailsScreen(
         venueId: businessProvider.businessVenue!.id,
-        bottomNavigationBar: const BusinessBottomNav(),
+        bottomNavigationBar: embedded ? null : const BusinessBottomNav(),
+        hideDefaultBottomBar: embedded,
+        showBackButton: false,
       );
     }
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDFBFB),
-      bottomNavigationBar: showBusinessNav ? const BusinessBottomNav() : null,
+      bottomNavigationBar: (showBusinessNav && !embedded)
+          ? const BusinessBottomNav()
+          : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -509,10 +516,33 @@ class ProfileScreen extends StatelessWidget {
                                 width: double.infinity,
                                 height: 56,
                                 child: OutlinedButton(
-                                  onPressed: () {
-                                    // Önce login'e yönlendir, sonra signOut
-                                    context.go('/login');
-                                    authProvider.signOut();
+                                  onPressed: () async {
+                                    // Reset business mode
+                                    final businessProvider = context
+                                        .read<BusinessProvider>();
+                                    // Manually reset state to normal without requiring userId
+                                    // This effectively does what switchMode(normal) does but cleaner for logout
+                                    await businessProvider.clearSavedMode();
+                                    // We can't access private _currentMode but we can call init or reload?
+                                    // Or better, just switchMode if we have userId, or rely on clearSavedMode + provider re-init?
+                                    // Let's use switchMode if user is logged in, otherwise just continue.
+
+                                    final userId = authProvider.currentUser?.id;
+                                    if (userId != null &&
+                                        businessProvider.isBusinessMode) {
+                                      await businessProvider.switchMode(
+                                        BusinessMode.normal,
+                                        userId,
+                                      );
+                                    }
+
+                                    // Sign out
+                                    await authProvider.signOut();
+
+                                    if (context.mounted) {
+                                      // Navigate to home (guest mode)
+                                      context.go('/');
+                                    }
                                   },
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.primary,

@@ -44,6 +44,14 @@ class _DiscoveryMapViewState extends State<DiscoveryMapView>
     });
   }
 
+  @override
+  void dispose() {
+    // Dispose the map controller to stop GPU surface updates
+    _mapController?.dispose();
+    _mapController = null;
+    super.dispose();
+  }
+
   Future<void> _loadMarkerIcons() async {
     if (!mounted) return;
     final provider = context.read<DiscoveryProvider>();
@@ -121,40 +129,42 @@ class _DiscoveryMapViewState extends State<DiscoveryMapView>
 
         return Stack(
           children: [
-            // 1. Google Map
-            GoogleMap(
-              initialCameraPosition: provider.currentPosition != null
-                  ? CameraPosition(
-                      target: LatLng(
-                        provider.currentPosition!.latitude,
-                        provider.currentPosition!.longitude,
-                      ),
-                      zoom: 15,
-                      tilt: 30.0,
-                    )
-                  : _initialPosition,
-              onMapCreated: (controller) async {
-                _mapController = controller;
-                final style = await DefaultAssetBundle.of(
-                  context,
-                ).loadString('assets/maps/rose_premium_style.json');
-                _mapController!.setMapStyle(style);
-                _initializeCamera(provider);
-              },
-              onTap: _onMapTapped,
-              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-                Factory<OneSequenceGestureRecognizer>(
-                  () => EagerGestureRecognizer(),
-                ),
-              }.toSet(),
-              markers: _buildMarkers(provider),
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
-              mapToolbarEnabled: false,
-              compassEnabled: false,
-              tiltGesturesEnabled: true,
-              rotateGesturesEnabled: true,
+            // 1. Google Map - PERF: RepaintBoundary isolates PlatformView GPU updates
+            RepaintBoundary(
+              child: GoogleMap(
+                initialCameraPosition: provider.currentPosition != null
+                    ? CameraPosition(
+                        target: LatLng(
+                          provider.currentPosition!.latitude,
+                          provider.currentPosition!.longitude,
+                        ),
+                        zoom: 15,
+                        tilt: 30.0,
+                      )
+                    : _initialPosition,
+                onMapCreated: (controller) async {
+                  _mapController = controller;
+                  final style = await DefaultAssetBundle.of(
+                    context,
+                  ).loadString('assets/maps/rose_premium_style.json');
+                  _mapController!.setMapStyle(style);
+                  _initializeCamera(provider);
+                },
+                onTap: _onMapTapped,
+                gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                  Factory<OneSequenceGestureRecognizer>(
+                    () => EagerGestureRecognizer(),
+                  ),
+                }.toSet(),
+                markers: _buildMarkers(provider),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
+                mapToolbarEnabled: false,
+                compassEnabled: false,
+                tiltGesturesEnabled: true,
+                rotateGesturesEnabled: true,
+              ),
             ),
 
             // 2. Right Side Controls

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../../core/services/ad_service.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -78,29 +77,33 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: _isLoaded && _bannerAd != null
-            ? SizedBox(
-                width: _bannerAd!.size.width.toDouble(),
-                height: _bannerAd!.size.height.toDouble(),
-                child: AdWidget(ad: _bannerAd!),
-              )
-            : _buildShimmerPlaceholder(),
+        // PERF: RepaintBoundary isolates PlatformView (AdWidget) GPU surface updates
+        child: RepaintBoundary(
+          child: _isLoaded && _bannerAd != null
+              ? SizedBox(
+                  width: _bannerAd!.size.width.toDouble(),
+                  height: _bannerAd!.size.height.toDouble(),
+                  child: AdWidget(ad: _bannerAd!),
+                )
+              : _buildShimmerPlaceholder(),
+        ),
       ),
     );
   }
 
   Widget _buildShimmerPlaceholder() {
-    return Shimmer.fromColors(
-      baseColor: AppColors.gray100,
-      highlightColor: AppColors.gray50,
-      child: Container(
-        width: double.infinity,
-        height: 50,
-        margin: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: AppColors.gray100,
-          borderRadius: BorderRadius.circular(4),
+    // Use static placeholder instead of animated shimmer to prevent continuous GPU redraws
+    return Container(
+      width: double.infinity,
+      height: 50,
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.gray100, AppColors.gray50, AppColors.gray100],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
         ),
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }

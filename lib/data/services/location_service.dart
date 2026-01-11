@@ -6,17 +6,17 @@ import 'package:geocoding/geocoding.dart';
 class LocationService {
   /// Check if location services are enabled
   Future<bool> isLocationServiceEnabled() async {
-    return await Geolocator.isLocationServiceEnabled();
+    return Geolocator.isLocationServiceEnabled();
   }
 
   /// Check location permission status
   Future<LocationPermission> checkPermission() async {
-    return await Geolocator.checkPermission();
+    return Geolocator.checkPermission();
   }
 
   /// Request location permission
   Future<LocationPermission> requestPermission() async {
-    return await Geolocator.requestPermission();
+    return Geolocator.requestPermission();
   }
 
   /// Get current position
@@ -146,12 +146,12 @@ class LocationService {
 
   /// Open location settings
   Future<bool> openLocationSettings() async {
-    return await Geolocator.openLocationSettings();
+    return Geolocator.openLocationSettings();
   }
 
   /// Open app settings
   Future<bool> openAppSettings() async {
-    return await Geolocator.openAppSettings();
+    return Geolocator.openAppSettings();
   }
 
   /// Get full placemark data from coordinates

@@ -32,7 +32,7 @@ class AuthProvider with ChangeNotifier {
     );
 
     // Listen to auth state changes
-    _authService.authStateChanges.listen((AuthState state) {
+    _authService.authStateChanges.listen((state) {
       _currentUser = state.session?.user;
       print('🔐 Auth state changed - User: ${_currentUser?.email ?? "null"}');
       notifyListeners();

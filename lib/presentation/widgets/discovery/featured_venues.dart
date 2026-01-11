@@ -126,39 +126,86 @@ class FeaturedVenuesShimmerCard extends StatefulWidget {
 }
 
 class _FeaturedVenuesShimmerCardState extends State<FeaturedVenuesShimmerCard>
-    with SingleTickerProviderStateMixin, ShimmerMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isAnimating = false;
+
   @override
   void initState() {
     super.initState();
-    initShimmer();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    );
+
+    _animation = Tween<double>(begin: -2, end: 2).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
+    );
+
+    WidgetsBinding.instance.addObserver(this);
     startAnimation();
   }
 
   @override
   void dispose() {
-    disposeShimmer();
+    WidgetsBinding.instance.removeObserver(this);
+    stopAnimation();
+    _controller.dispose();
     super.dispose();
+  }
+
+  void startAnimation() {
+    if (_isAnimating) return;
+    _isAnimating = true;
+    _controller.repeat();
+  }
+
+  void stopAnimation() {
+    if (!_isAnimating) return;
+    _isAnimating = false;
+    _controller.stop();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Pause animation when app is not visible to reduce GPU work
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.hidden) {
+      stopAnimation();
+    } else if (state == AppLifecycleState.resumed && mounted) {
+      startAnimation();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // PERF: Wrap with RepaintBoundary to isolate shimmer animation repaints
     return RepaintBoundary(
       child: AnimatedBuilder(
-        animation: shimmerAnimation,
+        animation: _animation,
+        child: Container(
+          width: 280,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            color: AppColors.gray100,
+          ),
+        ),
         builder: (context, child) {
           return Container(
             width: 280,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               gradient: LinearGradient(
-                begin: Alignment(shimmerAnimation.value - 1, 0),
-                end: Alignment(shimmerAnimation.value + 1, 0),
-                colors: [
+                begin: Alignment(_animation.value - 1, 0),
+                end: Alignment(_animation.value + 1, 0),
+                colors: const [
                   AppColors.gray100,
                   AppColors.gray50,
                   AppColors.gray100,
                 ],
+                stops: const [0.0, 0.5, 1.0],
               ),
             ),
             child: Stack(

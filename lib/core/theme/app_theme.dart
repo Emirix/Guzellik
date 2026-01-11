@@ -21,8 +21,6 @@ class AppTheme {
         onSurface: AppColors.black,
         error: AppColors.error,
         onError: AppColors.white,
-        background: AppColors.background,
-        onBackground: AppColors.black,
       ),
       
       scaffoldBackgroundColor: AppColors.background,
@@ -103,7 +101,6 @@ class AppTheme {
         primary: AppColors.primary,
         onPrimary: AppColors.white,
         surface: AppColors.darkSurface,
-        background: AppColors.darkBackground,
       ),
       scaffoldBackgroundColor: AppColors.darkBackground,
       textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),

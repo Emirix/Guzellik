@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/venue.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/icon_utils.dart';
@@ -69,7 +70,20 @@ class VenueCard extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 16 / 9,
                     child: venue.imageUrl != null
-                        ? Image.network(venue.imageUrl!, fit: BoxFit.cover)
+                        ? CachedNetworkImage(
+                            imageUrl: venue.imageUrl!,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Container(color: AppColors.nudeLight),
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColors.nudeLight,
+                              child: const Icon(
+                                Icons.image,
+                                color: Colors.white,
+                                size: 40,
+                              ),
+                            ),
+                          )
                         : Container(
                             color: AppColors.nudeLight,
                             child: const Icon(
@@ -227,7 +241,19 @@ class VenueCard extends StatelessWidget {
                 width: 96,
                 height: 96,
                 child: venue.imageUrl != null
-                    ? Image.network(venue.imageUrl!, fit: BoxFit.cover)
+                    ? CachedNetworkImage(
+                        imageUrl: venue.imageUrl!,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            Container(color: AppColors.gray200),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColors.gray200,
+                          child: const Icon(
+                            Icons.store,
+                            color: AppColors.gray400,
+                          ),
+                        ),
+                      )
                     : Container(color: AppColors.gray200),
               ),
             ),

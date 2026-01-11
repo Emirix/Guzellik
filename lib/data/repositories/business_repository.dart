@@ -117,4 +117,21 @@ class BusinessRepository {
       return false;
     }
   }
+
+  /// Update venue working hours
+  Future<bool> updateVenueWorkingHours(
+    String venueId,
+    Map<String, dynamic> workingHours,
+  ) async {
+    try {
+      await _supabase
+          .from('venues')
+          .update({'working_hours': workingHours})
+          .eq('id', venueId);
+      return true;
+    } catch (e) {
+      print('Error updating working hours: $e');
+      return false;
+    }
+  }
 }

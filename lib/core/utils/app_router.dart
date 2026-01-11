@@ -15,6 +15,12 @@ import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../presentation/screens/location_onboarding_screen.dart';
 import '../../presentation/screens/business/subscription_screen.dart';
 import '../../presentation/screens/business/store_screen.dart';
+import '../../presentation/screens/business/admin_dashboard_screen.dart';
+import '../../presentation/screens/business/admin/admin_services_screen.dart';
+import '../../presentation/screens/business/admin/admin_specialists_screen.dart';
+import '../../presentation/screens/business/admin/admin_gallery_screen.dart';
+import '../../presentation/screens/business/admin/admin_campaigns_screen.dart';
+import '../../presentation/screens/business/admin/admin_working_hours_screen.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
 
@@ -140,6 +146,63 @@ class AppRouter {
           requiredFor: 'Mağaza',
           redirectPath: '/business/store',
           child: StoreScreen(),
+        ),
+      ),
+
+      // Admin Routes (Business Management)
+      GoRoute(
+        path: '/business/admin',
+        name: 'business-admin',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Yönetim',
+          redirectPath: '/business/admin',
+          child: AdminDashboardScreen(),
+        ),
+      ),
+      // TODO: Add sub-routes for services, gallery, specialists, campaigns
+      GoRoute(
+        path: '/business/admin/services',
+        name: 'admin-services',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Hizmet Yönetimi',
+          redirectPath: '/business/admin/services',
+          child: AdminServicesScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/business/admin/working-hours',
+        name: 'admin-working-hours',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Çalışma Saatleri',
+          redirectPath: '/business/admin/working-hours',
+          child: AdminWorkingHoursScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/business/admin/gallery',
+        name: 'admin-gallery',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Galeri Yönetimi',
+          redirectPath: '/business/admin/gallery',
+          child: AdminGalleryScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/business/admin/specialists',
+        name: 'admin-specialists',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Uzman Yönetimi',
+          redirectPath: '/business/admin/specialists',
+          child: AdminSpecialistsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/business/admin/campaigns',
+        name: 'admin-campaigns',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Kampanya Yönetimi',
+          redirectPath: '/business/admin/campaigns',
+          child: AdminCampaignsScreen(),
         ),
       ),
     ],

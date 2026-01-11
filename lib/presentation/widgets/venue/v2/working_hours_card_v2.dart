@@ -10,10 +10,12 @@ class WorkingHoursCardV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status = _getCurrentStatus();
+    final isOpen = status == 'Açık';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header with title and open status badge
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -24,43 +26,46 @@ class WorkingHoursCardV2 extends StatelessWidget {
                 fontSize: 18,
               ),
             ),
-            // Open Status Badge with pulse animation
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: const Color(0xFFDCFCE7),
+                color: isOpen
+                    ? const Color(0xFFDCFCE7)
+                    : const Color(0xFFFEE2E2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Animated pulse dot
-                  TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0.5, end: 1.0),
-                    duration: const Duration(milliseconds: 800),
-                    builder: (context, value, child) {
-                      return Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF22C55E).withOpacity(value),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF22C55E).withOpacity(0.3),
-                              blurRadius: 4,
-                              spreadRadius: 1,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                  if (isOpen)
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.5, end: 1.0),
+                      duration: const Duration(milliseconds: 800),
+                      builder: (context, value, child) {
+                        return Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF22C55E).withOpacity(value),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF22C55E).withOpacity(0.3),
+                                blurRadius: 4,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  else
+                    const Icon(Icons.circle, color: Colors.redAccent, size: 8),
                   const SizedBox(width: 6),
                   Text(
-                    'Şu an Açık',
+                    isOpen ? 'Şu an Açık' : 'Şu an Kapalı',
                     style: TextStyle(
-                      color: const Color(0xFF15803D),
+                      color: isOpen ? const Color(0xFF15803D) : Colors.red[800],
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
@@ -71,7 +76,6 @@ class WorkingHoursCardV2 extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        // Hours Card
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -86,18 +90,97 @@ class WorkingHoursCardV2 extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            children: [
-              _buildHourRow('Hafta içi', '09:00 - 19:00'),
-              _buildDashedDivider(),
-              _buildHourRow('Cumartesi', '09:00 - 17:00'),
-              _buildDashedDivider(),
-              _buildHourRow('Pazar', 'Kapalı', isClosed: true),
-            ],
-          ),
+          child: Column(children: _buildHoursList()),
         ),
       ],
     );
+  }
+
+  List<Widget> _buildHoursList() {
+    final Map<String, String> dayNames = {
+      'monday': 'Pazartesi',
+      'tuesday': 'Salı',
+      'wednesday': 'Çarşamba',
+      'thursday': 'Perşembe',
+      'friday': 'Cuma',
+      'saturday': 'Cumartesi',
+      'sunday': 'Pazar',
+    };
+
+    final List<Widget> widgets = [];
+    final hours = venue.workingHours;
+
+    final sortedKeys = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
+
+    for (int i = 0; i < sortedKeys.length; i++) {
+      final key = sortedKeys[i];
+      final dayName = dayNames[key]!;
+      final value = hours[key]?.toString() ?? 'Belirtilmedi';
+      final isClosed = value.toLowerCase() == 'kapalı';
+
+      widgets.add(_buildHourRow(dayName, value, isClosed: isClosed));
+
+      if (i < sortedKeys.length - 1) {
+        widgets.add(_buildDashedDivider());
+      }
+    }
+
+    return widgets;
+  }
+
+  String _getCurrentStatus() {
+    try {
+      final now = DateTime.now();
+      final dayNames = [
+        'sunday',
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+      ];
+      final currentDayKey = dayNames[now.weekday % 7];
+      final hoursRaw = venue.workingHours[currentDayKey];
+
+      if (hoursRaw == null || hoursRaw.toString().toLowerCase() == 'kapalı') {
+        return 'Kapalı';
+      }
+
+      final parts = hoursRaw.toString().split(' - ');
+      if (parts.length != 2) return 'Açık'; // Fallback
+
+      final startTime = _parseTime(parts[0]);
+      final endTime = _parseTime(parts[1]);
+      final currentTime = TimeOfDay.fromDateTime(now);
+
+      if (_isTimeAfter(currentTime, startTime) &&
+          _isTimeAfter(endTime, currentTime)) {
+        return 'Açık';
+      }
+      return 'Kapalı';
+    } catch (e) {
+      return 'Açık';
+    }
+  }
+
+  TimeOfDay _parseTime(String timeStr) {
+    final parts = timeStr.trim().split(':');
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+  }
+
+  bool _isTimeAfter(TimeOfDay time, TimeOfDay target) {
+    if (time.hour > target.hour) return true;
+    if (time.hour == target.hour && time.minute >= target.minute) return true;
+    return false;
   }
 
   Widget _buildHourRow(String day, String hours, {bool isClosed = false}) {
@@ -110,8 +193,8 @@ class WorkingHoursCardV2 extends StatelessWidget {
           Text(
             hours,
             style: TextStyle(
-              color: isClosed ? AppColors.primary : AppColors.gray900,
-              fontWeight: isClosed ? FontWeight.w600 : FontWeight.w600,
+              color: isClosed ? Colors.redAccent : AppColors.gray900,
+              fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
           ),

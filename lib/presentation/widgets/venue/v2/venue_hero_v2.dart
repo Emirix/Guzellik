@@ -15,8 +15,13 @@ import '../../../providers/search_provider.dart';
 
 class VenueHeroV2 extends StatelessWidget {
   final Venue venue;
+  final bool showBackButton;
 
-  const VenueHeroV2({super.key, required this.venue});
+  const VenueHeroV2({
+    super.key,
+    required this.venue,
+    this.showBackButton = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,17 +37,31 @@ class VenueHeroV2 extends StatelessWidget {
           children: [
             // Gallery Carousel
             Builder(
-              builder: (BuildContext builderContext) {
+              builder: (builderContext) {
+                // Use gallery photos if available (sorted by hero first, then sortOrder)
+                // If not, fallback to heroImages or legacy imageUrl
+                List<String> images = [];
+                if (venue.galleryPhotos != null &&
+                    venue.galleryPhotos!.isNotEmpty) {
+                  final sorted = List<VenuePhoto>.from(venue.galleryPhotos!);
+                  sorted.sort((a, b) {
+                    if (a.isHeroImage && !b.isHeroImage) return -1;
+                    if (!a.isHeroImage && b.isHeroImage) return 1;
+                    return a.sortOrder.compareTo(b.sortOrder);
+                  });
+                  images = sorted.map((p) => p.url).toList();
+                } else if (venue.heroImages.isNotEmpty) {
+                  images = venue.heroImages;
+                } else if (venue.imageUrl != null) {
+                  images = [venue.imageUrl!];
+                }
+
                 return VenueHeroCarousel(
-                  imageUrls: venue.heroImages.isNotEmpty
-                      ? venue.heroImages
-                      : (venue.imageUrl != null ? [venue.imageUrl!] : []),
+                  imageUrls: images,
                   height: 360,
                   onTap: () {
                     // Open full-screen gallery viewer if there are photos
-                    final hasPhotos =
-                        venue.heroImages.isNotEmpty || venue.imageUrl != null;
-                    if (hasPhotos) {
+                    if (images.isNotEmpty) {
                       _openGalleryViewer(builderContext);
                     }
                   },
@@ -71,10 +90,19 @@ class VenueHeroV2 extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildGlassButton(
-                      icon: Icons.arrow_back,
-                      onTap: () => Navigator.pop(context),
-                    ),
+                    if (showBackButton)
+                      _buildGlassButton(
+                        icon: Icons.arrow_back,
+                        onTap: () {
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                        },
+                      )
+                    else
+                      const SizedBox(
+                        width: 44,
+                      ), // Placeholder if back button hidden
                     Row(
                       children: [
                         _buildGlassButton(
@@ -97,14 +125,14 @@ class VenueHeroV2 extends StatelessWidget {
                             }
 
                             try {
-                              final favoritesProvider =
-                                  context.read<FavoritesProvider>();
-                              final discoveryProvider =
-                                  context.read<DiscoveryProvider>();
-                              final searchProvider =
-                                  context.read<SearchProvider>();
-                              final detailsProvider =
-                                  context.read<VenueDetailsProvider>();
+                              final favoritesProvider = context
+                                  .read<FavoritesProvider>();
+                              final discoveryProvider = context
+                                  .read<DiscoveryProvider>();
+                              final searchProvider = context
+                                  .read<SearchProvider>();
+                              final detailsProvider = context
+                                  .read<VenueDetailsProvider>();
 
                               await Future.wait([
                                 favoritesProvider.toggleFavorite(venue),
@@ -144,23 +172,34 @@ class VenueHeroV2 extends StatelessWidget {
   }
 
   void _openGalleryViewer(BuildContext context) {
-    // Get image URLs (either from heroImages or fallback to imageUrl)
-    final imageUrls = venue.heroImages.isNotEmpty
-        ? venue.heroImages
-        : (venue.imageUrl != null ? [venue.imageUrl!] : []);
+    List<VenuePhoto> photos = [];
 
-    // Convert to VenuePhoto objects for the gallery viewer
-    final photos = imageUrls.asMap().entries.map((entry) {
-      return VenuePhoto(
-        id: '${venue.id}_hero_${entry.key}',
-        venueId: venue.id,
-        url: entry.value,
-        category: PhotoCategory.interior,
-        uploadedAt: DateTime.now(),
-        sortOrder: entry.key,
-        isHeroImage: true,
-      );
-    }).toList();
+    if (venue.galleryPhotos != null && venue.galleryPhotos!.isNotEmpty) {
+      // Use existing gallery photos, sorted correctly
+      photos = List<VenuePhoto>.from(venue.galleryPhotos!);
+      photos.sort((a, b) {
+        if (a.isHeroImage && !b.isHeroImage) return -1;
+        if (!a.isHeroImage && b.isHeroImage) return 1;
+        return a.sortOrder.compareTo(b.sortOrder);
+      });
+    } else {
+      // Fallback for legacy data/heroImages
+      final imageUrls = venue.heroImages.isNotEmpty
+          ? venue.heroImages
+          : (venue.imageUrl != null ? [venue.imageUrl!] : []);
+
+      photos = imageUrls.asMap().entries.map((entry) {
+        return VenuePhoto(
+          id: '${venue.id}_hero_${entry.key}',
+          venueId: venue.id,
+          url: entry.value,
+          category: PhotoCategory.interior,
+          uploadedAt: DateTime.now(),
+          sortOrder: entry.key,
+          isHeroImage: entry.key == 0,
+        );
+      }).toList();
+    }
 
     if (photos.isEmpty) return;
 

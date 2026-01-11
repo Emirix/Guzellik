@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/business_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/business/subscription_card.dart';
 import '../../../config/admin_config.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/enums/business_mode.dart';
 import '../../widgets/common/business_bottom_nav.dart';
 
 /// Subscription screen for business accounts
@@ -178,6 +180,40 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+
+                  // Switch to Normal Account Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: OutlinedButton(
+                        onPressed: () => _switchToNormalAccount(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.person_outline, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              'Normal Hesaba Geç',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
                   // Quick Actions
@@ -291,6 +327,21 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Admin panel açılamadı')));
+      }
+    }
+  }
+
+  Future<void> _switchToNormalAccount(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final userId = authProvider.currentUser?.id;
+
+    if (userId != null) {
+      final businessProvider = context.read<BusinessProvider>();
+      await businessProvider.switchMode(BusinessMode.normal, userId);
+      
+      if (context.mounted) {
+        // Reset navigation to initial route using GoRouter
+        context.go('/');
       }
     }
   }

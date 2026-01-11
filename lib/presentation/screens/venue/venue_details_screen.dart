@@ -17,12 +17,16 @@ class VenueDetailsScreen extends StatefulWidget {
   final String venueId;
   final Venue? initialVenue;
   final Widget? bottomNavigationBar;
+  final bool hideDefaultBottomBar;
+  final bool showBackButton;
 
   const VenueDetailsScreen({
     super.key,
     required this.venueId,
     this.initialVenue,
     this.bottomNavigationBar,
+    this.hideDefaultBottomBar = false,
+    this.showBackButton = true,
   });
 
   @override
@@ -216,7 +220,26 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      bottomNavigationBar: widget.bottomNavigationBar,
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AdBannerWidget(),
+          if (widget.bottomNavigationBar != null)
+            widget.bottomNavigationBar!
+          else if (!widget.hideDefaultBottomBar)
+            Consumer<VenueDetailsProvider>(
+              builder: (context, provider, _) {
+                final venue = provider.venue;
+                if (venue == null) return const SizedBox.shrink();
+                return BookingBottomBar(
+                  onBookingTap: () => _showContactOptions(context, venue),
+                  rating: venue.rating,
+                  reviewCount: venue.ratingCount,
+                );
+              },
+            ),
+        ],
+      ),
       body: Consumer<VenueDetailsProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.venue == null) {
@@ -283,7 +306,10 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
               NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
-                    VenueHeroV2(venue: venue),
+                    VenueHeroV2(
+                      venue: venue,
+                      showBackButton: widget.showBackButton,
+                    ),
                     // Rounded top overlay that goes over the hero image
                     SliverToBoxAdapter(
                       child: Transform.translate(
@@ -317,38 +343,21 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
                       VenueOverviewV2(
                         venue: venue,
                         reviews: provider.reviews,
+                        specialists: provider.specialists,
                         onSeeAll: () => _tabController.animateTo(2),
                       ),
                       ServicesTab(venueId: venue.id),
                       venue.id.isNotEmpty
                           ? ReviewsTab(venueId: venue.id)
                           : const SizedBox(),
-                      ExpertsTab(venue: venue),
+                      ExpertsTab(
+                        venue: venue,
+                        specialists: provider.specialists,
+                      ),
                     ],
                   ),
                 ),
               ),
-
-              // Ad Banner above bottom bar
-              const Positioned(
-                bottom: 80,
-                left: 0,
-                right: 0,
-                child: AdBannerWidget(),
-              ),
-
-              // Fixed Bottom Bar
-              if (widget.bottomNavigationBar == null)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: BookingBottomBar(
-                    onBookingTap: () => _showContactOptions(context, venue),
-                    rating: venue.rating,
-                    reviewCount: venue.ratingCount,
-                  ),
-                ),
             ],
           );
         },

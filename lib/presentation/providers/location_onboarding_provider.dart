@@ -249,11 +249,11 @@ class LocationOnboardingProvider extends ChangeNotifier {
 
   /// Get current saved location (useful for other providers)
   Future<UserLocation?> getSavedLocation() async {
-    return await _locationPreferences.getLocation();
+    return _locationPreferences.getLocation();
   }
 
   /// Check if location onboarding has been completed
   Future<bool> isOnboardingCompleted() async {
-    return await _locationPreferences.isOnboardingCompleted();
+    return _locationPreferences.isOnboardingCompleted();
   }
 }

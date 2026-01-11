@@ -122,6 +122,59 @@ class VenueIdentityV2 extends StatelessWidget {
     }
   }
 
+  Widget _buildFollowButton(
+    bool isFollowing,
+    bool isLoading,
+    BuildContext context,
+  ) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      child: Material(
+        color: AppColors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: isLoading ? null : () => _handleFollowTap(context),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isLoading)
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
+                    ),
+                  )
+                else
+                  Icon(
+                    isFollowing ? Icons.check : Icons.add,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
+                const SizedBox(width: 4),
+                Text(
+                  isFollowing ? 'Takipte' : 'Takip Et',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: AppColors.primary,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<VenueDetailsProvider>(
@@ -132,130 +185,90 @@ class VenueIdentityV2 extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Name, Location, Category and Logo Row
+            // Name and Follow Button Row - Split by SpaceBetween
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Venue Name - Premium typography
-                      Text(
-                        venue.name,
-                        style: AppTextStyles.heading1.copyWith(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
-                          color: AppColors.gray900,
-                          height: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      // Location & Category - Combined in one line like design
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 14,
-                            color: AppColors.gray500,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              venue.address,
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.gray500,
-                                fontSize: 13,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6),
-                            child: Text(
-                              '•',
-                              style: TextStyle(
-                                color: AppColors.gray400,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              venue.category?.name ?? 'Güzellik Salonu',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.gray500,
-                                fontSize: 13,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  child: Text(
+                    venue.name,
+                    style: AppTextStyles.heading1.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                      color: AppColors.gray900,
+                      height: 1.2,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                // Logo Container - Elegant rounded square
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white, width: 2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                const SizedBox(width: 12),
+                _buildFollowButton(isFollowing, isLoading, context),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Location & Category Row
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on_outlined,
+                  size: 14,
+                  color: AppColors.gray500,
+                ),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    venue.address,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.gray500,
+                      fontSize: 13,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: venue.imageUrl != null
-                        ? Image.network(
-                            venue.imageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: AppColors.primaryLight,
-                                child: Icon(
-                                  IconUtils.getCategoryIcon(
-                                    venue.icon ?? venue.category?.icon,
-                                  ),
-                                  color: AppColors.primary,
-                                  size: 28,
-                                ),
-                              );
-                            },
-                          )
-                        : Container(
-                            color: AppColors.primaryLight,
-                            child: Icon(
-                              IconUtils.getCategoryIcon(
-                                venue.icon ?? venue.category?.icon,
-                              ),
-                              color: AppColors.primary,
-                              size: 28,
-                            ),
-                          ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Text(
+                    '•',
+                    style: TextStyle(color: AppColors.gray400, fontSize: 12),
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    venue.category?.name ?? 'Güzellik Salonu',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.gray500,
+                      fontSize: 13,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            // Rating & Follow Row
-            Row(
-              children: [
-                // Rating Badge - Premium design
-                if (venue.ratingCount > 0)
+            const SizedBox(height: 8),
+            // Venue Description
+            Text(
+              venue.description ??
+                  'Bu mekan hakkında henüz detaylı bilgi eklenmemiştir. Daha fazla bilgi almak için iletişime geçebilirsiniz.',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.gray600,
+                height: 1.5,
+                fontSize: 14,
+              ),
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 12),
+            const SizedBox(height: 12),
+            // Rating Row
+            if (venue.ratingCount > 0)
+              Row(
+                children: [
+                  // Rating Badge - Premium design
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 8,
+                      vertical: 6,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -280,7 +293,7 @@ class VenueIdentityV2 extends StatelessWidget {
                           style: const TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontSize: 14,
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -293,20 +306,20 @@ class VenueIdentityV2 extends StatelessWidget {
                               return const Icon(
                                 Icons.star_rounded,
                                 color: AppColors.gold,
-                                size: 16,
+                                size: 14,
                               );
                             } else if (index < rating.ceil() &&
                                 rating % 1 != 0) {
                               return const Icon(
                                 Icons.star_half_rounded,
                                 color: AppColors.gold,
-                                size: 16,
+                                size: 14,
                               );
                             } else {
                               return Icon(
                                 Icons.star_outline_rounded,
                                 color: AppColors.gold.withOpacity(0.4),
-                                size: 16,
+                                size: 14,
                               );
                             }
                           }),
@@ -317,67 +330,14 @@ class VenueIdentityV2 extends StatelessWidget {
                           style: AppTextStyles.caption.copyWith(
                             color: AppColors.gray400,
                             fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                            fontSize: 11,
                           ),
                         ),
                       ],
                     ),
                   ),
-                const Spacer(),
-                // Follow Button - Premium pill shape
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  child: Material(
-                    color: isFollowing
-                        ? AppColors.primary.withOpacity(0.1)
-                        : AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    child: InkWell(
-                      onTap: isLoading ? null : () => _handleFollowTap(context),
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (isLoading)
-                              SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.primary,
-                                  ),
-                                ),
-                              )
-                            else
-                              Icon(
-                                isFollowing ? Icons.check : Icons.add,
-                                size: 18,
-                                color: AppColors.primary,
-                              ),
-                            const SizedBox(width: 6),
-                            Text(
-                              isFollowing ? 'Takipte' : 'Takip Et',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: AppColors.primary,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         );
       },

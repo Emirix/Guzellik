@@ -105,7 +105,8 @@ class _ExploreScreenState extends State<ExploreScreen>
             Positioned.fill(
               child: RepaintBoundary(
                 child: provider.viewMode == DiscoveryViewMode.map
-                    ? const DiscoveryMapView()
+                    // Wrap GoogleMap in another RepaintBoundary to isolate PlatformView redraws
+                    ? const RepaintBoundary(child: DiscoveryMapView())
                     : const VenueListView(),
               ),
             ),
@@ -315,38 +316,48 @@ class _ExploreScreenState extends State<ExploreScreen>
                   ),
                 ),
 
-                // Featured Venues
+                // Featured Venues - wrapped in RepaintBoundary
                 const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 24),
-                    child: FeaturedVenues(),
+                  child: RepaintBoundary(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: FeaturedVenues(),
+                    ),
                   ),
                 ),
 
-                // Category Icons
+                // Category Icons - wrapped in RepaintBoundary
                 const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 24),
-                    child: CategoryIcons(),
+                  child: RepaintBoundary(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: CategoryIcons(),
+                    ),
                   ),
                 ),
 
-                // Campaign Slider
+                // Campaign Slider - wrapped in RepaintBoundary
                 const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 24),
-                    child: CampaignSlider(),
+                  child: RepaintBoundary(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: CampaignSlider(),
+                    ),
                   ),
                 ),
 
-                // Ad Banner
-                const SliverToBoxAdapter(child: AdBannerWidget()),
-
-                // Nearby Venues
+                // Ad Banner - wrapped in RepaintBoundary
                 const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 24),
-                    child: NearbyVenues(),
+                  child: RepaintBoundary(child: AdBannerWidget()),
+                ),
+
+                // Nearby Venues - wrapped in RepaintBoundary
+                const SliverToBoxAdapter(
+                  child: RepaintBoundary(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: NearbyVenues(),
+                    ),
                   ),
                 ),
 

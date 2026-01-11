@@ -158,7 +158,7 @@ class NotificationService {
 
   /// Get FCM token
   Future<String?> getToken() async {
-    return await _messaging.getToken();
+    return _messaging.getToken();
   }
 
   /// Subscribe to topic

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../../core/services/ad_service.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -90,73 +89,105 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: _isLoaded && _nativeAd != null
-            ? AdWidget(ad: _nativeAd!)
-            : _buildShimmerPlaceholder(),
+        // PERF: RepaintBoundary isolates PlatformView (AdWidget) GPU surface updates
+        child: RepaintBoundary(
+          child: _isLoaded && _nativeAd != null
+              ? AdWidget(ad: _nativeAd!)
+              : _buildShimmerPlaceholder(),
+        ),
       ),
     );
   }
 
   Widget _buildShimmerPlaceholder() {
-    return Shimmer.fromColors(
-      baseColor: AppColors.gray100,
-      highlightColor: AppColors.gray50,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Reklam etiketi
-            Container(
-              width: 40,
-              height: 16,
-              decoration: BoxDecoration(
-                color: AppColors.gray200,
-                borderRadius: BorderRadius.circular(4),
+    // Use static placeholders instead of animated shimmer to prevent continuous GPU redraws
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Reklam etiketi
+          Container(
+            width: 40,
+            height: 16,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.gray100,
+                  AppColors.gray50,
+                  AppColors.gray100,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
               ),
+              borderRadius: BorderRadius.circular(4),
             ),
-            const SizedBox(height: 12),
-            // Başlık placeholder
-            Container(
-              width: double.infinity,
-              height: 20,
-              decoration: BoxDecoration(
-                color: AppColors.gray200,
-                borderRadius: BorderRadius.circular(4),
+          ),
+          const SizedBox(height: 12),
+          // Başlık placeholder
+          Container(
+            width: double.infinity,
+            height: 20,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.gray100,
+                  AppColors.gray50,
+                  AppColors.gray100,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
               ),
+              borderRadius: BorderRadius.circular(4),
             ),
-            const SizedBox(height: 8),
-            // Açıklama placeholder
-            Container(
-              width: double.infinity * 0.7,
-              height: 14,
-              decoration: BoxDecoration(
-                color: AppColors.gray200,
-                borderRadius: BorderRadius.circular(4),
+          ),
+          const SizedBox(height: 8),
+          // Açıklama placeholder
+          Container(
+            width: 200,
+            height: 14,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.gray100,
+                  AppColors.gray50,
+                  AppColors.gray100,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
               ),
+              borderRadius: BorderRadius.circular(4),
             ),
-            const Spacer(),
-            // Görsel placeholder
-            Container(
-              width: double.infinity,
-              height: 120,
-              decoration: BoxDecoration(
-                color: AppColors.gray200,
-                borderRadius: BorderRadius.circular(8),
+          ),
+          const Spacer(),
+          // Görsel placeholder
+          Container(
+            width: double.infinity,
+            height: 120,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.gray100,
+                  AppColors.gray50,
+                  AppColors.gray100,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
               ),
+              borderRadius: BorderRadius.circular(8),
             ),
-            const SizedBox(height: 12),
-            // CTA button placeholder
-            Container(
-              width: 100,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(8),
-              ),
+          ),
+          const SizedBox(height: 12),
+          // CTA button placeholder
+          Container(
+            width: 100,
+            height: 36,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(8),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -46,79 +46,82 @@ class _SearchShimmerLoadingState extends State<SearchShimmerLoading>
   }
 
   Widget _buildShimmerCard() {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image placeholder
-              _buildShimmerBox(
-                height: 180,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
+    // PERF: Wrap with RepaintBoundary to isolate shimmer animation repaints
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildShimmerBox(width: 180, height: 20),
-                        _buildShimmerBox(width: 60, height: 20),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    // Location
-                    _buildShimmerBox(width: 140, height: 14),
-                    const SizedBox(height: 12),
-                    // Service tags
-                    Row(
-                      children: [
-                        _buildShimmerBox(width: 80, height: 28, radius: 10),
-                        const SizedBox(width: 8),
-                        _buildShimmerBox(width: 70, height: 28, radius: 10),
-                        const SizedBox(width: 8),
-                        _buildShimmerBox(width: 60, height: 28, radius: 10),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    // Bottom row
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildShimmerBox(height: 44, radius: 12),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildShimmerBox(height: 44, radius: 12),
-                        ),
-                      ],
-                    ),
-                  ],
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image placeholder
+                _buildShimmerBox(
+                  height: 180,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildShimmerBox(width: 180, height: 20),
+                          _buildShimmerBox(width: 60, height: 20),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Location
+                      _buildShimmerBox(width: 140, height: 14),
+                      const SizedBox(height: 12),
+                      // Service tags
+                      Row(
+                        children: [
+                          _buildShimmerBox(width: 80, height: 28, radius: 10),
+                          const SizedBox(width: 8),
+                          _buildShimmerBox(width: 70, height: 28, radius: 10),
+                          const SizedBox(width: 8),
+                          _buildShimmerBox(width: 60, height: 28, radius: 10),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      // Bottom row
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildShimmerBox(height: 44, radius: 12),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildShimmerBox(height: 44, radius: 12),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 

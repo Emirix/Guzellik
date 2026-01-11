@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/app_state_provider.dart';
+import '../../providers/business_provider.dart';
 
 /// Business bottom navigation bar
 /// Shows 3 tabs: Profilim, Abonelik, Mağaza
@@ -31,19 +32,27 @@ class BusinessBottomNav extends StatelessWidget {
               ),
               _buildNavItem(
                 context,
+                icon: Icons.dashboard_customize_outlined,
+                activeIcon: Icons.dashboard_customize,
+                label: 'Yönetim',
+                isSelected: selectedIndex == 1,
+                onTap: () => _handleTap(context, appState, 1),
+              ),
+              _buildNavItem(
+                context,
                 icon: Icons.card_membership_outlined,
                 activeIcon: Icons.card_membership,
                 label: 'Abonelik',
-                isSelected: selectedIndex == 1,
-                onTap: () => _handleTap(context, appState, 1),
+                isSelected: selectedIndex == 2,
+                onTap: () => _handleTap(context, appState, 2),
               ),
               _buildNavItem(
                 context,
                 icon: Icons.store_outlined,
                 activeIcon: Icons.store,
                 label: 'Mağaza',
-                isSelected: selectedIndex == 2,
-                onTap: () => _handleTap(context, appState, 2),
+                isSelected: selectedIndex == 3,
+                onTap: () => _handleTap(context, appState, 3),
               ),
             ],
           ),
@@ -98,14 +107,24 @@ class BusinessBottomNav extends StatelessWidget {
     // Navigate based on index using GoRouter
     switch (index) {
       case 0:
-        // Profile
-        context.go('/profile');
+        // Profile - Show venue details for business users
+        final businessProvider = context.read<BusinessProvider>();
+        if (businessProvider.isBusinessMode &&
+            businessProvider.businessVenue != null) {
+          context.go('/venue/${businessProvider.businessVenue!.id}');
+        } else {
+          context.go('/profile');
+        }
         break;
       case 1:
+        // Admin/Management
+        context.go('/business/admin');
+        break;
+      case 2:
         // Subscription
         context.go('/business/subscription');
         break;
-      case 2:
+      case 3:
         // Store
         context.go('/business/store');
         break;

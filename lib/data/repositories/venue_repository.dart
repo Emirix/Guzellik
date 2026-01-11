@@ -4,6 +4,8 @@ import '../models/venue_filter.dart';
 import '../models/review.dart';
 import '../models/venue_photo.dart';
 import '../models/venue_category.dart';
+import '../models/specialist.dart';
+import '../models/campaign.dart';
 import '../services/supabase_service.dart';
 import '../../core/services/cache_service.dart';
 
@@ -559,5 +561,68 @@ class VenueRepository {
     );
 
     return response.map((json) => Service.fromJson(json)).toList();
+  }
+
+  // Specialists Methods (Task 37)
+
+  /// Fetch all specialists for a venue, ordered by sort_order
+  Future<List<Specialist>> getVenueSpecialists(String venueId) async {
+    final response = await _supabase
+        .from('specialists')
+        .select()
+        .eq('venue_id', venueId)
+        .order('sort_order', ascending: true);
+
+    return (response as List).map((json) => Specialist.fromJson(json)).toList();
+  }
+
+  // Campaigns Methods (Task 39)
+
+  /// Fetch active campaigns for a venue
+  Future<List<Campaign>> getVenueCampaigns(String venueId) async {
+    final now = DateTime.now().toIso8601String();
+
+    final response = await _supabase
+        .from('campaigns')
+        .select()
+        .eq('venue_id', venueId)
+        .eq('is_active', true)
+        .gte('end_date', now)
+        .order('created_at', ascending: false);
+
+    return (response as List).map((json) => Campaign.fromJson(json)).toList();
+  }
+
+  /// Fetch all campaigns for a venue (including inactive/expired)
+  Future<List<Campaign>> getAllVenueCampaigns(String venueId) async {
+    final response = await _supabase
+        .from('campaigns')
+        .select()
+        .eq('venue_id', venueId)
+        .order('created_at', ascending: false);
+
+    return (response as List).map((json) => Campaign.fromJson(json)).toList();
+  }
+
+  /// Fetch featured campaigns across all venues
+  Future<List<Campaign>> getFeaturedCampaigns({int limit = 10}) async {
+    final now = DateTime.now().toIso8601String();
+
+    final response = await _supabase
+        .from('campaigns')
+        .select('*, venues:venue_id(*)')
+        .eq('is_active', true)
+        .gte('end_date', now)
+        .order('created_at', ascending: false)
+        .limit(limit);
+
+    return (response as List).map((json) => Campaign.fromJson(json)).toList();
+  }
+
+  // Gallery Methods (Task 38) - Already exists as fetchVenuePhotos
+
+  /// Alias for consistency with new naming convention
+  Future<List<VenuePhoto>> getVenuePhotos(String venueId) async {
+    return fetchVenuePhotos(venueId);
   }
 }
