@@ -13,6 +13,8 @@ import '../../presentation/screens/auth/complete_profile_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
 import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../presentation/screens/location_onboarding_screen.dart';
+import '../../presentation/screens/business/subscription_screen.dart';
+import '../../presentation/screens/business/store_screen.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
 
@@ -128,9 +130,7 @@ class AppRouter {
         builder: (context, state) => const AuthGuard(
           requiredFor: 'Abonelik',
           redirectPath: '/business/subscription',
-          child: Scaffold(
-            body: Center(child: Text('Subscription Screen - Coming Soon')),
-          ),
+          child: SubscriptionScreen(),
         ),
       ),
       GoRoute(
@@ -139,9 +139,7 @@ class AppRouter {
         builder: (context, state) => const AuthGuard(
           requiredFor: 'Mağaza',
           redirectPath: '/business/store',
-          child: Scaffold(
-            body: Center(child: Text('Store Screen - Coming Soon')),
-          ),
+          child: StoreScreen(),
         ),
       ),
     ],

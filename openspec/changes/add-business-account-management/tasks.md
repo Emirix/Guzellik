@@ -155,56 +155,56 @@
 ## Phase 6: Flutter UI - Subscription Screen (Priority: MEDIUM)
 
 ### Task 6.1: Create SubscriptionScreen
-- [ ] Create `lib/presentation/screens/business/subscription_screen.dart`
-- [ ] Implement screen layout based on design/admin-abonelik/image.png
-- [ ] Add business logo/branding section
-- [ ] Add welcome message
-- [ ] **Validation**: Screen renders correctly
+- [x] Create `lib/presentation/screens/business/subscription_screen.dart`
+- [x] Implement screen layout based on design/admin-abonelik/image.png
+- [x] Add business logo/branding section
+- [x] Add welcome message
+- [x] **Validation**: Screen renders correctly
 
 ### Task 6.2: Create SubscriptionCard widget
-- [ ] Create `lib/presentation/widgets/business/subscription_card.dart`
-- [ ] Implement subscription type badge
-- [ ] Add subscription name display
-- [ ] Add days remaining display
-- [ ] Implement progress bar with gradient
-- [ ] Add renewal date display
-- [ ] **Validation**: Card displays subscription data correctly
+- [x] Create `lib/presentation/widgets/business/subscription_card.dart`
+- [x] Implement subscription type badge
+- [x] Add subscription name display
+- [x] Add days remaining display
+- [x] Implement progress bar with gradient
+- [x] Add renewal date display
+- [x] **Validation**: Card displays subscription data correctly
 
 ### Task 6.3: Implement "Admin Panele Git" button
-- [ ] Add button to SubscriptionScreen
-- [ ] Implement URL opening logic using url_launcher
-- [ ] Get admin URL from AdminConfig
-- [ ] Append venue ID as query parameter
-- [ ] **Validation**: Button opens admin panel in browser
+- [x] Add button to SubscriptionScreen
+- [x] Implement URL opening logic using url_launcher
+- [x] Get admin URL from AdminConfig
+- [x] Append venue ID as query parameter
+- [x] **Validation**: Button opens admin panel in browser
 
 ### Task 6.4: Create quick action cards
-- [ ] Create "Raporlar" card
-- [ ] Create "Ayarlar" card
-- [ ] Implement tap handlers (placeholder for now)
-- [ ] **Validation**: Cards are tappable and show appropriate feedback
+- [x] Create "Raporlar" card
+- [x] Create "Ayarlar" card
+- [x] Implement tap handlers (placeholder for now)
+- [x] **Validation**: Cards are tappable and show appropriate feedback
 
 ### Task 6.5: Implement bottom tabs
-- [ ] Create bottom tab bar with YARDIM, DESTEK, ÇIKIŞ YAP
-- [ ] Implement tab tap handlers
-- [ ] Add logout confirmation dialog
-- [ ] **Validation**: Tabs are functional
+- [x] Create bottom tab bar with YARDIM, DESTEK, ÇIKIŞ YAP
+- [x] Implement tab tap handlers
+- [x] Add logout confirmation dialog
+- [x] **Validation**: Tabs are functional
 
 ---
 
 ## Phase 7: Flutter UI - Store Screen (Priority: LOW)
 
 ### Task 7.1: Create StoreScreen (mockup)
-- [ ] Create `lib/presentation/screens/business/store_screen.dart`
-- [ ] Implement grid layout for feature cards
-- [ ] Create feature card widget
-- [ ] Add "Yakında" badges to all features
-- [ ] **Validation**: Screen displays mockup correctly
+- [x] Create `lib/presentation/screens/business/store_screen.dart`
+- [x] Implement grid layout for feature cards
+- [x] Create feature card widget
+- [x] Add "Yakında" badges to all features
+- [x] **Validation**: Screen displays mockup correctly
 
 ### Task 7.2: Design feature cards
-- [ ] Create cards for: Öne Çıkma, Kampanya Ekleme, Bildirim Gönderme
-- [ ] Add feature icons and descriptions
-- [ ] Add placeholder pricing
-- [ ] **Validation**: Cards look premium and match app design
+- [x] Create cards for: Öne Çıkma, Kampanya Ekleme, Bildirim Gönderme
+- [x] Add feature icons and descriptions
+- [x] Add placeholder pricing
+- [x] **Validation**: Cards look premium and match app design
 
 ---
 

@@ -67,10 +67,7 @@ class VenueHeroV2 extends StatelessWidget {
             // Top Actions
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -86,7 +83,7 @@ class VenueHeroV2 extends StatelessWidget {
                               : Icons.favorite_border,
                           iconColor: venue.isFavorited
                               ? AppColors.primary
-                              : Colors.white,
+                              : AppColors.gray900,
                           onTap: () async {
                             final authProvider = context.read<AuthProvider>();
                             if (!authProvider.isAuthenticated) {
@@ -100,14 +97,14 @@ class VenueHeroV2 extends StatelessWidget {
                             }
 
                             try {
-                              final favoritesProvider = context
-                                  .read<FavoritesProvider>();
-                              final discoveryProvider = context
-                                  .read<DiscoveryProvider>();
-                              final searchProvider = context
-                                  .read<SearchProvider>();
-                              final detailsProvider = context
-                                  .read<VenueDetailsProvider>();
+                              final favoritesProvider =
+                                  context.read<FavoritesProvider>();
+                              final discoveryProvider =
+                                  context.read<DiscoveryProvider>();
+                              final searchProvider =
+                                  context.read<SearchProvider>();
+                              final detailsProvider =
+                                  context.read<VenueDetailsProvider>();
 
                               await Future.wait([
                                 favoritesProvider.toggleFavorite(venue),
@@ -185,21 +182,25 @@ class VenueHeroV2 extends StatelessWidget {
   Widget _buildGlassButton({
     required IconData icon,
     required VoidCallback onTap,
-    Color iconColor = Colors.white,
+    Color? iconColor,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Material(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withOpacity(0.9),
           child: InkWell(
             onTap: onTap,
             child: Container(
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               alignment: Alignment.center,
-              child: Icon(icon, color: iconColor, size: 22),
+              child: Icon(
+                icon,
+                color: iconColor ?? AppColors.gray900,
+                size: 22,
+              ),
             ),
           ),
         ),
