@@ -9,9 +9,9 @@ class SubscriptionRepository {
   Future<BusinessSubscription?> getSubscription(String profileId) async {
     try {
       final response = await _supabase
-          .from('business_subscriptions')
-          .select()
-          .eq('profile_id', profileId)
+          .from('venues_subscription')
+          .select('*, venues!inner(owner_id)')
+          .eq('venues.owner_id', profileId)
           .order('created_at', ascending: false)
           .limit(1)
           .maybeSingle();
@@ -62,7 +62,7 @@ class SubscriptionRepository {
   ) async {
     try {
       await _supabase
-          .from('business_subscriptions')
+          .from('venues_subscription')
           .update({
             'status': status,
             'updated_at': DateTime.now().toIso8601String(),
@@ -82,7 +82,7 @@ class SubscriptionRepository {
   ) async {
     try {
       await _supabase
-          .from('business_subscriptions')
+          .from('venues_subscription')
           .update({
             'expires_at': newExpiryDate.toIso8601String(),
             'updated_at': DateTime.now().toIso8601String(),

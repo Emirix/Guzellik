@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/explore_screen.dart';
 import '../../presentation/screens/favorites_screen.dart';
@@ -23,6 +24,8 @@ import '../../presentation/screens/business/admin/admin_campaigns_screen.dart';
 import '../../presentation/screens/business/admin/admin_working_hours_screen.dart';
 import '../../presentation/screens/business/admin/admin_location_screen.dart';
 import '../../presentation/screens/business/admin_basic_info_screen.dart';
+import '../../presentation/widgets/common/business_bottom_nav.dart';
+import '../../presentation/providers/business_provider.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
 
@@ -116,8 +119,23 @@ class AppRouter {
         name: 'venue-details',
         builder: (context, state) {
           final venueId = state.pathParameters['id']!;
-          final venue = state.extra as Venue?;
-          return VenueDetailsScreen(venueId: venueId, initialVenue: venue);
+          final extra = state.extra;
+          final venue = extra is Venue
+              ? extra
+              : (extra is Map<String, dynamic> ? Venue.fromJson(extra) : null);
+
+          // Check if user is viewing their own business venue
+          final businessProvider = context.read<BusinessProvider>();
+          final isOwnVenue =
+              businessProvider.isBusinessMode &&
+              businessProvider.businessVenue?.id == venueId;
+
+          return VenueDetailsScreen(
+            venueId: venueId,
+            initialVenue: venue,
+            bottomNavigationBar: isOwnVenue ? const BusinessBottomNav() : null,
+            hideDefaultBottomBar: isOwnVenue,
+          );
         },
       ),
 

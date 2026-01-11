@@ -96,6 +96,21 @@ class WorkingHoursCardV2 extends StatelessWidget {
     );
   }
 
+  String _formatDayHours(dynamic dayData) {
+    if (dayData == null) return 'Kapalı';
+
+    if (dayData is Map) {
+      final isOpen = dayData['open'] == true;
+      if (!isOpen) return 'Kapalı';
+
+      final start = dayData['start']?.toString() ?? '09:00';
+      final end = dayData['end']?.toString() ?? '20:00';
+      return '$start - $end';
+    }
+
+    return dayData.toString();
+  }
+
   List<Widget> _buildHoursList() {
     final Map<String, String> dayNames = {
       'monday': 'Pazartesi',
@@ -123,7 +138,7 @@ class WorkingHoursCardV2 extends StatelessWidget {
     for (int i = 0; i < sortedKeys.length; i++) {
       final key = sortedKeys[i];
       final dayName = dayNames[key]!;
-      final value = hours[key]?.toString() ?? 'Belirtilmedi';
+      final value = _formatDayHours(hours[key]);
       final isClosed = value.toLowerCase() == 'kapalı';
 
       widgets.add(_buildHourRow(dayName, value, isClosed: isClosed));
@@ -151,11 +166,14 @@ class WorkingHoursCardV2 extends StatelessWidget {
       final currentDayKey = dayNames[now.weekday % 7];
       final hoursRaw = venue.workingHours[currentDayKey];
 
-      if (hoursRaw == null || hoursRaw.toString().toLowerCase() == 'kapalı') {
+      // Use the formatted hours
+      final formattedHours = _formatDayHours(hoursRaw);
+
+      if (formattedHours.toLowerCase() == 'kapalı') {
         return 'Kapalı';
       }
 
-      final parts = hoursRaw.toString().split(' - ');
+      final parts = formattedHours.split(' - ');
       if (parts.length != 2) return 'Açık'; // Fallback
 
       final startTime = _parseTime(parts[0]);
@@ -189,7 +207,12 @@ class WorkingHoursCardV2 extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(day, style: TextStyle(color: AppColors.gray500, fontSize: 14)),
+          Expanded(
+            child: Text(
+              day,
+              style: TextStyle(color: AppColors.gray500, fontSize: 14),
+            ),
+          ),
           Text(
             hours,
             style: TextStyle(

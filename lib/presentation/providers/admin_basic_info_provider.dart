@@ -16,15 +16,15 @@ class AdminBasicInfoProvider extends ChangeNotifier {
 
   String get name => _venueData?['name'] ?? '';
   String get description => _venueData?['description'] ?? '';
-  String get phone => _venueData?['phone'] ?? '';
-  String get email => _venueData?['email'] ?? '';
   Map<String, dynamic> get socialLinks =>
       _venueData?['social_links'] as Map<String, dynamic>? ?? {};
 
-  String get instagramUrl => socialLinks['instagram'] ?? '';
-  String get whatsappNumber => socialLinks['whatsapp'] ?? '';
-  String get facebookUrl => socialLinks['facebook'] ?? '';
-  String get websiteUrl => socialLinks['website'] ?? '';
+  String get phone => socialLinks['phone']?.toString() ?? '';
+  String get email => socialLinks['email']?.toString() ?? '';
+  String get instagramUrl => socialLinks['instagram']?.toString() ?? '';
+  String get whatsappNumber => socialLinks['whatsapp']?.toString() ?? '';
+  String get facebookUrl => socialLinks['facebook']?.toString() ?? '';
+  String get websiteUrl => socialLinks['website']?.toString() ?? '';
 
   /// Load venue basic info
   Future<void> loadVenueBasicInfo(String venueId) async {
@@ -35,7 +35,7 @@ class AdminBasicInfoProvider extends ChangeNotifier {
     try {
       final response = await _supabase
           .from('venues')
-          .select('id, name, description, phone, email, social_links')
+          .select('id, name, description, social_links')
           .eq('id', venueId)
           .single();
 
@@ -69,9 +69,21 @@ class AdminBasicInfoProvider extends ChangeNotifier {
       final updateData = <String, dynamic>{};
       if (name != null) updateData['name'] = name;
       if (description != null) updateData['description'] = description;
-      if (phone != null) updateData['phone'] = phone;
-      if (email != null) updateData['email'] = email;
-      if (socialLinks != null) updateData['social_links'] = socialLinks;
+
+      // Merge phone and email into social_links
+      if (socialLinks != null || phone != null || email != null) {
+        final currentSocialLinks = Map<String, dynamic>.from(
+          _venueData?['social_links'] as Map<String, dynamic>? ?? {},
+        );
+
+        if (phone != null) currentSocialLinks['phone'] = phone;
+        if (email != null) currentSocialLinks['email'] = email;
+        if (socialLinks != null) {
+          currentSocialLinks.addAll(socialLinks);
+        }
+
+        updateData['social_links'] = currentSocialLinks;
+      }
 
       await _supabase.from('venues').update(updateData).eq('id', venueId);
 

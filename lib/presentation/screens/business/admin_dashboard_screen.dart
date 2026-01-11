@@ -470,11 +470,17 @@ class AdminDashboardScreen extends StatelessWidget {
       return 'Haftalık çalışma planınız';
     }
 
-    final hours = venue.workingHours;
-    final monday = hours['monday'] as Map<String, dynamic>?;
+    try {
+      final hours = venue.workingHours;
+      final monday = hours['monday'];
 
-    if (monday != null && monday['open'] == true) {
-      return 'Pzt - Cmt: ${monday['start']} - ${monday['end']}';
+      if (monday is Map<String, dynamic> && monday['open'] == true) {
+        final start = monday['start']?.toString() ?? '09:00';
+        final end = monday['end']?.toString() ?? '20:00';
+        return 'Pzt - Cmt: $start - $end';
+      }
+    } catch (e) {
+      debugPrint('Error formatting working hours: $e');
     }
 
     return 'Çalışma saatlerini düzenleyin';
@@ -482,7 +488,52 @@ class AdminDashboardScreen extends StatelessWidget {
 
   bool _isCurrentlyOpen(Venue? venue) {
     if (venue == null || venue.workingHours.isEmpty) return false;
-    // Basit bir kontrol, geliştirilebilir
-    return true;
+
+    try {
+      final now = DateTime.now();
+      final dayNames = [
+        'sunday',
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+      ];
+      final currentDay = dayNames[now.weekday % 7];
+      final dayHours = venue.workingHours[currentDay];
+
+      if (dayHours is Map<String, dynamic> && dayHours['open'] == true) {
+        final start = dayHours['start']?.toString();
+        final end = dayHours['end']?.toString();
+
+        if (start != null && end != null) {
+          final startParts = start.split(':');
+          final endParts = end.split(':');
+
+          if (startParts.length == 2 && endParts.length == 2) {
+            final startHour = int.parse(startParts[0]);
+            final startMinute = int.parse(startParts[1]);
+            final endHour = int.parse(endParts[0]);
+            final endMinute = int.parse(endParts[1]);
+
+            final startTime = TimeOfDay(hour: startHour, minute: startMinute);
+            final endTime = TimeOfDay(hour: endHour, minute: endMinute);
+            final currentTime = TimeOfDay(hour: now.hour, minute: now.minute);
+
+            final currentMinutes = currentTime.hour * 60 + currentTime.minute;
+            final startMinutes = startTime.hour * 60 + startTime.minute;
+            final endMinutes = endTime.hour * 60 + endTime.minute;
+
+            return currentMinutes >= startMinutes &&
+                currentMinutes <= endMinutes;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error checking if open: $e');
+    }
+
+    return false;
   }
 }

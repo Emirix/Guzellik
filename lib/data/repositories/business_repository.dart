@@ -10,12 +10,12 @@ class BusinessRepository {
   Future<bool> checkBusinessAccount(String userId) async {
     try {
       final response = await _supabase
-          .from('profiles')
-          .select('is_business_account')
-          .eq('id', userId)
-          .single();
+          .from('venues')
+          .select('id')
+          .eq('owner_id', userId)
+          .maybeSingle();
 
-      return response['is_business_account'] == true;
+      return response != null;
     } catch (e) {
       print('Error checking business account: $e');
       return false;
@@ -79,12 +79,14 @@ class BusinessRepository {
   }
 
   /// Create default subscription for business account
-  Future<BusinessSubscription?> createDefaultSubscription(String userId) async {
+  Future<BusinessSubscription?> createDefaultSubscription(
+    String venueId,
+  ) async {
     try {
       final response = await _supabase
-          .from('business_subscriptions')
+          .from('venues_subscription')
           .insert({
-            'profile_id': userId,
+            'venue_id': venueId,
             'subscription_type': 'standard',
             'status': 'active',
             'features': {

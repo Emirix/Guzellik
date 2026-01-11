@@ -49,7 +49,7 @@ class VenueRepository {
 
   Future<List<Venue>> getVenues() async {
     final response = await _supabase
-        .from('venues_with_coords')
+        .from('venues')
         .select('*, venue_categories(*)');
     return (response as List).map((json) => Venue.fromJson(json)).toList();
   }
@@ -79,8 +79,12 @@ class VenueRepository {
     }
 
     final response = await _supabase
-        .from('featured_venues')
+        .from('venues')
         .select('*, venue_categories(*)')
+        .eq('is_active', true)
+        .gte('rating', 4.0)
+        .order('rating', ascending: false)
+        .order('name', ascending: true)
         .range(offset, offset + limit - 1);
 
     final venues = (response as List)
@@ -107,7 +111,7 @@ class VenueRepository {
     if (cached != null) return cached;
 
     final response = await _supabase
-        .from('venues_with_coords')
+        .from('venues')
         .select('*, venue_categories(*)')
         .eq('id', id)
         .single();
@@ -209,19 +213,16 @@ class VenueRepository {
 
       final response = await _supabase
           .from('follows')
-          .select('venue_id, venues_with_coords(*, venue_categories(*))')
+          .select('venue_id, venues(*, venue_categories(*))')
           .eq('user_id', userId);
 
-      return (response as List)
-          .where((item) => item['venues_with_coords'] != null)
-          .map((item) {
-            final venueJson = Map<String, dynamic>.from(
-              item['venues_with_coords'],
-            );
-            venueJson['is_following'] = true;
-            return Venue.fromJson(venueJson);
-          })
-          .toList();
+      return (response as List).where((item) => item['venues'] != null).map((
+        item,
+      ) {
+        final venueJson = Map<String, dynamic>.from(item['venues']);
+        venueJson['is_following'] = true;
+        return Venue.fromJson(venueJson);
+      }).toList();
     } catch (e) {
       print('Error getting followed venues: $e');
       return [];
@@ -291,20 +292,17 @@ class VenueRepository {
 
       final response = await _supabase
           .from('user_favorites')
-          .select('venue_id, venues_with_coords(*, venue_categories(*))')
+          .select('venue_id, venues(*, venue_categories(*))')
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
-      return (response as List)
-          .where((item) => item['venues_with_coords'] != null)
-          .map((item) {
-            final venueJson = Map<String, dynamic>.from(
-              item['venues_with_coords'],
-            );
-            venueJson['is_favorited'] = true;
-            return Venue.fromJson(venueJson);
-          })
-          .toList();
+      return (response as List).where((item) => item['venues'] != null).map((
+        item,
+      ) {
+        final venueJson = Map<String, dynamic>.from(item['venues']);
+        venueJson['is_favorited'] = true;
+        return Venue.fromJson(venueJson);
+      }).toList();
     } catch (e) {
       print('Error getting favorite venues: $e');
       return [];

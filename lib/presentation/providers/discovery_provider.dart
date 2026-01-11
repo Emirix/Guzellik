@@ -198,9 +198,7 @@ class DiscoveryProvider extends ChangeNotifier {
         );
       }
 
-      if (_nearbyVenues.isEmpty) {
-        _nearbyVenues = await _venueRepository.getVenues();
-      }
+      // Note: Removed getVenues() fallback to enforce subscription filtering
 
       _hasMoreNearby = _nearbyVenues.length >= _nearbyPageSize;
       _nearbyOffset += _nearbyVenues.length;
@@ -416,40 +414,14 @@ class DiscoveryProvider extends ChangeNotifier {
         );
       }
 
-      // 2. Fallback: if search returns nothing, fetch all venues
-      if (_nearbyVenues.isEmpty) {
-        debugPrint('Nearby search returned empty, falling back to all venues');
-        _nearbyVenues = await _venueRepository.getVenues();
-      }
-
-      // 3. Ultimate fallback: if both are empty, use featured venues (might still be empty)
-      if (_nearbyVenues.isEmpty) {
-        debugPrint(
-          'Both nearby and all_venues were empty, using featured venues',
-        );
-        _nearbyVenues = List.from(_featuredVenues);
-      }
-
-      // Final check: if still empty, get everything from repository directly
-      if (_nearbyVenues.isEmpty) {
-        _nearbyVenues = await _venueRepository.getVenues();
-      }
+      // Note: Removed getVenues() fallbacks to enforce subscription filtering
+      // If no subscribed venues found, show empty list
 
       _hasMoreNearby = _nearbyVenues.length >= _nearbyPageSize;
       _nearbyOffset = _nearbyVenues.length;
     } catch (e) {
       debugPrint('Error fetching nearby venues: $e');
-      // Final fallback on error: try to use whatever we have
-      if (_nearbyVenues.isEmpty) {
-        if (_featuredVenues.isNotEmpty) {
-          _nearbyVenues = List.from(_featuredVenues);
-        } else {
-          // One last attempt
-          try {
-            _nearbyVenues = await _venueRepository.getVenues();
-          } catch (_) {}
-        }
-      }
+      // Note: Removed getVenues() fallback to enforce subscription filtering
     } finally {
       _isLoadingNearby = false;
       notifyListeners();
@@ -743,21 +715,8 @@ class DiscoveryProvider extends ChangeNotifier {
 
       debugPrint('_loadVenues: searchVenues returned ${_venues.length} venues');
 
-      // Fallback: if search returns nothing and it's a default state (no query, no specific filters)
-      // fetch all venues to show something on home screen
-      if (_venues.isEmpty &&
-          _searchQuery.isEmpty &&
-          (_filter.categories.isEmpty)) {
-        debugPrint(
-          '_loadVenues: Search returned empty, falling back to getVenues()',
-        );
-        _venues = await _venueRepository.getVenues();
-        debugPrint(
-          '_loadVenues: getVenues() returned ${_venues.length} venues',
-        );
-      }
-
-      // Ultimate fallback: use nearby or featured venues
+      // Note: Removed getVenues() fallback to enforce subscription filtering
+      // If search returns empty, show empty list
       if (_venues.isEmpty) {
         debugPrint(
           '_loadVenues: Still empty, using nearby/featured as fallback',

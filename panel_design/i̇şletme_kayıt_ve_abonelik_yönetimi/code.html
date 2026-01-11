@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>İşletme Kayıt ve Abonelik Yönetimi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ee2b5b",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221015",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e7cfd5;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b0d11] dark:text-white min-h-screen">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="w-72 flex-shrink-0 border-r border-[#e7cfd5] dark:border-white/10 bg-background-light dark:bg-background-dark flex flex-col">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary rounded-full p-2 flex items-center justify-center text-white">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight">Admin Panel</h1>
+<p class="text-[#9a4c5f] dark:text-[#9a4c5f] text-xs font-normal">Güzellik Platformu</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 transition-all" href="#">
+<span class="material-symbols-outlined fill-[1]">storefront</span>
+<p class="text-sm font-semibold">İşletme Kaydı</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#9a4c5f] group-hover:text-primary transition-colors">assignment_ind</span>
+<p class="text-[#1b0d11] dark:text-white text-sm font-medium">Abonelik Yönetimi</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#9a4c5f] group-hover:text-primary transition-colors">credit_card</span>
+<p class="text-[#1b0d11] dark:text-white text-sm font-medium">Ödemeler</p>
+</a>
+<div class="my-4 border-t border-[#e7cfd5] dark:border-white/5"></div>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/10 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#9a4c5f] group-hover:text-primary transition-colors">settings</span>
+<p class="text-[#1b0d11] dark:text-white text-sm font-medium">Ayarlar</p>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6">
+<div class="bg-white/50 dark:bg-white/5 rounded-2xl p-4 flex items-center gap-3 border border-[#e7cfd5] dark:border-white/10">
+<div class="w-10 h-10 rounded-full bg-cover bg-center" data-alt="Admin user profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAixsCRbEFXd-ykTQbnUUWpUD9WiTOG_mdmybCboqCI6jSBW7YYN5oVjG4kc2ON90dyQze0TtwuEQF16VrpM2cPNttA7GGpksqTu8BjFdl5dPYDr387NkURYJ7Px7LftNEPcxwCLUTL3pRWYi9dL44MIvUJvzReLPUWOuRjnSgPBQaOatKpUbBwV9nfTXSpHFqIxzSBLMxdIm7fSin-0n4A-9ODCtfzTf7jXF05zQDmDcNwRG_2nVw67jw_ENzeUWUkn3onC21xxs4W");'></div>
+<div>
+<p class="text-sm font-bold text-[#1b0d11] dark:text-white leading-none">Melisa Kaya</p>
+<p class="text-xs text-[#9a4c5f] mt-1">Süper Admin</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-[#9a4c5f] text-sm">logout</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- Top Header & Breadcrumbs -->
+<header class="h-16 flex items-center justify-between px-8 border-b border-[#e7cfd5] dark:border-white/10 bg-white dark:bg-background-dark/50">
+<div class="flex items-center gap-2">
+<a class="text-[#9a4c5f] text-sm font-medium hover:text-primary transition-colors" href="#">Admin Dashboard</a>
+<span class="text-[#9a4c5f] text-sm font-medium opacity-50">/</span>
+<span class="text-[#1b0d11] dark:text-white text-sm font-semibold tracking-wide">İşletme Yönetimi</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9a4c5f] text-lg">search</span>
+<input class="pl-10 pr-4 py-2 bg-background-light dark:bg-white/5 border-none rounded-full text-sm focus:ring-2 focus:ring-primary/50 w-64 transition-all" placeholder="İşletme Ara..." type="text"/>
+</div>
+<button class="relative p-2 text-[#9a4c5f] hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-8">
+<!-- PageHeading -->
+<div class="mb-8">
+<div class="flex items-end justify-between">
+<div>
+<h2 class="text-[#1b0d11] dark:text-white text-4xl font-black leading-tight tracking-tight">İşletme Kayıt ve Abonelik</h2>
+<p class="text-[#9a4c5f] dark:text-[#9a4c5f] text-lg mt-1">Yeni güzellik salonlarını sisteme dahil edin ve aboneliklerini yönetin.</p>
+</div>
+<div class="flex items-center gap-2 text-primary font-bold bg-primary/10 px-4 py-2 rounded-lg">
+<span class="material-symbols-outlined">trending_up</span>
+<span>Aylık %12 Büyüme</span>
+</div>
+</div>
+</div>
+<!-- Stats Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="flex flex-col gap-2 rounded-2xl p-6 bg-white dark:bg-white/5 border border-[#e7cfd5] dark:border-white/10 shadow-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between mb-2">
+<p class="text-[#9a4c5f] text-sm font-semibold uppercase tracking-wider">Toplam İşletme</p>
+<span class="material-symbols-outlined text-primary">groups</span>
+</div>
+<p class="text-[#1b0d11] dark:text-white text-3xl font-extrabold">124</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[#078859] text-sm">north_east</span>
+<p class="text-[#078859] text-xs font-bold">+5% bu ay</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-2xl p-6 bg-white dark:bg-white/5 border border-[#e7cfd5] dark:border-white/10 shadow-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between mb-2">
+<p class="text-[#9a4c5f] text-sm font-semibold uppercase tracking-wider">Aktif Premium</p>
+<span class="material-symbols-outlined text-amber-500">stars</span>
+</div>
+<p class="text-[#1b0d11] dark:text-white text-3xl font-extrabold">86</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[#e75608] text-sm">south_east</span>
+<p class="text-[#e75608] text-xs font-bold">-2% düşüş</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-2xl p-6 bg-white dark:bg-white/5 border border-[#e7cfd5] dark:border-white/10 shadow-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between mb-2">
+<p class="text-[#9a4c5f] text-sm font-semibold uppercase tracking-wider">Bekleyen Ödeme</p>
+<span class="material-symbols-outlined text-indigo-500">pending_actions</span>
+</div>
+<p class="text-[#1b0d11] dark:text-white text-3xl font-extrabold">12</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[#078859] text-sm">north_east</span>
+<p class="text-[#078859] text-xs font-bold">+1% artış</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- New Business Registration Form (Left) -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<div class="bg-white dark:bg-white/5 rounded-3xl border border-[#e7cfd5] dark:border-white/10 p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">add_business</span>
+</div>
+<h3 class="text-xl font-bold">Yeni İşletme Kaydı</h3>
+</div>
+<!-- Stepper UI -->
+<div class="flex items-center justify-between mb-10 relative">
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-[#e7cfd5] dark:bg-white/10 -translate-y-1/2 z-0"></div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold ring-4 ring-white dark:ring-background-dark">1</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">İşletme</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-[#e7cfd5] dark:bg-white/10 text-[#9a4c5f] flex items-center justify-center text-xs font-bold ring-4 ring-white dark:ring-background-dark">2</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-[#9a4c5f]">Hizmet</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-[#e7cfd5] dark:bg-white/10 text-[#9a4c5f] flex items-center justify-center text-xs font-bold ring-4 ring-white dark:ring-background-dark">3</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-[#9a4c5f]">Sahip</span>
+</div>
+</div>
+<form class="space-y-5">
+<div>
+<label class="block text-sm font-bold text-[#1b0d11] dark:text-white mb-2">İşletme Adı</label>
+<input class="w-full px-4 py-3 rounded-xl border-[#e7cfd5] dark:border-white/10 dark:bg-white/5 focus:ring-primary focus:border-primary" placeholder="Örn: Parıltı Güzellik Merkezi" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-bold text-[#1b0d11] dark:text-white mb-2">Kategori</label>
+<select class="w-full px-4 py-3 rounded-xl border-[#e7cfd5] dark:border-white/10 dark:bg-white/5 focus:ring-primary focus:border-primary">
+<option>Saç &amp; Kuaför</option>
+<option>Cilt Bakımı &amp; Lazer</option>
+<option>Tırnak &amp; Protez</option>
+<option>Wellness &amp; Spa</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-bold text-[#1b0d11] dark:text-white mb-2">Şehir / Bölge</label>
+<input class="w-full px-4 py-3 rounded-xl border-[#e7cfd5] dark:border-white/10 dark:bg-white/5 focus:ring-primary focus:border-primary" placeholder="Örn: Beşiktaş, İstanbul" type="text"/>
+</div>
+<div class="pt-4">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2" type="submit">
+                                        Sonraki Adım
+                                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Promotion Card -->
+<div class="bg-gradient-to-br from-[#ee2b5b] to-[#b01e42] rounded-3xl p-6 text-white relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="text-xl font-bold mb-2">Yıllık Abonelik Kampanyası</h4>
+<p class="text-white/80 text-sm mb-4">Yeni işletmelere özel ilk 3 ay %50 indirim fırsatını kaçırmayın.</p>
+<button class="bg-white text-primary font-bold px-4 py-2 rounded-lg text-sm">Detayları Gör</button>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-white/20 text-[120px] rotate-12">redeem</span>
+</div>
+</div>
+<!-- Registered Salons List (Right) -->
+<div class="lg:col-span-7">
+<div class="bg-white dark:bg-white/5 rounded-3xl border border-[#e7cfd5] dark:border-white/10 shadow-sm overflow-hidden flex flex-col h-full">
+<div class="p-6 border-b border-[#e7cfd5] dark:border-white/10 flex items-center justify-between bg-white dark:bg-white/5">
+<h3 class="text-xl font-bold">Kayıtlı İşletmeler</h3>
+<div class="flex gap-2">
+<button class="p-2 border border-[#e7cfd5] dark:border-white/10 rounded-lg hover:bg-background-light dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+</button>
+<button class="p-2 border border-[#e7cfd5] dark:border-white/10 rounded-lg hover:bg-background-light dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-sm">file_download</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left">
+<thead class="bg-background-light dark:bg-white/5 border-b border-[#e7cfd5] dark:border-white/10">
+<tr>
+<th class="px-6 py-4 text-xs font-bold text-[#9a4c5f] uppercase tracking-wider">İşletme</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9a4c5f] uppercase tracking-wider">Plan</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9a4c5f] uppercase tracking-wider">Bitiş Tarihi</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9a4c5f] uppercase tracking-wider">İşlem</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#e7cfd5] dark:divide-white/5">
+<!-- Row 1 -->
+<tr class="hover:bg-background-light/50 dark:hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-cover bg-center" data-alt="Salon logo example" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDSb96p9_qo5a-eUATV_nDrjtpK6UutTE8qJrEp0lTho0aYgTEdk8j255JA_nBWtECvtlMsMUyE2ipA2-UPXK907Rrm72oxSvyKlVYmCcotN956UYQVagIcBQs3nD6MODFN2NKFv9V6O-ya1zjdy-t3L47BWfBGWk_VVuwS1CXmjV2LuhDYYSvXlFmHOuk30GFGRsbiY0XRTDGZa17E_xegDKnn-S_r8zBna_c5xO6ihYF91NpPiHwIunD9fhee0R9Kfr0ohzEAFJN8");'></div>
+<div>
+<p class="text-sm font-bold">Lavin Estetik</p>
+<p class="text-xs text-[#9a4c5f]">Nişantaşı, İstanbul</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px] fill-1">stars</span>
+                                                    Premium
+                                                </span>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-[#1b0d11] dark:text-white/80">12 Haz 2024</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg text-xs font-bold border border-primary/20 transition-all">Düzenle</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-background-light/50 dark:hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-cover bg-center" data-alt="Salon logo example" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6KdHYtBGhczkEDqZfMK7vayuHreEALBYRi_lGXGHVPlKluIzctLfxs-t1RLxtFfUu8SPMA3l-1ah16V034wcE30_DyERYtTC8NSgOi_wd1-gWrLZoszK-AIRSLa2Gg0b6wYPTEQ3z6DRgw97HmZEEjOacA99k8cvSebLKGc3-x6SvsCy_J-YREqpRb_q0Ztpio6sH-hFlkw7tq0MQAqgRgHLP0xkqXcaA5oHi1e0lUyOP6JymsKi2cLL26dLUFFXibjeGjn5EH0nZ");'></div>
+<div>
+<p class="text-sm font-bold">Naturel Kuaför</p>
+<p class="text-xs text-[#9a4c5f]">Alsancak, İzmir</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-500/20 text-slate-700 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+                                                    Basic
+                                                </span>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-[#1b0d11] dark:text-white/80">05 Nis 2024</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg text-xs font-bold border border-primary/20 transition-all">Düzenle</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-background-light/50 dark:hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-cover bg-center" data-alt="Salon logo example" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqPqqL0BTYnZrGY858R1qHa1geBZ3mya6uZ_HyivKtf-7nRurn39DwigElB2BrNDmkYZAhmAy89e7ke_OuV68kipD3lmkiXkFI_xBosxcVOOgJBoQBi4yoNTZEgCu7s55r2iuQHtA4IobhfxULiFiZPFX28VifHEGjtl56SXRGw8jnVG1QinCtq1UkqSovbJOybnIRoBbTBPhcNeCo2iK-HMym5ibhrt5G99IytNWfT4OYhxUK2YtbdxlcGaLMJkXGXZxa56fs_332");'></div>
+<div>
+<p class="text-sm font-bold">Gold Touch Spa</p>
+<p class="text-xs text-[#9a4c5f]">Muratpaşa, Antalya</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 text-[10px] font-bold uppercase tracking-wider flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px]">error</span>
+                                                    Süresi Doldu
+                                                </span>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-red-600 dark:text-red-400">22 Oca 2024</td>
+<td class="px-6 py-4">
+<button class="bg-primary text-white hover:bg-primary/90 px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Yenile</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-background-light/50 dark:hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-cover bg-center" data-alt="Salon logo example" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCkiyJ4TWV1pTgM4pgDd17OgBk3cuURxg9Bl1xFNeIYwNxQvhV7HB433deL51qRn4-z8UU2xJfCt-kBcrGG_SHAFfV35F-Kda5ZCVx-fsj3VXFYuW_5jHSCTq9UHbsTqqU8eFtk9BIoaUjPOqpbKAHY8Ndtw2s2IovK8NzLRhIxTlbCYZMtP03j4Twk5CLjDMNIkNAPw8xR-g8B1AUHB_dYc-3w2staRzJ0ynlGSUMloOconz5C2LQzKrBGChrP-5-n9xlfd447MZly");'></div>
+<div>
+<p class="text-sm font-bold">Elite Barber Shop</p>
+<p class="text-xs text-[#9a4c5f]">Çankaya, Ankara</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px] fill-1">stars</span>
+                                                    Premium
+                                                </span>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-[#1b0d11] dark:text-white/80">30 Ağu 2024</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg text-xs font-bold border border-primary/20 transition-all">Düzenle</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-[#e7cfd5] dark:border-white/10 flex items-center justify-between">
+<p class="text-xs text-[#9a4c5f]">Toplam 124 kayıttan 1-4 arası gösteriliyor</p>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-[#e7cfd5] dark:border-white/10 hover:bg-background-light dark:hover:bg-white/5 text-[#9a4c5f] transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white font-bold text-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-[#e7cfd5] dark:border-white/10 hover:bg-background-light dark:hover:bg-white/5 text-[#9a4c5f] transition-colors font-bold text-xs">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-[#e7cfd5] dark:border-white/10 hover:bg-background-light dark:hover:bg-white/5 text-[#9a4c5f] transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

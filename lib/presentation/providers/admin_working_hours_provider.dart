@@ -24,7 +24,22 @@ class AdminWorkingHoursProvider extends ChangeNotifier {
           .eq('id', venueId)
           .single();
 
-      _workingHours = response['working_hours'] as Map<String, dynamic>? ?? {};
+      final rawWorkingHours = response['working_hours'];
+      if (rawWorkingHours is Map) {
+        // Normalize the working hours data to ensure proper types
+        _workingHours = {};
+        rawWorkingHours.forEach((key, value) {
+          if (value is Map) {
+            _workingHours[key] = {
+              'open': value['open'] == true,
+              'start': value['start']?.toString() ?? '09:00',
+              'end': value['end']?.toString() ?? '20:00',
+            };
+          }
+        });
+      } else {
+        _workingHours = {};
+      }
       _isLoading = false;
       notifyListeners();
     } catch (e) {

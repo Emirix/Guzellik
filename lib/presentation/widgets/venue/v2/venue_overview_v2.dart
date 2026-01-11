@@ -3,13 +3,14 @@ import '../../../../data/models/venue.dart';
 import '../../../../data/models/review.dart';
 import '../../../../data/models/specialist.dart';
 import '../../../../core/theme/app_colors.dart';
-import 'venue_identity_v2.dart';
-import 'venue_quick_actions_v2.dart';
 import 'experts_section_v2.dart';
 import 'working_hours_card_v2.dart';
 import 'map_preview_v2.dart';
 import 'trust_badges_grid_v2.dart';
 import 'reviews_preview_v2.dart';
+import '../photo_gallery_viewer.dart';
+import '../../../providers/venue_details_provider.dart';
+import 'package:provider/provider.dart';
 
 class VenueOverviewV2 extends StatelessWidget {
   final Venue venue;
@@ -30,22 +31,112 @@ class VenueOverviewV2 extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        // 1. Identity Section (Name, Rating, Follow Button)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-          child: VenueIdentityV2(venue: venue),
-        ),
-        const SizedBox(height: 20),
+        // 1. Identity Section (Now handled by VenueHeroV2)
+        const SizedBox(height: 12),
 
-        // 2. Quick Actions Section (WhatsApp, Call, Directions, Instagram)
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: VenueQuickActionsV2(venue: venue),
-        ),
-        const SizedBox(height: 24),
+        // About Section
+        if (venue.description != null && venue.description!.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Hakkında',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.gray900,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  venue.description!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: AppColors.gray600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
 
-        // Divider
-        const Divider(color: AppColors.nude, height: 1, thickness: 1),
+        // Gallery Section
+        if (venue.galleryPhotos != null && venue.galleryPhotos!.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Galeri',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.gray900,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 120,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: venue.galleryPhotos!.length > 6
+                        ? 6
+                        : venue.galleryPhotos!.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      final photo = venue.galleryPhotos![index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PhotoGalleryViewer(
+                                photos: venue.galleryPhotos!,
+                                initialIndex: index,
+                                venueName: venue.name,
+                                onLike: (photoId) => context
+                                    .read<VenueDetailsProvider>()
+                                    .likePhoto(photoId),
+                              ),
+                              fullscreenDialog: true,
+                            ),
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            photo.url,
+                            width: 160,
+                            height: 120,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: 160,
+                              height: 120,
+                              color: AppColors.gray100,
+                              child: const Icon(
+                                Icons.image_not_supported,
+                                color: AppColors.gray400,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+
+        // Grey Spacer
+        Container(height: 8, color: AppColors.nude.withOpacity(0.3)),
         const SizedBox(height: 24),
 
         // 3. Experts Section

@@ -37,43 +37,54 @@ class VenueQuickActionsV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _buildActionButton(
-          icon: FontAwesomeIcons.whatsapp,
-          label: 'WhatsApp',
-          iconColor: const Color(0xFF25D366),
-          onTap: () =>
-              _launchUrl('https://wa.me/${_phoneNumber ?? "905000000000"}'),
-        ),
-        const SizedBox(width: 12),
-        _buildActionButton(
-          icon: Icons.call_outlined,
-          label: 'Ara',
-          iconColor: AppColors.primary,
-          onTap: () => _launchUrl('tel:+${_phoneNumber ?? "905000000000"}'),
-        ),
-        const SizedBox(width: 12),
-        _buildActionButton(
-          icon: Icons.near_me_outlined,
-          label: 'Yol Tarifi',
-          iconColor: const Color(0xFF1976D2),
-          onTap: () => _launchUrl(
-            'https://maps.google.com/?q=${venue.latitude},${venue.longitude}',
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
-        ),
-        const SizedBox(width: 12),
-        _buildActionButton(
-          icon: FontAwesomeIcons.instagram,
-          label: 'Instagram',
-          iconColor: const Color(0xFFE1306C),
-          onTap: () => _launchUrl(
-            _instagramHandle != null
-                ? 'https://instagram.com/$_instagramHandle'
-                : 'https://instagram.com',
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildActionButton(
+            icon: FontAwesomeIcons.whatsapp,
+            label: 'WHATSAPP',
+            iconColor: const Color(0xFF25D366),
+            onTap: () =>
+                _launchUrl('https://wa.me/${_phoneNumber ?? "905000000000"}'),
           ),
-        ),
-      ],
+          _buildActionButton(
+            icon: Icons.call,
+            label: 'ARA',
+            iconColor: AppColors.primary,
+            onTap: () => _launchUrl('tel:+${_phoneNumber ?? "905000000000"}'),
+          ),
+          _buildActionButton(
+            icon: Icons.map,
+            label: 'YOL TARİFİ',
+            iconColor: const Color(0xFF1976D2),
+            onTap: () => _launchUrl(
+              'https://maps.google.com/?q=${venue.latitude},${venue.longitude}',
+            ),
+          ),
+          _buildActionButton(
+            icon: Icons.camera_alt,
+            label: 'SOSYAL',
+            iconColor: const Color(0xFFE1306C),
+            onTap: () => _launchUrl(
+              _instagramHandle != null
+                  ? 'https://instagram.com/$_instagramHandle'
+                  : 'https://instagram.com',
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -91,21 +102,13 @@ class VenueQuickActionsV2 extends StatelessWidget {
           children: [
             // Icon Container - White with border, matching design
             Container(
-              width: 56,
-              height: 56,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.nude, width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                color: iconColor.withOpacity(0.05),
+                shape: BoxShape.circle,
               ),
-              child: Center(child: Icon(icon, color: iconColor, size: 24)),
+              child: Center(child: Icon(icon, color: iconColor, size: 22)),
             ),
             const SizedBox(height: 8),
             // Label

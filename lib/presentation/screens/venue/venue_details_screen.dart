@@ -309,28 +309,7 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
                     VenueHeroV2(
                       venue: venue,
                       showBackButton: widget.showBackButton,
-                    ),
-                    // Rounded top overlay that goes over the hero image
-                    SliverToBoxAdapter(
-                      child: Transform.translate(
-                        offset: const Offset(0, -24),
-                        child: Container(
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: AppColors.backgroundLight,
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(28),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
-                                blurRadius: 10,
-                                offset: const Offset(0, -4),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      onBookingTap: () => _showContactOptions(context, venue),
                     ),
                     VenueTabSwitcher(tabController: _tabController),
                   ];

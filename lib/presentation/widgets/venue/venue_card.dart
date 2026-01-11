@@ -69,29 +69,7 @@ class VenueCard extends StatelessWidget {
                   ),
                   child: AspectRatio(
                     aspectRatio: 16 / 9,
-                    child: venue.imageUrl != null
-                        ? CachedNetworkImage(
-                            imageUrl: venue.imageUrl!,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                Container(color: AppColors.nudeLight),
-                            errorWidget: (context, url, error) => Container(
-                              color: AppColors.nudeLight,
-                              child: const Icon(
-                                Icons.image,
-                                color: Colors.white,
-                                size: 40,
-                              ),
-                            ),
-                          )
-                        : Container(
-                            color: AppColors.nudeLight,
-                            child: const Icon(
-                              Icons.image,
-                              color: Colors.white,
-                              size: 40,
-                            ),
-                          ),
+                    child: _buildCardImage(),
                   ),
                 ),
                 // Rating
@@ -237,25 +215,7 @@ class VenueCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: SizedBox(
-                width: 96,
-                height: 96,
-                child: venue.imageUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: venue.imageUrl!,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Container(color: AppColors.gray200),
-                        errorWidget: (context, url, error) => Container(
-                          color: AppColors.gray200,
-                          child: const Icon(
-                            Icons.store,
-                            color: AppColors.gray400,
-                          ),
-                        ),
-                      )
-                    : Container(color: AppColors.gray200),
-              ),
+              child: SizedBox(width: 96, height: 96, child: _buildCardImage()),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -390,6 +350,30 @@ class VenueCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCardImage() {
+    // Prefer heroImages (new system), fallback to imageUrl (legacy)
+    final imageUrl = venue.heroImages.isNotEmpty
+        ? venue.heroImages.first
+        : venue.imageUrl;
+
+    if (imageUrl != null) {
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(color: AppColors.gray200),
+        errorWidget: (context, url, error) => Container(
+          color: AppColors.gray200,
+          child: const Icon(Icons.store, color: AppColors.gray400),
+        ),
+      );
+    }
+
+    return Container(
+      color: AppColors.gray200,
+      child: const Icon(Icons.store, color: AppColors.gray400),
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../providers/admin_working_hours_provider.dart';
 import '../../../providers/business_provider.dart';
+import '../../../providers/venue_details_provider.dart';
 
 class AdminWorkingHoursScreen extends StatefulWidget {
   const AdminWorkingHoursScreen({super.key});
@@ -69,6 +70,15 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
         );
         // Refresh business venue data
         await businessProvider.refreshVenue(venueId);
+
+        // Also refresh venue details provider if it exists
+        try {
+          final venueDetailsProvider = context.read<VenueDetailsProvider>();
+          await venueDetailsProvider.loadVenueDetails(venueId);
+        } catch (e) {
+          // VenueDetailsProvider might not be available in this context
+          debugPrint('VenueDetailsProvider not available: $e');
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -209,7 +219,7 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: _days.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
               final day = _days[index];
               final label = _dayLabels[day]!;
@@ -219,90 +229,193 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
               final isOpen = hours['open'] ?? false;
 
               return Container(
-                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  color: isOpen ? Colors.white : Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isOpen
+                        ? AppColors.primary.withOpacity(0.2)
+                        : Colors.grey.withOpacity(0.3),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 10,
+                      color: isOpen
+                          ? AppColors.primary.withOpacity(0.08)
+                          : Colors.black.withOpacity(0.03),
+                      blurRadius: 12,
                       offset: const Offset(0, 4),
+                      spreadRadius: 0,
                     ),
                   ],
                 ),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            label,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1B0E11),
-                            ),
-                          ),
-                        ),
-                        Switch.adaptive(
-                          value: isOpen,
-                          activeColor: AppColors.primary,
-                          onChanged: (value) {
-                            final newHours = Map<String, dynamic>.from(hours);
-                            newHours['open'] = value;
-                            provider.updateDayHours(day, newHours);
-                          },
-                        ),
-                        PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_vert, color: Colors.grey),
-                          onSelected: (value) {
-                            if (value == 'apply_all') _applyToAll(day);
-                          },
-                          itemBuilder: (context) => [
-                            const PopupMenuItem(
-                              value: 'apply_all',
-                              child: Text('Tüm günlere uygula'),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    if (isOpen) ...[
-                      const Divider(height: 24),
-                      Row(
+                    // Header Row
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
                         children: [
-                          Expanded(
-                            child: _buildTimeButton(
-                              context,
-                              label: 'Açılış',
-                              time: hours['start'] ?? '09:00',
-                              onTap: () => _selectTime(day, true),
+                          // Day Icon
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: isOpen
+                                  ? AppColors.primary
+                                  : Colors.grey.shade400,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: isOpen
+                                      ? AppColors.primary.withOpacity(0.3)
+                                      : Colors.grey.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
                             child: Icon(
-                              Icons.arrow_forward,
-                              color: Colors.grey,
-                              size: 16,
+                              isOpen
+                                  ? Icons.schedule_rounded
+                                  : Icons.block_rounded,
+                              color: Colors.white,
+                              size: 20,
                             ),
                           ),
+                          const SizedBox(width: 12),
+
+                          // Day Name
                           Expanded(
-                            child: _buildTimeButton(
-                              context,
-                              label: 'Kapanış',
-                              time: hours['end'] ?? '20:00',
-                              onTap: () => _selectTime(day, false),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  label,
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1B0E11),
+                                  ),
+                                ),
+                                if (!isOpen)
+                                  Text(
+                                    'Kapalı',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+
+                          // Switch
+                          Transform.scale(
+                            scale: 0.9,
+                            child: Switch.adaptive(
+                              value: isOpen,
+                              activeColor: AppColors.primary,
+                              onChanged: (value) {
+                                final newHours = Map<String, dynamic>.from(
+                                  hours,
+                                );
+                                newHours['open'] = value;
+                                provider.updateDayHours(day, newHours);
+                              },
+                            ),
+                          ),
+
+                          // Menu Button
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: PopupMenuButton<String>(
+                              icon: Icon(
+                                Icons.more_horiz_rounded,
+                                color: Colors.grey.shade700,
+                                size: 20,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              onSelected: (value) {
+                                if (value == 'apply_all') _applyToAll(day);
+                              },
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 'apply_all',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.content_copy_rounded,
+                                        size: 18,
+                                        color: AppColors.primary,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Text('Tüm günlere uygula'),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ] else ...[
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Bu gün işletmeniz hizmet vermemektedir.',
-                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+
+                    // Time Selection (only if open)
+                    if (isOpen) ...[
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.1),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildTimeButton(
+                                context,
+                                label: 'Açılış',
+                                time: (hours['start'] ?? '09:00').toString(),
+                                icon: Icons.wb_sunny_rounded,
+                                onTap: () => _selectTime(day, true),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: AppColors.primary,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: _buildTimeButton(
+                                context,
+                                label: 'Kapanış',
+                                time: (hours['end'] ?? '20:00').toString(),
+                                icon: Icons.nightlight_round,
+                                onTap: () => _selectTime(day, false),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ],
@@ -319,32 +432,58 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
     BuildContext context, {
     required String label,
     required String time,
+    required IconData icon,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8F8F8),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.withOpacity(0.1)),
+          color: AppColors.primary.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              label,
-              style: TextStyle(color: Colors.grey[600], fontSize: 11),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 14, color: AppColors.primary),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              time,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1B0E11),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                time,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B0E11),
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
           ],
