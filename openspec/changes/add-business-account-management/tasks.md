@@ -211,28 +211,28 @@
 ## Phase 8: Flutter UI - Profile Screen Updates (Priority: MEDIUM)
 
 ### Task 8.1: Add business mode buttons to ProfileScreen
-- [ ] Modify `lib/presentation/screens/profile_screen.dart`
-- [ ] Add "Yönetim Paneli" button (business mode only)
-- [ ] Add "Normal Hesaba Geç" button (business mode only)
-- [ ] Implement button tap handlers
-- [ ] **Validation**: Buttons show only in business mode
+- [x] Modify `lib/presentation/screens/profile_screen.dart`
+- [x] Add "Yönetim Paneli" button (business mode only)
+- [x] Add "Normal Hesaba Geç" button (business mode only)
+- [x] Implement button tap handlers
+- [x] **Validation**: Buttons show only in business mode
 
 ### Task 8.2: Implement "Yönetim Paneli" button action
-- [ ] Get admin URL from AdminConfig
-- [ ] Get venue ID from BusinessProvider
-- [ ] Open URL in external browser
-- [ ] **Validation**: Button opens admin panel correctly
+- [x] Get admin URL from AdminConfig
+- [x] Get venue ID from BusinessProvider
+- [x] Open URL in external browser
+- [x] **Validation**: Button opens admin panel correctly
 
 ### Task 8.3: Implement "Normal Hesaba Geç" button action
-- [ ] Call BusinessProvider.switchMode(BusinessMode.normal)
-- [ ] Navigate to explore screen
-- [ ] Update bottom navigation
-- [ ] **Validation**: Mode switches correctly
+- [x] Call BusinessProvider.switchMode(BusinessMode.normal)
+- [x] Navigate to explore screen
+- [x] Update bottom navigation
+- [x] **Validation**: Mode switches correctly
 
 ### Task 8.4: Add "İşletme Moduna Geç" button for normal mode
-- [ ] Show button in normal mode if is_business_account = true
-- [ ] Implement tap handler to switch to business mode
-- [ ] **Validation**: Users can switch back to business mode
+- [x] Show button in normal mode if is_business_account = true
+- [x] Implement tap handler to switch to business mode
+- [x] **Validation**: Users can switch back to business mode
 
 ---
 

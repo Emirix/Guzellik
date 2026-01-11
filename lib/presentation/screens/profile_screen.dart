@@ -1,11 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../providers/auth_provider.dart';
+import '../providers/business_provider.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats.dart';
 import '../widgets/profile/profile_menu_item.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/enums/business_mode.dart';
+import '../../config/admin_config.dart';
+
+/// Helper function to open admin panel
+Future<void> _openAdminPanel(BuildContext context, String? venueId) async {
+  if (venueId == null) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Mekan bilgisi bulunamadı')));
+    return;
+  }
+
+  final url = AdminConfig.getAdminUrl(venueId);
+  final uri = Uri.parse(url);
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } else {
+    if (context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Admin panel açılamadı')));
+    }
+  }
+}
 
 /// Profile screen - Redesigned based on design/profilim.php
 class ProfileScreen extends StatelessWidget {
@@ -210,6 +237,253 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
+
+                          // Business Mode Buttons (if business account)
+                          Consumer2<AuthProvider, BusinessProvider>(
+                            builder: (context, authProvider, businessProvider, _) {
+                              final userId = authProvider.currentUser?.id;
+
+                              return FutureBuilder<bool>(
+                                future: userId != null
+                                    ? businessProvider.checkBusinessAccount(
+                                        userId,
+                                      )
+                                    : Future.value(false),
+                                builder: (context, snapshot) {
+                                  final isBusinessAccount =
+                                      snapshot.data ?? false;
+
+                                  if (!isBusinessAccount) {
+                                    return const SizedBox.shrink();
+                                  }
+
+                                  final isBusinessMode =
+                                      businessProvider.isBusinessMode;
+                                  final venue = businessProvider.businessVenue;
+
+                                  return Column(
+                                    children: [
+                                      // Business Mode Indicator Card
+                                      Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xFFE8B4BC),
+                                              Color(0xFFD4A5A5),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color(
+                                                0xFFE8B4BC,
+                                              ).withOpacity(0.3),
+                                              blurRadius: 12,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets.all(
+                                                    8,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white
+                                                        .withOpacity(0.3),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.business_center,
+                                                    color: Colors.white,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      const Text(
+                                                        'İşletme Hesabı',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        isBusinessMode
+                                                            ? 'İşletme Modunda'
+                                                            : 'Normal Modda',
+                                                        style: TextStyle(
+                                                          color: Colors.white
+                                                              .withOpacity(0.9),
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 12),
+
+                                            // Business Mode Buttons
+                                            if (isBusinessMode) ...[
+                                              // Admin Panel Button
+                                              SizedBox(
+                                                width: double.infinity,
+                                                height: 48,
+                                                child: ElevatedButton.icon(
+                                                  onPressed: () =>
+                                                      _openAdminPanel(
+                                                        context,
+                                                        venue?.id,
+                                                      ),
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    foregroundColor:
+                                                        const Color(0xFFE8B4BC),
+                                                    elevation: 0,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  icon: const Icon(
+                                                    Icons.dashboard,
+                                                    size: 20,
+                                                  ),
+                                                  label: const Text(
+                                                    'Yönetim Paneli',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              // Switch to Normal Mode Button
+                                              SizedBox(
+                                                width: double.infinity,
+                                                height: 48,
+                                                child: OutlinedButton.icon(
+                                                  onPressed: () async {
+                                                    if (userId != null) {
+                                                      await businessProvider
+                                                          .switchMode(
+                                                            BusinessMode.normal,
+                                                            userId,
+                                                          );
+                                                      if (context.mounted) {
+                                                        context.go('/');
+                                                      }
+                                                    }
+                                                  },
+                                                  style: OutlinedButton.styleFrom(
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                    side: const BorderSide(
+                                                      color: Colors.white,
+                                                    ),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  icon: const Icon(
+                                                    Icons.person,
+                                                    size: 20,
+                                                  ),
+                                                  label: const Text(
+                                                    'Normal Hesaba Geç',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ] else ...[
+                                              // Switch to Business Mode Button
+                                              SizedBox(
+                                                width: double.infinity,
+                                                height: 48,
+                                                child: ElevatedButton.icon(
+                                                  onPressed: () async {
+                                                    if (userId != null) {
+                                                      await businessProvider
+                                                          .switchMode(
+                                                            BusinessMode
+                                                                .business,
+                                                            userId,
+                                                          );
+                                                      if (context.mounted) {
+                                                        context.go('/');
+                                                      }
+                                                    }
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    foregroundColor:
+                                                        const Color(0xFFE8B4BC),
+                                                    elevation: 0,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  icon: const Icon(
+                                                    Icons.store,
+                                                    size: 20,
+                                                  ),
+                                                  label: const Text(
+                                                    'İşletme Moduna Geç',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
 
                           // Logout Button
                           Consumer<AuthProvider>(
