@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/app_state_provider.dart';
 
 /// Business bottom navigation bar
@@ -94,18 +95,19 @@ class BusinessBottomNav extends StatelessWidget {
   void _handleTap(BuildContext context, AppStateProvider appState, int index) {
     appState.setBottomNavIndex(index);
 
-    // Navigate based on index
+    // Navigate based on index using GoRouter
     switch (index) {
       case 0:
-        // Profile - already handled by main navigation
+        // Profile
+        context.go('/profile');
         break;
       case 1:
         // Subscription
-        Navigator.of(context).pushNamed('/business/subscription');
+        context.go('/business/subscription');
         break;
       case 2:
         // Store
-        Navigator.of(context).pushNamed('/business/store');
+        context.go('/business/store');
         break;
     }
   }

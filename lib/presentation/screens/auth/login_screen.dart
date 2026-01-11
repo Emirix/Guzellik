@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/business_provider.dart';
+import '../../widgets/business/business_mode_dialog.dart';
+import '../../../core/enums/business_mode.dart';
 
 /// Login screen - Design based on design/login.html with navbar
 class LoginScreen extends StatefulWidget {
@@ -49,7 +52,34 @@ class _LoginScreenState extends State<LoginScreen> {
             return;
           }
 
-          // Navigate to redirect path or home
+          // Check if business account
+          final userId = authProvider.currentUser?.id;
+          if (userId != null) {
+            final businessProvider = context.read<BusinessProvider>();
+            final isBusinessAccount = await businessProvider
+                .checkBusinessAccount(userId);
+
+            if (isBusinessAccount && mounted) {
+              // Show mode selection dialog
+              final selectedMode = await BusinessModeSelectionDialog.show(
+                context,
+              );
+
+              if (selectedMode != null && mounted) {
+                await businessProvider.switchMode(selectedMode, userId);
+
+                // Navigate based on selected mode
+                if (selectedMode == BusinessMode.business) {
+                  context.go('/business/subscription');
+                } else {
+                  context.go(widget.redirectPath ?? '/');
+                }
+                return;
+              }
+            }
+          }
+
+          // Navigate to redirect path or home (normal flow)
           if (widget.redirectPath != null) {
             context.go(widget.redirectPath!);
           } else {
@@ -93,8 +123,35 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      debugPrint('✅ Profile complete - Redirecting to destination...');
-      // Başarılı girişte kesin yönlendirme
+      debugPrint('✅ Profile complete - Checking business account...');
+
+      // Check if business account
+      final userId = authProvider.currentUser?.id;
+      if (userId != null) {
+        final businessProvider = context.read<BusinessProvider>();
+        final isBusinessAccount = await businessProvider.checkBusinessAccount(
+          userId,
+        );
+
+        if (isBusinessAccount && mounted) {
+          // Show mode selection dialog
+          final selectedMode = await BusinessModeSelectionDialog.show(context);
+
+          if (selectedMode != null && mounted) {
+            await businessProvider.switchMode(selectedMode, userId);
+
+            // Navigate based on selected mode
+            if (selectedMode == BusinessMode.business) {
+              context.go('/business/subscription');
+            } else {
+              context.go(widget.redirectPath ?? '/');
+            }
+            return;
+          }
+        }
+      }
+
+      // Navigate to redirect path or home (normal flow)
       if (widget.redirectPath != null) {
         context.go(widget.redirectPath!);
       } else {
