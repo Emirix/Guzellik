@@ -7,6 +7,7 @@ import '../providers/business_provider.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats.dart';
 import '../widgets/profile/profile_menu_item.dart';
+import '../widgets/common/business_bottom_nav.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/enums/business_mode.dart';
 import '../../config/admin_config.dart';
@@ -40,8 +41,15 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final businessProvider = context.watch<BusinessProvider>();
+    // Check if we are in business mode AND not in the home screen shell
+    // If we are in the home index stack, the shell provides the nav
+    // If we are navigated to directly (e.g. from business nav), we need to provide it
+    final showBusinessNav = businessProvider.isBusinessMode;
+
     return Scaffold(
       backgroundColor: const Color(0xFFFDFBFB),
+      bottomNavigationBar: showBusinessNav ? const BusinessBottomNav() : null,
       body: SafeArea(
         child: Column(
           children: [

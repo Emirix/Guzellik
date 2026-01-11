@@ -1,0 +1,152 @@
+.header {
+    height: 72px;
+    background-color: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-lg);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.menu-button {
+    background: transparent;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius);
+    color: var(--gray-700);
+    display: none;
+    /* Hidden by default on desktop */
+}
+
+.menu-button:hover {
+    background-color: var(--gray-100);
+    color: var(--primary);
+}
+
+.header-title h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.header-subtitle {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.header-icon-button {
+    position: relative;
+    background: transparent;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-full);
+    color: var(--gray-600);
+    transition: var(--transition);
+}
+
+.header-icon-button:hover {
+    background-color: var(--gray-50);
+    color: var(--primary);
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--primary);
+    color: var(--white);
+    font-size: 0.625rem;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--white);
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--gray-200);
+    background-color: var(--white);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.header-user:hover {
+    border-color: var(--primary-light);
+    background-color: var(--background-light);
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--primary-light);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--black);
+    line-height: 1.2;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header {
+        padding: 0 var(--spacing);
+    }
+
+    .menu-button {
+        display: flex;
+    }
+
+    .header-subtitle,
+    .user-info {
+        display: none;
+    }
+
+    .header-user {
+        border: none;
+        padding: 0;
+        background: transparent;
+    }
+
+    .header-user:hover {
+        background: transparent;
+    }
+}

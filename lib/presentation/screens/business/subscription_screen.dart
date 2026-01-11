@@ -7,6 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../widgets/business/subscription_card.dart';
 import '../../../config/admin_config.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../widgets/common/business_bottom_nav.dart';
 
 /// Subscription screen for business accounts
 /// Shows subscription details and quick actions
@@ -49,6 +50,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         ),
         centerTitle: true,
       ),
+      bottomNavigationBar: const BusinessBottomNav(),
       body: Consumer2<SubscriptionProvider, BusinessProvider>(
         builder: (context, subscriptionProvider, businessProvider, _) {
           if (subscriptionProvider.isLoading) {

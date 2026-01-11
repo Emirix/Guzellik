@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/common/business_bottom_nav.dart';
 
 /// Store screen for business features marketplace
 /// Currently shows "Coming Soon" placeholders
@@ -21,6 +22,7 @@ class StoreScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
+      bottomNavigationBar: const BusinessBottomNav(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
