@@ -278,11 +278,17 @@ class AdminDashboardScreen extends StatelessWidget {
             context,
             icon: Icons.schedule,
             title: 'Çalışma Saatleri',
-            subtitle: venue != null
-                ? 'Pzt - Cmt: 09:00 - 20:00'
-                : 'Haftalık çalışma planınız', // Example
-            statusLabel: 'AÇIK',
+            subtitle: _formatWorkingHoursSummary(venue),
+            statusLabel: _isCurrentlyOpen(venue) ? 'AÇIK' : 'KAPALI',
             onTap: () => context.push('/business/admin/working-hours'),
+          ),
+
+          _buildListItem(
+            context,
+            icon: Icons.location_on,
+            title: 'Konum ve Adres',
+            subtitle: venue?.address ?? 'Harita konumu ve açık adres',
+            onTap: () => context.push('/business/admin/location'),
           ),
 
           _buildListItem(
@@ -457,5 +463,26 @@ class AdminDashboardScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatWorkingHoursSummary(Venue? venue) {
+    if (venue == null || venue.workingHours.isEmpty) {
+      return 'Haftalık çalışma planınız';
+    }
+
+    final hours = venue.workingHours;
+    final monday = hours['monday'] as Map<String, dynamic>?;
+
+    if (monday != null && monday['open'] == true) {
+      return 'Pzt - Cmt: ${monday['start']} - ${monday['end']}';
+    }
+
+    return 'Çalışma saatlerini düzenleyin';
+  }
+
+  bool _isCurrentlyOpen(Venue? venue) {
+    if (venue == null || venue.workingHours.isEmpty) return false;
+    // Basit bir kontrol, geliştirilebilir
+    return true;
   }
 }

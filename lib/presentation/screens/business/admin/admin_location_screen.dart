@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/province.dart';
 import '../../../../data/models/district.dart';
 import '../../../../data/repositories/location_repository.dart';
+import '../../../../data/services/location_service.dart';
 import '../../../providers/admin_location_provider.dart';
 import '../../../providers/business_provider.dart';
+import '../../../widgets/business/admin_map_picker.dart';
 
 class AdminLocationScreen extends StatefulWidget {
   const AdminLocationScreen({super.key});
@@ -101,9 +104,13 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
         if (initialDistrictId != null) {
           try {
             _selectedDistrict = districts.firstWhere(
-              (d) => d.id == initialDistrictId,
+              (d) =>
+                  d.id == initialDistrictId ||
+                  d.name.toLowerCase() == initialDistrictId.toLowerCase(),
             );
-          } catch (_) {}
+          } catch (_) {
+            _selectedDistrict = null;
+          }
         } else {
           _selectedDistrict = null;
         }
@@ -111,6 +118,56 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
     } finally {
       setState(() => _isLoadingLocations = false);
     }
+  }
+
+  Future<void> _openMapPicker() async {
+    final double lat = double.tryParse(_latitudeController.text) ?? 0;
+    final double lng = double.tryParse(_longitudeController.text) ?? 0;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => AdminMapPicker(
+        initialLocation: LatLng(lat, lng),
+        onLocationSelected: (location, address) async {
+          setState(() {
+            _latitudeController.text = location.latitude.toStringAsFixed(6);
+            _longitudeController.text = location.longitude.toStringAsFixed(6);
+            if (address != null && _addressController.text.isEmpty) {
+              _addressController.text = address;
+            }
+          });
+
+          // Try to match province and district from coordinates
+          final locationService = LocationService();
+          final info = await locationService
+              .extractProvinceAndDistrictFromCoordinates(
+                latitude: location.latitude,
+                longitude: location.longitude,
+              );
+
+          if (info != null) {
+            final provinceName = info['province'];
+            final districtName = info['district'];
+
+            if (provinceName != null) {
+              final repo = context.read<LocationRepository>();
+              final matchedProvince = await repo.findProvinceByName(
+                provinceName,
+              );
+
+              if (matchedProvince != null) {
+                setState(() {
+                  _selectedProvince = matchedProvince;
+                });
+                await _loadDistricts(matchedProvince.id, districtName);
+              }
+            }
+          }
+        },
+      ),
+    );
   }
 
   Future<void> _saveChanges() async {
@@ -283,6 +340,22 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
                   validator: (value) => value == null || value.isEmpty
                       ? 'Adres zorunludur'
                       : null,
+                ),
+                const SizedBox(height: 24),
+
+                // Harita Seçim Butonu
+                OutlinedButton.icon(
+                  onPressed: _openMapPicker,
+                  icon: const Icon(Icons.map_outlined),
+                  label: const Text('HARİTA ÜZERİNDEN SEÇ'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.primary),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 32),
 
