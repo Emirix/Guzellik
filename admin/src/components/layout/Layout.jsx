@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import './Layout.css';
 import { auth, business } from '../../lib/supabase';
 
 export default function Layout() {
@@ -49,12 +50,6 @@ export default function Layout() {
             />
 
             <div className="main-wrapper">
-                <Header
-                    onMenuClick={() => setIsSidebarOpen(true)}
-                    user={user}
-                    venueName={venue?.name}
-                />
-
                 <main className="main-content">
                     <Outlet />
                 </main>

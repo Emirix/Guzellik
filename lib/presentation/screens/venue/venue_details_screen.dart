@@ -16,11 +16,13 @@ import '../../../data/models/venue.dart';
 class VenueDetailsScreen extends StatefulWidget {
   final String venueId;
   final Venue? initialVenue;
+  final Widget? bottomNavigationBar;
 
   const VenueDetailsScreen({
     super.key,
     required this.venueId,
     this.initialVenue,
+    this.bottomNavigationBar,
   });
 
   @override
@@ -214,6 +216,7 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: widget.bottomNavigationBar,
       body: Consumer<VenueDetailsProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.venue == null) {
@@ -335,16 +338,17 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
               ),
 
               // Fixed Bottom Bar
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: BookingBottomBar(
-                  onBookingTap: () => _showContactOptions(context, venue),
-                  rating: venue.rating,
-                  reviewCount: venue.ratingCount,
+              if (widget.bottomNavigationBar == null)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: BookingBottomBar(
+                    onBookingTap: () => _showContactOptions(context, venue),
+                    rating: venue.rating,
+                    reviewCount: venue.ratingCount,
+                  ),
                 ),
-              ),
             ],
           );
         },

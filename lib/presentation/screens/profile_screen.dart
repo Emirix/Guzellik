@@ -11,6 +11,7 @@ import '../widgets/common/business_bottom_nav.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/enums/business_mode.dart';
 import '../../config/admin_config.dart';
+import 'venue/venue_details_screen.dart';
 
 /// Helper function to open admin panel
 Future<void> _openAdminPanel(BuildContext context, String? venueId) async {
@@ -46,6 +47,14 @@ class ProfileScreen extends StatelessWidget {
     // If we are in the home index stack, the shell provides the nav
     // If we are navigated to directly (e.g. from business nav), we need to provide it
     final showBusinessNav = businessProvider.isBusinessMode;
+
+    // If in business mode, show venue details as "Profile"
+    if (showBusinessNav && businessProvider.businessVenue?.id != null) {
+      return VenueDetailsScreen(
+        venueId: businessProvider.businessVenue!.id,
+        bottomNavigationBar: const BusinessBottomNav(),
+      );
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDFBFB),
