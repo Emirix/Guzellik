@@ -41,7 +41,7 @@ class BusinessProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print('Error loading saved mode: $e');
+      debugPrint('Error loading saved mode: $e');
     }
   }
 
@@ -51,7 +51,7 @@ class BusinessProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('business_mode', mode.toStorageString());
     } catch (e) {
-      print('Error saving mode: $e');
+      debugPrint('Error saving mode: $e');
     }
   }
 
@@ -61,7 +61,7 @@ class BusinessProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('business_mode');
     } catch (e) {
-      print('Error clearing saved mode: $e');
+      debugPrint('Error clearing saved mode: $e');
     }
   }
 
@@ -107,7 +107,7 @@ class BusinessProvider with ChangeNotifier {
     try {
       return await _repository.checkBusinessAccount(userId);
     } catch (e) {
-      print('Error checking business account: $e');
+      debugPrint('Error checking business account: $e');
       return false;
     }
   }
@@ -117,7 +117,7 @@ class BusinessProvider with ChangeNotifier {
     try {
       return await _repository.checkFeatureAccess(userId, feature);
     } catch (e) {
-      print('Error checking feature access: $e');
+      debugPrint('Error checking feature access: $e');
       return false;
     }
   }
@@ -128,7 +128,7 @@ class BusinessProvider with ChangeNotifier {
       _subscription = await _repository.getSubscription(userId);
       notifyListeners();
     } catch (e) {
-      print('Error refreshing subscription: $e');
+      debugPrint('Error refreshing subscription: $e');
     }
   }
 
@@ -138,7 +138,7 @@ class BusinessProvider with ChangeNotifier {
       _businessVenue = await _repository.getBusinessVenue(userId);
       notifyListeners();
     } catch (e) {
-      print('Error refreshing venue: $e');
+      debugPrint('Error refreshing venue: $e');
     }
   }
 
