@@ -271,7 +271,7 @@ class AdminDashboardScreen extends StatelessWidget {
             icon: Icons.storefront,
             title: 'Temel Bilgiler',
             subtitle: 'İsim, Tanıtım Yazısı ve İletişim',
-            onTap: () {},
+            onTap: () => context.push('/business/admin/basic-info'),
           ),
 
           _buildListItem(

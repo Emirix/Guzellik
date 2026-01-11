@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import '../../../providers/business_provider.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../providers/admin_working_hours_provider.dart';
+import '../../../providers/business_provider.dart';
 
 class AdminWorkingHoursScreen extends StatefulWidget {
   const AdminWorkingHoursScreen({super.key});
@@ -13,7 +14,19 @@ class AdminWorkingHoursScreen extends StatefulWidget {
 }
 
 class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
-  final Map<String, String> _days = {
+  bool _isInitialized = false;
+
+  final List<String> _days = [
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
+  ];
+
+  final Map<String, String> _dayLabels = {
     'monday': 'Pazartesi',
     'tuesday': 'Salı',
     'wednesday': 'Çarşamba',
@@ -23,251 +36,319 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
     'sunday': 'Pazar',
   };
 
-  late Map<String, dynamic> _workingHours;
-  bool _isSaving = false;
-
   @override
-  void initState() {
-    super.initState();
-    final venue = context.read<BusinessProvider>().currentVenue;
-    _workingHours = Map<String, dynamic>.from(venue?.workingHours ?? {});
-    _fillMissingDays();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      _loadData();
+      _isInitialized = true;
+    }
   }
 
-  void _fillMissingDays() {
-    for (var key in _days.keys) {
-      if (!_workingHours.containsKey(key) || _workingHours[key] == null) {
-        _workingHours[key] = '09:00 - 19:00'; // Default
+  Future<void> _loadData() async {
+    final businessProvider = context.read<BusinessProvider>();
+    final venueId = businessProvider.businessVenue?.id;
+
+    if (venueId != null) {
+      await context.read<AdminWorkingHoursProvider>().loadWorkingHours(venueId);
+    }
+  }
+
+  Future<void> _saveChanges() async {
+    final businessProvider = context.read<BusinessProvider>();
+    final venueId = businessProvider.businessVenue?.id;
+
+    if (venueId == null) return;
+
+    final provider = context.read<AdminWorkingHoursProvider>();
+    try {
+      await provider.saveWorkingHours(venueId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Çalışma saatleri kaydedildi')),
+        );
+        // Refresh business venue data
+        await businessProvider.refreshVenue(venueId);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
+        );
       }
     }
   }
 
-  Future<void> _selectTimeRange(String dayKey) async {
-    final currentVal = _workingHours[dayKey] as String;
-    if (currentVal == 'Kapalı') {
-      _toggleClosed(dayKey);
-      return;
+  Future<void> _selectTime(String day, bool isStart) async {
+    final provider = context.read<AdminWorkingHoursProvider>();
+    final currentHours = provider.workingHours[day] ?? {};
+    final currentTimeStr = isStart
+        ? currentHours['start']
+        : currentHours['end'];
+
+    TimeOfDay initialTime = const TimeOfDay(hour: 9, minute: 0);
+    if (currentTimeStr != null) {
+      final parts = (currentTimeStr as String).split(':');
+      if (parts.length == 2) {
+        initialTime = TimeOfDay(
+          hour: int.parse(parts[0]),
+          minute: int.parse(parts[1]),
+        );
+      }
     }
 
-    final parts = currentVal.split(' - ');
-    final startTimeStr = parts[0];
-    final endTimeStr = parts[1];
-
-    final TimeOfDay? start = await showTimePicker(
+    final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _parseTime(startTimeStr),
-      helpText: '${_days[dayKey]} Açılış Saati',
-    );
-
-    if (start == null) return;
-
-    final TimeOfDay? end = await showTimePicker(
-      context: context,
-      initialTime: _parseTime(endTimeStr),
-      helpText: '${_days[dayKey]} Kapanış Saati',
-    );
-
-    if (end == null) return;
-
-    setState(() {
-      _workingHours[dayKey] = '${_formatTime(start)} - ${_formatTime(end)}';
-    });
-  }
-
-  TimeOfDay _parseTime(String timeStr) {
-    final parts = timeStr.split(':');
-    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-  }
-
-  String _formatTime(TimeOfDay time) {
-    final hour = time.hour.toString().padLeft(2, '0');
-    final minute = time.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
-
-  void _toggleClosed(String dayKey) {
-    setState(() {
-      if (_workingHours[dayKey] == 'Kapalı') {
-        _workingHours[dayKey] = '09:00 - 19:00';
-      } else {
-        _workingHours[dayKey] = 'Kapalı';
-      }
-    });
-  }
-
-  Future<void> _save() async {
-    setState(() => _isSaving = true);
-    final success = await context.read<BusinessProvider>().updateWorkingHours(
-      _workingHours,
-    );
-    setState(() => _isSaving = false);
-
-    if (mounted) {
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Çalışma saatleri güncellendi')),
+      initialTime: initialTime,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              onSurface: Color(0xFF1B0E11),
+            ),
+          ),
+          child: child!,
         );
-        Navigator.pop(context);
+      },
+    );
+
+    if (picked != null) {
+      final timeStr =
+          '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+      final newDayHours = Map<String, dynamic>.from(currentHours);
+      if (isStart) {
+        newDayHours['start'] = timeStr;
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Hata oluştu, lütfen tekrar deneyin')),
-        );
+        newDayHours['end'] = timeStr;
       }
+      provider.updateDayHours(day, newDayHours);
+    }
+  }
+
+  void _applyToAll(String sourceDay) {
+    final provider = context.read<AdminWorkingHoursProvider>();
+    final sourceHours = provider.workingHours[sourceDay];
+    if (sourceHours != null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Tüm Günlere Uygula'),
+          content: Text(
+            '${_dayLabels[sourceDay]} gününün saatlerini tüm haftaya kopyalamak istediğinize emin misiniz?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('İptal'),
+            ),
+            TextButton(
+              onPressed: () {
+                provider.applyToAllDays(sourceHours);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Saatler tüm günlere uygulandı'),
+                  ),
+                );
+              },
+              child: const Text('Uygula'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: const Color(0xFFFCFCFC),
       appBar: AppBar(
-        title: const Text(
-          'Çalışma Saatleri',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
-        ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        title: const Text(
+          'Çalışma Saatleri',
+          style: TextStyle(
+            color: Color(0xFF1B0E11),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
-            color: Colors.black87,
+            color: Color(0xFF1B0E11),
             size: 20,
           ),
-          onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            } else {
-              context.go('/business/admin');
-            }
-          },
+          onPressed: () => context.pop(),
         ),
+        actions: [
+          Consumer<AdminWorkingHoursProvider>(
+            builder: (context, provider, _) => IconButton(
+              icon: provider.isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.check_circle, color: AppColors.primary),
+              onPressed: provider.isLoading ? null : _saveChanges,
+            ),
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      body: Consumer<AdminWorkingHoursProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoading && provider.workingHours.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: _days.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final day = _days[index];
+              final label = _dayLabels[day]!;
+              final hours =
+                  provider.workingHours[day] ??
+                  {'open': true, 'start': '09:00', 'end': '20:00'};
+              final isOpen = hours['open'] ?? false;
+
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            label,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1B0E11),
+                            ),
+                          ),
+                        ),
+                        Switch.adaptive(
+                          value: isOpen,
+                          activeColor: AppColors.primary,
+                          onChanged: (value) {
+                            final newHours = Map<String, dynamic>.from(hours);
+                            newHours['open'] = value;
+                            provider.updateDayHours(day, newHours);
+                          },
+                        ),
+                        PopupMenuButton<String>(
+                          icon: const Icon(Icons.more_vert, color: Colors.grey),
+                          onSelected: (value) {
+                            if (value == 'apply_all') _applyToAll(day);
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'apply_all',
+                              child: Text('Tüm günlere uygula'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (isOpen) ...[
+                      const Divider(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildTimeButton(
+                              context,
+                              label: 'Açılış',
+                              time: hours['start'] ?? '09:00',
+                              onTap: () => _selectTime(day, true),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            child: Icon(
+                              Icons.arrow_forward,
+                              color: Colors.grey,
+                              size: 16,
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildTimeButton(
+                              context,
+                              label: 'Kapanış',
+                              time: hours['end'] ?? '20:00',
+                              onTap: () => _selectTime(day, false),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ] else ...[
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Bu gün işletmeniz hizmet vermemektedir.',
+                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTimeButton(
+    BuildContext context, {
+    required String label,
+    required String time,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8F8F8),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Haftalık Plan',
-              style: TextStyle(
-                fontSize: 18,
+            Text(
+              label,
+              style: TextStyle(color: Colors.grey[600], fontSize: 11),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              time,
+              style: const TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Color(0xFF1B0E11),
               ),
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'İşletmenizin açık olduğu saatleri güncelleyerek müşterilerinizin doğru bilgiye ulaşmasını sağlayın.',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            const SizedBox(height: 24),
-            ..._days.keys.map((key) => _buildDayTile(key)),
-            const SizedBox(height: 40),
-            _buildSaveButton(),
-            const SizedBox(height: 40),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDayTile(String dayKey) {
-    final value = _workingHours[dayKey] as String;
-    final isClosed = value == 'Kapalı';
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _days[dayKey]!,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                GestureDetector(
-                  onTap: () => _selectTimeRange(dayKey),
-                  child: Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: isClosed ? Colors.redAccent : AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            children: [
-              const Text(
-                'Kapalı',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-              Switch.adaptive(
-                value: isClosed,
-                onChanged: (_) => _toggleClosed(dayKey),
-                activeColor: Colors.redAccent,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSaveButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _isSaving ? null : _save,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          elevation: 0,
-        ),
-        child: _isSaving
-            ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : const Text(
-                'AYARLARI KAYDET',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                ),
-              ),
       ),
     );
   }

@@ -3,67 +3,67 @@
 ## Phase 1: Temel Bilgiler Ekranı
 
 ### Task 1.1: Admin Ana Ekrana Menü Öğesi Ekle
-- [ ] `admin_dashboard_screen.dart` içinde "Temel Bilgiler" menü kartı ekle
-- [ ] Icon: `Icons.storefront` veya `Icons.business`
-- [ ] Subtitle: "İsim, Tanıtım Yazısı ve İletişim"
-- [ ] Navigation: `/business/admin/basic-info`
-- [ ] Tasarım referansı: `design/yonetim-index.html` (lines 124-142)
+- [x] `admin_dashboard_screen.dart` içinde "Temel Bilgiler" menü kartı ekle
+- [x] Icon: `Icons.storefront` veya `Icons.business`
+- [x] Subtitle: "İsim, Tanıtım Yazısı ve İletişim"
+- [x] Navigation: `/business/admin/basic-info`
+- [x] Tasarım referansı: `design/yonetim-index.html` (lines 124-142)
 
 **Validation**: Yönetim ekranında "Temel Bilgiler" kartı görünür ve tıklanabilir
 
 ---
 
 ### Task 1.2: Temel Bilgiler Ekranı Oluştur
-- [ ] `lib/presentation/screens/business/admin_basic_info_screen.dart` oluştur
-- [ ] AppBar: "Temel Bilgiler" başlığı, geri butonu, kaydet butonu
-- [ ] Form alanları:
+- [x] `lib/presentation/screens/business/admin_basic_info_screen.dart` oluştur
+- [x] AppBar: "Temel Bilgiler" başlığı, geri butonu, kaydet butonu
+- [x] Form alanları:
   - İşletme Adı (TextFormField, required)
   - Tanıtım Yazısı (TextFormField, multiline, maxLines: 5)
   - Telefon (TextFormField, phone keyboard)
   - E-posta (TextFormField, email keyboard)
-- [ ] Form validasyonu ekle
-- [ ] Kaydet butonu ile değişiklikleri kaydet
+- [x] Form validasyonu ekle
+- [x] Kaydet butonu ile değişiklikleri kaydet
 
 **Validation**: Ekran açılır, form alanları görünür ve düzenlenebilir
 
 ---
 
 ### Task 1.3: Sosyal Medya Linkleri Bölümü
-- [ ] Sosyal medya linkleri için genişletilebilir bölüm ekle
-- [ ] Alanlar:
+- [x] Sosyal medya linkleri için genişletilebilir bölüm ekle
+- [x] Alanlar:
   - Instagram URL (TextFormField, URL validasyonu)
   - WhatsApp numarası (TextFormField, phone format)
   - Facebook URL (TextFormField, opsiyonel)
   - Website URL (TextFormField, opsiyonel)
-- [ ] Her alan için format örneği göster (hint text)
-- [ ] URL validasyonu ekle
+- [x] Her alan için format örneği göster (hint text)
+- [x] URL validasyonu ekle
 
 **Validation**: Sosyal medya linkleri düzenlenebilir ve doğru formatta kaydedilir
 
 ---
 
 ### Task 1.4: BasicInfoProvider Oluştur
-- [ ] `lib/presentation/providers/admin_basic_info_provider.dart` oluştur
-- [ ] State: loading, venue data, error
-- [ ] Methods:
+- [x] `lib/presentation/providers/admin_basic_info_provider.dart` oluştur
+- [x] State: loading, venue data, error
+- [x] Methods:
   - `loadVenueBasicInfo(String venueId)` - Mevcut bilgileri yükle
   - `updateBasicInfo(Map<String, dynamic> data)` - Bilgileri güncelle
   - `validatePhone(String phone)` - Telefon validasyonu
   - `validateEmail(String email)` - Email validasyonu
   - `validateUrl(String url)` - URL validasyonu
-- [ ] Supabase `venues` tablosuna UPDATE sorgusu
-- [ ] Optimistic updates
-- [ ] Error handling
+- [x] Supabase `venues` tablosuna UPDATE sorgusu
+- [x] Optimistic updates
+- [x] Error handling
 
 **Validation**: Provider venues tablosunu doğru günceller
 
 ---
 
 ### Task 1.5: Route Ekle
-- [ ] GoRouter'a `/business/admin/basic-info` route'u ekle
-- [ ] Parent route: `/business/admin`
-- [ ] BusinessProvider'dan venue_id al
-- [ ] Route guard: Sadece business mode'da erişilebilir
+- [x] GoRouter'a `/business/admin/basic-info` route'u ekle
+- [x] Parent route: `/business/admin`
+- [x] BusinessProvider'dan venue_id al
+- [x] Route guard: Sadece business mode'da erişilebilir
 
 **Validation**: Route çalışır ve doğru ekrana yönlendirir
 
@@ -72,32 +72,32 @@
 ## Phase 2: Çalışma Saatleri Ekranı
 
 ### Task 2.1: Çalışma Saatleri Menü Öğesi
-- [ ] Temel Bilgiler ekranına "Çalışma Saatleri" alt menü butonu ekle
-- [ ] Icon: `Icons.schedule`
-- [ ] Mevcut çalışma saati özetini göster (örn: "Pzt-Cmt: 09:00-20:00")
-- [ ] Navigation: `/business/admin/basic-info/working-hours`
+- [x] Temel Bilgiler ekranına "Çalışma Saatleri" alt menü butonu ekle
+- [x] Icon: `Icons.schedule`
+- [x] Mevcut çalışma saati özetini göster (örn: "Pzt-Cmt: 09:00-20:00")
+- [x] Navigation: `/business/admin/basic-info/working-hours`
 
 **Validation**: Buton görünür ve çalışma saatleri ekranına yönlendirir
 
 ---
 
 ### Task 2.2: Çalışma Saatleri Ekranı Oluştur
-- [ ] `lib/presentation/screens/business/admin_working_hours_screen.dart` oluştur
-- [ ] Her gün için liste öğesi:
+- [x] `lib/presentation/screens/business/admin_working_hours_screen.dart` oluştur
+- [x] Her gün için liste öğesi:
   - Gün adı (Pazartesi, Salı, vb.)
   - Açık/Kapalı switch
   - Açılış saati (TimePicker)
   - Kapanış saati (TimePicker)
-- [ ] "Tüm Günler İçin Uygula" butonu
-- [ ] Kaydet butonu
+- [x] "Tüm Günler İçin Uygula" butonu
+- [x] Kaydet butonu
 
 **Validation**: Ekran açılır, günler listelenmiş, saat seçilebilir
 
 ---
 
 ### Task 2.3: WorkingHoursProvider Oluştur
-- [ ] `lib/presentation/providers/admin_working_hours_provider.dart` oluştur
-- [ ] JSONB working_hours yapısını parse et:
+- [x] `lib/presentation/providers/admin_working_hours_provider.dart` oluştur
+- [x] JSONB working_hours yapısını parse et:
   ```json
   {
     "monday": {"open": true, "start": "09:00", "end": "20:00"},
@@ -105,22 +105,22 @@
     ...
   }
   ```
-- [ ] Methods:
+- [x] Methods:
   - `loadWorkingHours(String venueId)`
   - `updateDayHours(String day, Map<String, dynamic> hours)`
   - `applyToAllDays(Map<String, dynamic> hours)`
   - `saveWorkingHours()`
-- [ ] Supabase UPDATE ile working_hours JSONB güncelle
+- [x] Supabase UPDATE ile working_hours JSONB güncelle
 
 **Validation**: Çalışma saatleri doğru kaydedilir ve venue_details'da görünür
 
 ---
 
 ### Task 2.4: Time Picker Widget
-- [ ] Özel time picker widget oluştur veya `showTimePicker` kullan
-- [ ] 24 saat formatı
-- [ ] Türkçe lokalizasyon
-- [ ] Açılış < Kapanış validasyonu
+- [x] Özel time picker widget oluştur veya `showTimePicker` kullan
+- [x] 24 saat formatı
+- [x] Türkçe lokalizasyon
+- [x] Açılış < Kapanış validasyonu
 
 **Validation**: Saat seçimi kullanıcı dostu ve doğru çalışıyor
 
@@ -129,38 +129,38 @@
 ## Phase 3: Konum Yönetimi
 
 ### Task 3.1: Konum Menü Öğesi
-- [ ] Temel Bilgiler ekranına "Konum ve Adres" alt menü butonu ekle
-- [ ] Icon: `Icons.location_on`
-- [ ] Mevcut adresi göster
-- [ ] Navigation: `/business/admin/basic-info/location`
+- [x] Temel Bilgiler ekranına "Konum ve Adres" alt menü butonu ekle
+- [x] Icon: `Icons.location_on`
+- [x] Mevcut adresi göster
+- [x] Navigation: `/business/admin/basic-info/location`
 
 **Validation**: Buton görünür ve konum ekranına yönlendirir
 
 ---
 
 ### Task 3.2: Konum Ekranı Oluştur
-- [ ] `lib/presentation/screens/business/admin_location_screen.dart` oluştur
-- [ ] Adres text field (autocomplete ile)
-- [ ] Google Maps widget (küçük önizleme)
-- [ ] Harita üzerinde marker ile konum seçimi
-- [ ] Manuel koordinat girişi (opsiyonel)
-- [ ] İl/İlçe dropdown'ları
-- [ ] Kaydet butonu
+- [x] `lib/presentation/screens/business/admin_location_screen.dart` oluştur
+- [x] Adres text field (autocomplete ile)
+- [x] Google Maps widget (küçük önizleme)
+- [x] Harita üzerinde marker ile konum seçimi
+- [x] Manuel koordinat girişi (opsiyonel)
+- [x] İl/İlçe dropdown'ları
+- [x] Kaydet butonu
 
 **Validation**: Harita görünür, konum seçilebilir
 
 ---
 
 ### Task 3.3: LocationProvider Oluştur
-- [ ] `lib/presentation/providers/admin_location_provider.dart` oluştur
-- [ ] Methods:
+- [x] `lib/presentation/providers/admin_location_provider.dart` oluştur
+- [x] Methods:
   - `loadLocation(String venueId)`
   - `updateAddress(String address)`
   - `updateCoordinates(double lat, double lng)`
   - `updateProvinceDistrict(int provinceId, String districtId)`
   - `saveLocation()`
-- [ ] Supabase UPDATE: address, latitude, longitude, location (geography)
-- [ ] PostGIS point güncelleme: `ST_SetSRID(ST_MakePoint(lng, lat), 4326)`
+- [x] Supabase UPDATE: address, latitude, longitude, location (geography)
+- [x] PostGIS point güncelleme: `ST_SetSRID(ST_MakePoint(lng, lat), 4326)`
 
 **Validation**: Konum bilgileri doğru kaydedilir
 
@@ -179,34 +179,34 @@
 ## Phase 4: Entegrasyon ve Test
 
 ### Task 4.1: Provider'ları MultiProvider'a Ekle
-- [ ] `main.dart` içinde:
+- [x] `main.dart` içinde:
   - `AdminBasicInfoProvider`
   - `AdminWorkingHoursProvider`
   - `AdminLocationProvider`
-- [ ] Provider'ları ChangeNotifierProvider ile wrap et
+- [x] Provider'ları ChangeNotifierProvider ile wrap et
 
 **Validation**: Provider'lar uygulamada erişilebilir
 
 ---
 
 ### Task 4.2: VenueDetailsScreen Entegrasyonu
-- [ ] Temel bilgiler güncellendiğinde VenueDetailsScreen otomatik yenilensin
-- [ ] Realtime subscription veya provider listener kullan
-- [ ] Optimistic UI updates
+- [x] Temel bilgiler güncellendiğinde VenueDetailsScreen otomatik yenilensin
+- [x] Realtime subscription veya provider listener kullan
+- [x] Optimistic UI updates
 
 **Validation**: Değişiklikler anında venue details'da görünür
 
 ---
 
 ### Task 4.3: Form Validasyonu ve Error Handling
-- [ ] Tüm formlarda validasyon:
+- [x] Tüm formlarda validasyon:
   - Boş alan kontrolü (required fields)
   - Telefon format kontrolü
   - Email format kontrolü
   - URL format kontrolü
-- [ ] Error mesajları Türkçe
-- [ ] SnackBar ile kullanıcıya bildirim
-- [ ] Loading states
+- [x] Error mesajları Türkçe
+- [x] SnackBar ile kullanıcıya bildirim
+- [x] Loading states
 
 **Validation**: Geçersiz veri girildiğinde uygun hata mesajı gösterilir
 

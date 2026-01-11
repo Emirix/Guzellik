@@ -21,6 +21,8 @@ import '../../presentation/screens/business/admin/admin_specialists_screen.dart'
 import '../../presentation/screens/business/admin/admin_gallery_screen.dart';
 import '../../presentation/screens/business/admin/admin_campaigns_screen.dart';
 import '../../presentation/screens/business/admin/admin_working_hours_screen.dart';
+import '../../presentation/screens/business/admin/admin_location_screen.dart';
+import '../../presentation/screens/business/admin_basic_info_screen.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
 
@@ -161,6 +163,15 @@ class AppRouter {
       ),
       // TODO: Add sub-routes for services, gallery, specialists, campaigns
       GoRoute(
+        path: '/business/admin/basic-info',
+        name: 'admin-basic-info',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Temel Bilgiler',
+          redirectPath: '/business/admin/basic-info',
+          child: AdminBasicInfoScreen(),
+        ),
+      ),
+      GoRoute(
         path: '/business/admin/services',
         name: 'admin-services',
         builder: (context, state) => const AuthGuard(
@@ -203,6 +214,15 @@ class AppRouter {
           requiredFor: 'Kampanya Yönetimi',
           redirectPath: '/business/admin/campaigns',
           child: AdminCampaignsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/business/admin/location',
+        name: 'admin-location',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'Konum Yönetimi',
+          redirectPath: '/business/admin/location',
+          child: AdminLocationScreen(),
         ),
       ),
     ],
