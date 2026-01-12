@@ -1,7 +1,7 @@
 class ServiceCategory {
   final String id;
   final String name;
-  final String category;
+  final String subCategory;
   final String description;
   final int averageDurationMinutes;
   final String? icon;
@@ -11,7 +11,7 @@ class ServiceCategory {
   ServiceCategory({
     required this.id,
     required this.name,
-    required this.category,
+    required this.subCategory,
     required this.description,
     required this.averageDurationMinutes,
     this.icon,
@@ -23,7 +23,8 @@ class ServiceCategory {
     return ServiceCategory(
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? '',
-      category: json['category'] as String? ?? '',
+      subCategory:
+          json['sub_category'] as String? ?? json['category'] as String? ?? '',
       description: json['description'] as String? ?? '',
       averageDurationMinutes:
           (json['average_duration_minutes'] as num?)?.toInt() ?? 0,
@@ -39,7 +40,7 @@ class ServiceCategory {
     return {
       'id': id,
       'name': name,
-      'category': category,
+      'sub_category': subCategory,
       'description': description,
       'average_duration_minutes': averageDurationMinutes,
       'icon': icon,

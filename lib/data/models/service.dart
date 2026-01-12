@@ -14,6 +14,7 @@ class Service {
   final String? category;
   final double? price;
   final int? durationMinutes;
+  final int sortOrder;
 
   Service({
     required this.id,
@@ -29,6 +30,7 @@ class Service {
     this.category,
     this.price,
     this.durationMinutes,
+    this.sortOrder = 0,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
@@ -45,9 +47,13 @@ class Service {
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
       venueId: json['venue_id'] as String?,
-      category: json['category'] as String? ?? 'Genel',
+      category:
+          (json['category'] as String?) ??
+          (json['sub_category'] as String?) ??
+          'Genel',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       durationMinutes: (json['duration'] as num?)?.toInt() ?? 0,
+      sortOrder: json['sort_order'] as int? ?? 0,
     );
   }
 
@@ -62,6 +68,7 @@ class Service {
       'after_photo_url': afterPhotoUrl,
       'expert_name': expertName,
       'created_at': createdAt.toIso8601String(),
+      'sort_order': sortOrder,
     };
   }
 }

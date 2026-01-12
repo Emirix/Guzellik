@@ -202,8 +202,9 @@ class ReviewsPreviewV2 extends StatelessWidget {
     if (difference.inDays == 0) return 'Bugün';
     if (difference.inDays == 1) return 'Dün';
     if (difference.inDays < 7) return '${difference.inDays} gün önce';
-    if (difference.inDays < 30)
+    if (difference.inDays < 30) {
       return '${(difference.inDays / 7).floor()} hafta önce';
+    }
     return '${date.day}.${date.month}.${date.year}';
   }
 }

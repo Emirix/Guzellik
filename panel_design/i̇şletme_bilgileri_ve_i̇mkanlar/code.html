@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>İşletme Bilgileri ve İmkanlar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sidebar-item-active {
+            background-color: #e7ebf3;
+        }
+        .dark .sidebar-item-active {
+            background-color: rgba(19, 91, 236, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="flex min-h-screen">
+<!-- Sidebar -->
+<aside class="w-72 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark hidden lg:flex flex-col sticky top-0 h-screen">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary rounded-xl p-2 flex items-center justify-center text-white">
+<span class="material-symbols-outlined">spa</span>
+</div>
+<div>
+<h1 class="text-base font-bold leading-none">Güzellik Salonu</h1>
+<p class="text-xs text-slate-500 mt-1">Yönetici Paneli</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">calendar_month</span>
+<span class="text-sm font-medium">Randevular</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-primary sidebar-item-active transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1">storefront</span>
+<span class="text-sm font-bold">İşletme Bilgileri</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">content_cut</span>
+<span class="text-sm font-medium">Hizmetler</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">group</span>
+<span class="text-sm font-medium">Personel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-sm font-medium">Ayarlar</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-slate-200 bg-cover bg-center" data-alt="Kullanıcı profil fotoğrafı" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCQmupFtC7k6tghBchVHPdC7fb1jv0w9Iuul9RTT-E3tzvNnpDqv8_r4hrnBlNNKRhba64jzP0qMDLe0W_s7I7wpMBNE7j5_FLjSEbCGSwc1k2Li3dqcApW-sAKC-ZOT2f9PCBwX0zoFrCFc4-X9m89823DP4Jzdi6IlFbFL2oFl4zJT-jz_HWk2kfGb5IUTAClYe-wlYc5G4DtoldJBc6UzaNVQwLew37dHFaSEYp6XlTcwRVJ7EngvfFa7mRxmyzRvR5JnQ2qwUsB");'></div>
+<div>
+<p class="text-sm font-bold leading-none">Zeynep Yılmaz</p>
+<p class="text-xs text-slate-500 mt-1">İşletme Sahibi</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- Top Nav -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400">arrow_back</span>
+<h2 class="font-semibold text-slate-700 dark:text-slate-200">Ayarlar / İşletme Profili</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+</button>
+<button class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8 max-w-5xl mx-auto w-full">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">İşletme Bilgileri ve İmkanlar</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Profilinizi ve tesis imkanlarınızı buradan yönetebilirsiniz.</p>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                    Değişiklikleri Kaydet
+                </button>
+</div>
+<div class="grid grid-cols-1 gap-8">
+<!-- Basic Info Card -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">info</span>
+                            Temel Bilgiler
+                        </h2>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Mekan Adı</label>
+<input class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="Örn: Shine Güzellik Salonu" type="text" value="Shine Güzellik &amp; Bakım"/>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Slogan</label>
+<input class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="Örn: Güzelliğinize Işıltı Katın" type="text" value="Güzelliğinize profesyonel dokunuş"/>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Telefon Numarası</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[20px]">call</span>
+<input class="w-full pl-11 pr-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="+90 5xx xxx xx xx" type="tel" value="+90 212 555 0101"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Web Sitesi</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[20px]">language</span>
+<input class="w-full pl-11 pr-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="https://www.orneksite.com" type="url" value="https://www.shineguzellik.com"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Media Card -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">share</span>
+                            Sosyal Medya Bağlantıları
+                        </h2>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Instagram</label>
+<div class="flex">
+<span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 text-sm">@</span>
+<input class="flex-1 px-4 py-3 rounded-r-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="kullanıcıadi" type="text" value="shine_guzellik"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Facebook</label>
+<div class="flex">
+<span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 text-sm">fb/</span>
+<input class="flex-1 px-4 py-3 rounded-r-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="sayfa-adi" type="text" value="shinebakim"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Twitter (X)</label>
+<div class="flex">
+<span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 text-sm">x/</span>
+<input class="flex-1 px-4 py-3 rounded-r-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="kullanıcıadi" type="text"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Facilities Card -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">checklist_rtl</span>
+                            Tesis İmkanları
+                        </h2>
+</div>
+<div class="p-6">
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Müşterilerinizin randevu alırken görebileceği tesis özelliklerini seçiniz.</p>
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+<!-- Facility Item -->
+<label class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 cursor-pointer hover:border-primary/30 transition-all group">
+<input checked="" class="w-5 h-5 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Otopark</span>
+<span class="text-[11px] text-slate-400">Ücretsiz park alanı</span>
+</div>
+</label>
+<!-- Facility Item -->
+<label class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 cursor-pointer hover:border-primary/30 transition-all group">
+<input class="w-5 h-5 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Vale</span>
+<span class="text-[11px] text-slate-400">Vale hizmeti</span>
+</div>
+</label>
+<!-- Facility Item -->
+<label class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 cursor-pointer hover:border-primary/30 transition-all group">
+<input checked="" class="w-5 h-5 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Wi-Fi</span>
+<span class="text-[11px] text-slate-400">Hızlı internet</span>
+</div>
+</label>
+<!-- Facility Item -->
+<label class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 cursor-pointer hover:border-primary/30 transition-all group">
+<input checked="" class="w-5 h-5 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Klima</span>
+<span class="text-[11px] text-slate-400">İklimlendirme</span>
+</div>
+</label>
+<!-- Facility Item -->
+<label class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 cursor-pointer hover:border-primary/30 transition-all group">
+<input checked="" class="w-5 h-5 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">İkram</span>
+<span class="text-[11px] text-slate-400">Çay, kahve &amp; su</span>
+</div>
+</label>
+<!-- Facility Item -->
+<label class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 cursor-pointer hover:border-primary/30 transition-all group">
+<input class="w-5 h-5 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Çocuk Alanı</span>
+<span class="text-[11px] text-slate-400">Oyun parkı</span>
+</div>
+</label>
+<!-- Facility Item -->
+<label class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 cursor-pointer hover:border-primary/30 transition-all group">
+<input checked="" class="w-5 h-5 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Kredi Kartı</span>
+<span class="text-[11px] text-slate-400">Tüm kartlar</span>
+</div>
+</label>
+<!-- Facility Item -->
+<label class="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 cursor-pointer hover:border-primary/30 transition-all group">
+<input class="w-5 h-5 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Bahçe</span>
+<span class="text-[11px] text-slate-400">Açık hava alanı</span>
+</div>
+</label>
+</div>
+</div>
+</section>
+<!-- Location Preview (Custom Component) -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-12">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">location_on</span>
+                            Konum Bilgisi
+                        </h2>
+</div>
+<div class="p-6">
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex-1 space-y-4">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Açık Adres</label>
+<textarea class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none resize-none" placeholder="Adres detaylarını buraya girin..." rows="3">Nişantaşı Mah. Abdi İpekçi Cad. No:12 Kat:2, Şişli/İstanbul</textarea>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">İl</label>
+<select class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none">
+<option>İstanbul</option>
+<option>Ankara</option>
+<option>İzmir</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">İlçe</label>
+<select class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none">
+<option>Şişli</option>
+<option>Beşiktaş</option>
+<option>Kadıköy</option>
+</select>
+</div>
+</div>
+</div>
+<div class="w-full md:w-80 h-48 md:h-auto bg-slate-200 dark:bg-slate-800 rounded-xl relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="Harita konumu gösterimi" data-location="Istanbul" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfB61eeqnabAl0xNdbz2Denqz0KubX33C-Iij9F4bRGq6a2bhKqLgVk-aKHgNznaR1q3Eoi6aL3gb80LFZ_8uCeM1Y5ctEbDQxssHKW2Ym0zApQqvt8KwkFo5hFSlzr5xmCXxhd6vJVZLIjt4GuQqrdezKKliM0TFs4Vxjn-IgY_WDSnhWVZrs7YO32vJa2BPVPax_XxSWkreH-51Rkb5zAyYswql7AsAW7yvy3CcIuU7FzFmcI-jN82KrTctGNbDN6XCTRhfzcdaI');"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-white/90 dark:bg-slate-900/90 p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-red-500 text-3xl">location_on</span>
+</div>
+</div>
+<div class="absolute bottom-3 right-3">
+<button class="bg-white dark:bg-slate-900 px-3 py-1.5 rounded-lg shadow text-xs font-bold border border-slate-200 dark:border-slate-700">Haritada Seç</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+</body></html>

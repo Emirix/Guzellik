@@ -1,4 +1,28 @@
-# Güzellik Platformu
+# Güzellik Haritam - Beauty Services Platform
+
+## 🎯 Proje Hakkında
+Türkiye'deki güzellik salonları, kuaförler ve spa merkezlerini keşfetmek, randevu almak ve kampanyalardan haberdar olmak için kapsamlı bir mobil platform.
+
+## ✨ Özellikler
+
+### Kullanıcı Özellikleri
+- 🔍 Mekan arama ve filtreleme
+- ⭐ Favori mekanlar
+- 📅 Randevu yönetimi
+- 💬 Yorum ve değerlendirme
+- 🎁 Kampanya takibi
+- 📍 Konum bazlı arama
+- 🔔 Bildirimler
+
+### İşletme Özellikleri ✨ YENİ
+- 🏢 İşletme hesabı yönetimi
+- 📊 Abonelik sistemi
+- 🎨 İşletme modu navigasyonu
+- 💼 Web admin paneli entegrasyonu
+- 🛍️ Premium özellikler mağazası
+- 📈 Gelişmiş analitik (yakında)
+
+## 🚀 Teknolojileru
 
 A comprehensive mobile application that aggregates beauty salons, aesthetic clinics, and similar service providers across Turkey into a single platform.
 
@@ -186,6 +210,18 @@ flutter build appbundle --release
 ```bash
 flutter build ios --release
 ```
+
+## 📚 Documentation
+
+### Business Account Management
+Detailed documentation for the business account system:
+- [Business Account Setup Guide](docs/BUSINESS_ACCOUNT_SETUP.md) - Complete setup and usage guide
+- [Admin Panel Deployment](docs/ADMIN_PANEL_DEPLOYMENT.md) - Deploy admin panel to production
+- [API Documentation](docs/API_DOCUMENTATION.md) - Database schema, RPC functions, and API reference
+
+### Other Documentation
+- [Firebase Setup Guide](docs/firebase-setup.md) - Firebase configuration
+- [OpenSpec Changes](openspec/changes/) - Feature specifications and proposals
 
 ## 🔐 Security
 

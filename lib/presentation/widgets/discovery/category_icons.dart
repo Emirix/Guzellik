@@ -30,7 +30,7 @@ class CategoryIcons extends StatelessWidget {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         if (provider.isLoadingCategories) {
-          return const CategoryIconsShimmer();
+          return const RepaintBoundary(child: CategoryIconsShimmer());
         }
 
         final categories = provider.categories;

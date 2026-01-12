@@ -4,6 +4,8 @@ import '../../providers/app_state_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/discovery_provider.dart';
 import '../../providers/search_provider.dart';
+import '../../providers/business_provider.dart';
+import 'business_bottom_nav.dart';
 
 /// Custom bottom navigation bar using BottomAppBar for FAB integration
 class CustomBottomNav extends StatelessWidget {
@@ -12,7 +14,14 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final notificationCount = context.watch<NotificationProvider>().unreadCount;
+    final businessProvider = context.watch<BusinessProvider>();
 
+    // Show business navigation if in business mode
+    if (businessProvider.isBusinessMode) {
+      return const BusinessBottomNav();
+    }
+
+    // Otherwise show normal navigation
     return Consumer<AppStateProvider>(
       builder: (context, appState, _) {
         final selectedIndex = appState.selectedBottomNavIndex;

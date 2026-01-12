@@ -1,0 +1,42 @@
+﻿{
+  "id": "filter-inactive-subscriptions",
+  "title": "Filter Inactive Subscriptions",
+  "deltaCount": 1,
+  "deltas": [
+    {
+      "spec": "database",
+      "operation": "ADDED",
+      "description": "Add requirement: Sistem, aktif bir aboneli─şi olmayan i┼şletmelerin normal kullan─▒c─▒lar taraf─▒ndan g├Âr├╝lmesini engellemelidir.",
+      "requirement": {
+        "text": "Sistem, aktif bir aboneli─şi olmayan i┼şletmelerin normal kullan─▒c─▒lar taraf─▒ndan g├Âr├╝lmesini engellemelidir.",
+        "scenarios": [
+          {
+            "rawText": "- **WHEN** normal bir kullan─▒c─▒ i┼şletmeleri listeler\n- **THEN** sadece aktif aboneli─şi olan i┼şletmeler g├Âr├╝l├╝r"
+          },
+          {
+            "rawText": "- **WHEN** sahibi kendi i┼şletmesini g├Âr├╝nt├╝ler\n- **THEN** i┼şletme sahibi i├ğin her zaman g├Âr├╝n├╝rd├╝r"
+          },
+          {
+            "rawText": "- **WHEN** bir admin i┼şletme listesini ├ğeker\n- **THEN** t├╝m i┼şletmeler g├Âr├╝n├╝rd├╝r"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "text": "Sistem, aktif bir aboneli─şi olmayan i┼şletmelerin normal kullan─▒c─▒lar taraf─▒ndan g├Âr├╝lmesini engellemelidir.",
+          "scenarios": [
+            {
+              "rawText": "- **WHEN** normal bir kullan─▒c─▒ i┼şletmeleri listeler\n- **THEN** sadece aktif aboneli─şi olan i┼şletmeler g├Âr├╝l├╝r"
+            },
+            {
+              "rawText": "- **WHEN** sahibi kendi i┼şletmesini g├Âr├╝nt├╝ler\n- **THEN** i┼şletme sahibi i├ğin her zaman g├Âr├╝n├╝rd├╝r"
+            },
+            {
+              "rawText": "- **WHEN** bir admin i┼şletme listesini ├ğeker\n- **THEN** t├╝m i┼şletmeler g├Âr├╝n├╝rd├╝r"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

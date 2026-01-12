@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ee2b5b",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221015",
+                        "gold": "#D4AF37",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .gold-shimmer {
+            background: linear-gradient(135deg, #D4AF37 0%, #F1D382 50%, #D4AF37 100%)
+        }
+
+        .premium-card-bg {
+            background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.8) 100%), url(https://lh3.googleusercontent.com/aida-public/AB6AXuA1axTMop_4pXYaOtob1VwhUwfXdcLBNjva00RNrZSgCfB-oS_fQJpOyAdLzXWfIRAY2hQLUaxYNuUkECCuyvHHZNeVe8i-m7lqZm5lMUYI6e9-xiSkoE0iHXEY9UzY_4HjbtirtJ0s7cxUnJhIgCzUAonamwRkVJ6lwVv_1VlY8ChFNJcO_0g_FsgeE7-lYKNbCOUN8jibmL9GED8GMaUz9lK2A-hyyfEywaYEVwSpEoO5c6qdr_vxPtZBLADJ7SmtH1yLNtwybA);
+            background-size: cover;
+            background-position: center
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b0d11] dark:text-white antialiased">
+    <div class="relative flex h-auto min-h-screen w-full flex-col max-w-[480px] mx-auto overflow-x-hidden shadow-2xl">
+        <!-- TopAppBar -->
+        <header
+            class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 pb-2 justify-between">
+            <div class="flex size-12 shrink-0 items-center justify-start cursor-pointer">
+                <span class="material-symbols-outlined text-[#1b0d11] dark:text-white">arrow_back_ios</span>
+            </div>
+            <h2
+                class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
+                Mağaza</h2>
+            <div class="flex w-12 items-center justify-end">
+                <button
+                    class="flex cursor-pointer items-center justify-center rounded-lg h-12 bg-transparent text-[#1b0d11] dark:text-white">
+                    <span class="material-symbols-outlined">history</span>
+                </button>
+            </div>
+        </header>
+        <main class="flex-1 pb-10">
+            <!-- Balance Card -->
+            <div class="p-4">
+                <div class="premium-card-bg flex flex-col items-stretch justify-end rounded-xl pt-[120px] shadow-lg overflow-hidden border border-white/10"
+                    data-alt="Luxurious spa interior with soft lighting">
+                    <div class="flex w-full items-end justify-between gap-4 p-5 bg-black/40 backdrop-blur-sm">
+                        <div class="flex max-w-[440px] flex-1 flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-gold text-sm">stars</span>
+                                <p class="text-gold text-xs font-bold leading-normal tracking-widest uppercase">GOLD
+                                    İŞLETME</p>
+                            </div>
+                            <p class="text-white tracking-light text-3xl font-extrabold leading-tight">2.450 Kredi</p>
+                            <p class="text-white/80 text-sm font-medium leading-normal">Mevcut Kredi Bakiyesi</p>
+                        </div>
+                        <button
+                            class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-5 bg-primary text-white text-sm font-bold shadow-md active:scale-95 transition-transform">
+                            <span>Yükle</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Section: Utilities -->
+            <div class="mt-2">
+                <h3
+                    class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-4">
+                    Kredilerinizle Neler Yapabilirsiniz?</h3>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3 px-4">
+                    <!-- Block 1 -->
+                    <div
+                        class="flex flex-1 gap-4 rounded-xl border border-[#e7cfd5] dark:border-white/10 bg-white dark:bg-white/5 p-4 flex-col shadow-sm">
+                        <div
+                            class="bg-primary/10 dark:bg-primary/20 size-10 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary">distance</span>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <h2 class="text-[#1b0d11] dark:text-white text-sm font-bold leading-tight">Mağazada Öne Çık
+                            </h2>
+                            <p class="text-[#9a4c5f] dark:text-pink-300/70 text-xs font-normal leading-snug">Haritada ve
+                                listelerde en üst sırada görünün</p>
+                        </div>
+                    </div>
+                    <!-- Block 2 -->
+                    <div
+                        class="flex flex-1 gap-4 rounded-xl border border-[#e7cfd5] dark:border-white/10 bg-white dark:bg-white/5 p-4 flex-col shadow-sm">
+                        <div
+                            class="bg-primary/10 dark:bg-primary/20 size-10 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary">notifications_active</span>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <h2 class="text-[#1b0d11] dark:text-white text-sm font-bold leading-tight">Bildirim Gönder
+                            </h2>
+                            <p class="text-[#9a4c5f] dark:text-pink-300/70 text-xs font-normal leading-snug">Tüm
+                                takipçilerinize anlık kampanya mesajı</p>
+                        </div>
+                    </div>
+                    <!-- Block 3 -->
+                    <div
+                        class="flex flex-1 gap-4 rounded-xl border border-[#e7cfd5] dark:border-white/10 bg-white dark:bg-white/5 p-4 flex-col shadow-sm col-span-full">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="bg-primary/10 dark:bg-primary/20 size-10 rounded-lg flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-primary">campaign</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <h2 class="text-[#1b0d11] dark:text-white text-sm font-bold leading-tight">Kampanya
+                                    Tanıtımı</h2>
+                                <p class="text-[#9a4c5f] dark:text-pink-300/70 text-xs font-normal leading-snug">Özel
+                                    tekliflerinizi binlerce yeni müşteriye ulaştırın</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Section: Packages -->
+            <div class="mt-8">
+                <div class="flex items-center justify-between px-4 pb-4">
+                    <h3 class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Kredi
+                        Paketi Satın Al</h3>
+                    <span class="text-primary text-xs font-bold uppercase tracking-wider">Tümünü Gör</span>
+                </div>
+                <div class="flex flex-col gap-3 px-4">
+                    <!-- Package 1 -->
+                    <div
+                        class="flex items-center justify-between p-4 rounded-xl bg-white dark:bg-white/5 border border-[#e7cfd5] dark:border-white/10 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-[#1b0d11] dark:text-white">500 Kredi Paketi</span>
+                                <span class="text-xs text-[#9a4c5f] dark:text-pink-300/70">Başlangıç Seviyesi</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-bold text-[#1b0d11] dark:text-white">299 TL</span>
+                            <button
+                                class="bg-primary hover:bg-primary/90 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
+                                Satın Al
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Package 2 - Popular -->
+                    <div
+                        class="relative flex items-center justify-between p-4 rounded-xl bg-white dark:bg-white/5 border-2 border-primary shadow-md overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-tighter">
+                            En Popüler
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-[#1b0d11] dark:text-white">1.000 Kredi Paketi</span>
+                                <span class="text-xs text-[#9a4c5f] dark:text-pink-300/70">Orta Ölçekli İşletme</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-bold text-[#1b0d11] dark:text-white">549 TL</span>
+                            <button
+                                class="bg-primary hover:bg-primary/90 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
+                                Satın Al
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Package 3 -->
+                    <div
+                        class="flex items-center justify-between p-4 rounded-xl bg-white dark:bg-white/5 border border-[#e7cfd5] dark:border-white/10 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-[#1b0d11] dark:text-white">5.000 Kredi Paketi</span>
+                                <span class="text-xs text-[#9a4c5f] dark:text-pink-300/70">Profesyonel Yönetim</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-bold text-[#1b0d11] dark:text-white">2.499 TL</span>
+                            <button
+                                class="bg-primary hover:bg-primary/90 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
+                                Satın Al
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Info Footer -->
+            <div class="p-6 text-center">
+                <p class="text-xs text-[#9a4c5f] dark:text-pink-300/50 leading-relaxed">
+                    Krediler iade edilemez ve 12 ay süresince geçerlidir.<br />
+                    Sorularınız için destek ekibi ile iletişime geçin.
+                </p>
+            </div>
+        </main>
+        <!-- Bottom Navigation Spacer (iOS style) -->
+        <div class="h-20 w-full"></div>
+        <nav
+            class="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto bg-white/90 dark:bg-background-dark/90 backdrop-blur-lg border-t border-[#e7cfd5] dark:border-white/10 flex justify-around items-center p-3 pb-6">
+            <div class="flex flex-col items-center gap-1 opacity-50">
+                <span class="material-symbols-outlined">home</span>
+                <span class="text-[10px] font-medium">Anasayfa</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 opacity-50">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span class="text-[10px] font-medium">Randevular</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 text-primary">
+                <span class="material-symbols-outlined fill-1">storefront</span>
+                <span class="text-[10px] font-bold">Mağaza</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 opacity-50">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-[10px] font-medium">Profil</span>
+            </div>
+        </nav>
+    </div>
+</body>
+
+</html>

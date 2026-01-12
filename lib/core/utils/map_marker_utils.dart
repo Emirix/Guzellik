@@ -93,7 +93,7 @@ class MapMarkerUtils {
       iconPainter.text = TextSpan(
         text: String.fromCharCode(categoryIcon.codePoint),
         style: TextStyle(
-          fontSize: (radius * 0.9), // Size based on the circle
+          fontSize: radius * 0.9, // Size based on the circle
           fontFamily: categoryIcon.fontFamily,
           package: categoryIcon.fontPackage,
           color: pinColor, // Icon color matches pin color

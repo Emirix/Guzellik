@@ -37,7 +37,7 @@ class StorageService {
     required File imageFile,
   }) async {
     // TODO: Add image compression before upload
-    return await uploadFile(
+    return uploadFile(
       bucket: bucket,
       path: path,
       file: imageFile,
@@ -46,7 +46,7 @@ class StorageService {
   
   /// Upload venue image
   Future<String> uploadVenueImage(File imageFile, String venueId) async {
-    return await uploadImage(
+    return uploadImage(
       bucket: 'venue-images',
       path: venueId,
       imageFile: imageFile,
@@ -55,7 +55,7 @@ class StorageService {
   
   /// Upload profile picture
   Future<String> uploadProfilePicture(File imageFile, String userId) async {
-    return await uploadImage(
+    return uploadImage(
       bucket: 'profile-pictures',
       path: userId,
       imageFile: imageFile,
@@ -64,7 +64,7 @@ class StorageService {
   
   /// Upload certificate
   Future<String> uploadCertificate(File file, String venueId) async {
-    return await uploadFile(
+    return uploadFile(
       bucket: 'certificates',
       path: venueId,
       file: file,

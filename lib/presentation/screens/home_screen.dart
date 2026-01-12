@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
     AuthGuard(
       requiredFor: 'Profilim',
       redirectPath: '/profile',
-      child: ProfileScreen(),
+      child: ProfileScreen(isEmbedded: true),
     ),
   ];
 

@@ -45,7 +45,7 @@ class _FeaturedVenuesState extends State<FeaturedVenues> {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         if (provider.isLoadingHome && provider.featuredVenues.isEmpty) {
-          return const FeaturedVenuesShimmer();
+          return const RepaintBoundary(child: FeaturedVenuesShimmer());
         }
 
         if (provider.featuredVenues.isEmpty) {
@@ -126,67 +126,122 @@ class FeaturedVenuesShimmerCard extends StatefulWidget {
 }
 
 class _FeaturedVenuesShimmerCardState extends State<FeaturedVenuesShimmerCard>
-    with SingleTickerProviderStateMixin, ShimmerMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isAnimating = false;
+
   @override
   void initState() {
     super.initState();
-    initShimmer();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    );
+
+    _animation = Tween<double>(begin: -2, end: 2).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
+    );
+
+    WidgetsBinding.instance.addObserver(this);
+    startAnimation();
   }
 
   @override
   void dispose() {
-    disposeShimmer();
+    WidgetsBinding.instance.removeObserver(this);
+    stopAnimation();
+    _controller.dispose();
     super.dispose();
+  }
+
+  void startAnimation() {
+    if (_isAnimating) return;
+    _isAnimating = true;
+    _controller.repeat();
+  }
+
+  void stopAnimation() {
+    if (!_isAnimating) return;
+    _isAnimating = false;
+    _controller.stop();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Pause animation when app is not visible to reduce GPU work
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.hidden) {
+      stopAnimation();
+    } else if (state == AppLifecycleState.resumed && mounted) {
+      startAnimation();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: shimmerAnimation,
-      builder: (context, child) {
-        return Container(
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _animation,
+        child: Container(
           width: 280,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              begin: Alignment(shimmerAnimation.value - 1, 0),
-              end: Alignment(shimmerAnimation.value + 1, 0),
-              colors: [AppColors.gray100, AppColors.gray50, AppColors.gray100],
-            ),
+            color: AppColors.gray100,
           ),
-          child: Stack(
-            children: [
-              Positioned(
-                bottom: 20,
-                left: 20,
-                right: 20,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 180,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: AppColors.gray200,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 120,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: AppColors.gray200,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ],
-                ),
+        ),
+        builder: (context, child) {
+          return Container(
+            width: 280,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                begin: Alignment(_animation.value - 1, 0),
+                end: Alignment(_animation.value + 1, 0),
+                colors: const [
+                  AppColors.gray100,
+                  AppColors.gray50,
+                  AppColors.gray100,
+                ],
+                stops: const [0.0, 0.5, 1.0],
               ),
-            ],
-          ),
-        );
-      },
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 180,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: AppColors.gray200,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: 120,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: AppColors.gray200,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec3c68",
+                        "accent-gold": "#d4af37",
+                        "background-light": "#fcfcfc",
+                        "background-dark": "#1a1113",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ios-shadow {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#1b0e11] dark:text-white min-h-screen">
+    <div class="relative flex h-auto w-full max-w-[480px] mx-auto flex-col overflow-x-hidden">
+        <!-- TopAppBar -->
+        <div
+            class="sticky top-0 z-50 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-gray-100 dark:border-gray-800">
+            <div
+                class="text-[#1b0e11] dark:text-white flex size-10 shrink-0 items-center justify-center cursor-pointer">
+                <span class="material-symbols-outlined">arrow_back_ios</span>
+            </div>
+            <h2
+                class="text-[#1b0e11] dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">
+                İşletme Profili</h2>
+            <div class="flex w-10 items-center justify-end">
+                <button
+                    class="flex items-center justify-center rounded-full h-10 w-10 text-primary hover:bg-primary/10 transition-colors">
+                    <span class="material-symbols-outlined">check_circle</span>
+                </button>
+            </div>
+        </div>
+        <!-- HeaderImage (Cover Photo) -->
+        <div class="relative w-full group">
+            <div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-gray-200 dark:bg-gray-800 min-h-56 h-64"
+                data-alt="Luxury salon interior with soft lighting and aesthetic furniture"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCjYtq39s0Sona0JgAMeDMUmwzSfdWbRtPt_mBhfr0jn4ALALaqryyi9ox-ct1qXP7yjoPifrvR3TX0p6Ouo0soPdDkSXOEWYWQHBz3UztR2NNBvH4UgvKFbU8jiFwrooIGolw4YcqJW8WfMdbkCG7gco79hTnWOzYvWjUvtTqANaltRFgOdomsSSFnhLr80lo5SxnMY1T7sofobPDtXkme8uc2RIahTSLGJzdT1G0GotlJmV4v_sCWOdevOZWYAjLlrwbAwuzf6Q");'>
+                <div
+                    class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-all flex items-center justify-center">
+                    <button class="bg-white/90 dark:bg-black/50 p-3 rounded-full shadow-lg flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">photo_camera</span>
+                        <span class="text-xs font-bold text-[#1b0e11] dark:text-white">Kapağı Değiştir</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- ProfileHeader (Logo and Title) -->
+        <div class="flex p-4 -mt-16 relative z-10 @container">
+            <div class="flex w-full flex-col gap-2 items-center">
+                <div class="relative flex flex-col items-center">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32 border-4 border-white dark:border-background-dark shadow-xl"
+                        data-alt="Business profile logo showing a golden lotus flower"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBSnA39C1ZP4hE3k9FxsqZwHH4W39sF6if2FYaVWovfcK_apz19Lgu0gWtLgf3ZXOmx0KB13p2DFVj9YxJJ4nBQjvUzC7fCeInGukA2XpOBffAkHHJ8S83CqfKT71MZ5ee2tIF4-I4n7nBlGjhfizkMHnoZTrx2QMMNELrFuhPvOxGuNHDNXJIJcDSTADa76lHFIQQBkibeGWzYNKVFLyFxNdXesxTFxIRZF4Nyb8c5ZYFu7zUL7XZJzrm8HDhJjyYnOXarpacVqw");'>
+                    </div>
+                    <button
+                        class="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full border-2 border-white dark:border-background-dark shadow-lg">
+                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
+                </div>
+                <div class="flex flex-col items-center justify-center pt-2">
+                    <div class="flex items-center gap-1">
+                        <p
+                            class="text-[#1b0e11] dark:text-white text-2xl font-extrabold leading-tight tracking-tight text-center">
+                            Işıltı Estetik &amp; Güzellik</p>
+                        <span class="material-symbols-outlined text-blue-500 text-[20px] fill-current">verified</span>
+                    </div>
+                    <p class="text-primary font-semibold text-sm">Nişantaşı, İstanbul</p>
+                    <div class="mt-2 flex items-center gap-1 px-3 py-1 bg-accent-gold/10 rounded-full">
+                        <span class="material-symbols-outlined text-accent-gold text-[16px]">stars</span>
+                        <p class="text-accent-gold text-xs font-bold uppercase tracking-wider">Premium İşletme</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Section: Management Menu -->
+        <div class="mt-4 pb-24">
+            <h2 class="text-[#1b0e11] dark:text-white text-xl font-bold leading-tight tracking-tight px-5 pb-4">Yönetim
+                Menüsü</h2>
+            <div class="flex flex-col gap-1 px-4">
+                <!-- ListItem: Temel Bilgiler -->
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-[#2a1a1e] rounded-xl px-4 min-h-[80px] py-3 justify-between ios-shadow mb-2 border border-gray-50 dark:border-transparent cursor-pointer active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12">
+                            <span class="material-symbols-outlined">storefront</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#1b0e11] dark:text-white text-base font-bold leading-none mb-1">Temel
+                                Bilgiler</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs font-medium line-clamp-1">İsim, Tanıtım
+                                Yazısı ve İletişim</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0">
+                        <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                    </div>
+                </div>
+                <!-- ListItem: Çalışma Saatleri -->
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-[#2a1a1e] rounded-xl px-4 min-h-[80px] py-3 justify-between ios-shadow mb-2 border border-gray-50 dark:border-transparent cursor-pointer active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12">
+                            <span class="material-symbols-outlined">schedule</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <div class="flex items-center gap-2">
+                                <p class="text-[#1b0e11] dark:text-white text-base font-bold leading-none">Çalışma
+                                    Saatleri</p>
+                                <span
+                                    class="bg-green-500/10 text-green-600 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Açık</span>
+                            </div>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs font-medium line-clamp-1">Pzt - Cmt:
+                                09:00 - 20:00</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0">
+                        <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                    </div>
+                </div>
+                <!-- ListItem: Hizmet Yönetimi -->
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-[#2a1a1e] rounded-xl px-4 min-h-[80px] py-3 justify-between ios-shadow mb-2 border border-gray-50 dark:border-transparent cursor-pointer active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12">
+                            <span class="material-symbols-outlined">spa</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#1b0e11] dark:text-white text-base font-bold leading-none mb-1">Hizmet
+                                Yönetimi</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs font-medium line-clamp-1">Kategoriler,
+                                Fiyat Listesi, Paketler</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0">
+                        <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                    </div>
+                </div>
+                <!-- ListItem: Uzman Ekip -->
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-[#2a1a1e] rounded-xl px-4 min-h-[80px] py-3 justify-between ios-shadow mb-2 border border-gray-50 dark:border-transparent cursor-pointer active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12">
+                            <span class="material-symbols-outlined">groups</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#1b0e11] dark:text-white text-base font-bold leading-none mb-1">Uzman Ekip
+                            </p>
+                            <div class="flex items-center gap-1.5 mt-1">
+                                <div class="flex -space-x-2">
+                                    <div class="size-5 rounded-full border border-white bg-cover"
+                                        data-alt="Staff member portrait"
+                                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAS9qTrzSLMi8AvDY8z1nkYCHcgbNo00pJhI3gB4n7Eq2VZOVuBNuZMSUNhR-thdvgQhqfzkgn6cG1yo6R2BeBNV6xKzkj7c8oIoHU_X-j2lR2k6J1kTa2ec9BDN-GjwbmnNK78s1-jcsN9lz2med9TuyQgWQuhb9_RiiUflnt2AYvOtu3S8LOBLvDinmjg6TAdYd_yNybPU17QYe5kHD09msS2mEqeZC3ZXeV1LXrnQfUdpz7FfFZfluB3Ce6nEwpIfGM07jburA');">
+                                    </div>
+                                    <div class="size-5 rounded-full border border-white bg-cover"
+                                        data-alt="Staff member portrait"
+                                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAFnt1uyk-d4wALrQBoHGexHGYI8opt-IlOf4tuujbjavslxyenj0904uNYGONwHYJkc3Oq34qws0KUfK2dJRieJsTLnZTCrZqZi21A8-JmZIzzLs2TQsh92euE5hmY2Y5vx0BD9vEAFzIaWNDh6Jo4kbNe_GJwt6yQ740z8BsIC0VSMoKfSyKdxi6oGpU842yz00B5TRcSFZhlH7vaKV2PzVu9biwq4Hy-V2r5AnbAgcmW-TyqxVNckKfgVgZSNEun88t-jHpBBg');">
+                                    </div>
+                                    <div
+                                        class="size-5 rounded-full border border-white bg-gray-200 flex items-center justify-center text-[8px] text-gray-600 font-bold">
+                                        +4</div>
+                                </div>
+                                <p class="text-gray-400 text-[10px] font-medium">6 Uzman</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shrink-0">
+                        <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                    </div>
+                </div>
+                <!-- ListItem: Galeri ve Medya -->
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-[#2a1a1e] rounded-xl px-4 min-h-[80px] py-3 justify-between ios-shadow mb-2 border border-gray-50 dark:border-transparent cursor-pointer active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12">
+                            <span class="material-symbols-outlined">collections</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#1b0e11] dark:text-white text-base font-bold leading-none mb-1">Galeri &amp;
+                                Medya</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs font-medium line-clamp-1">Salon
+                                Görselleri, Video Tanıtımı</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0">
+                        <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Sticky Footer Button -->
+        <div
+            class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-4 bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-t border-gray-100 dark:border-gray-800">
+            <button
+                class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 flex items-center justify-center gap-2 transition-all active:scale-95">
+                <span class="material-symbols-outlined">save</span>
+                Değişiklikleri Kaydet
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -3,6 +3,8 @@ import '../../data/models/venue.dart';
 import '../../data/models/venue_photo.dart';
 import '../../data/models/service.dart';
 import '../../data/models/review.dart';
+import '../../data/models/specialist.dart';
+import '../../data/models/campaign.dart';
 import '../../data/repositories/venue_repository.dart';
 
 class VenueDetailsProvider extends ChangeNotifier {
@@ -11,6 +13,8 @@ class VenueDetailsProvider extends ChangeNotifier {
   Venue? _venue;
   List<Service> _services = [];
   List<Review> _reviews = [];
+  List<Specialist> _specialists = [];
+  List<Campaign> _campaigns = [];
   bool _isLoading = false;
   bool _isFollowLoading = false;
   String? _error;
@@ -18,6 +22,8 @@ class VenueDetailsProvider extends ChangeNotifier {
   Venue? get venue => _venue;
   List<Service> get services => _services;
   List<Review> get reviews => _reviews;
+  List<Specialist> get specialists => _specialists;
+  List<Campaign> get campaigns => _campaigns;
   bool get isLoading => _isLoading;
   bool get isFollowLoading => _isFollowLoading;
   String? get error => _error;
@@ -45,6 +51,8 @@ class VenueDetailsProvider extends ChangeNotifier {
     _venue = initialVenue;
     _services = [];
     _reviews = [];
+    _specialists = [];
+    _campaigns = [];
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -63,12 +71,16 @@ class VenueDetailsProvider extends ChangeNotifier {
         _repository.getReviewsByVenueId(venueId),
         _repository.fetchVenuePhotos(venueId),
         _repository.checkIfFollowing(venueId),
+        _repository.getVenueSpecialists(venueId),
+        _repository.getVenueCampaigns(venueId),
       ]);
 
       _services = results[0] as List<Service>;
       _reviews = results[1] as List<Review>;
       final galleryPhotos = results[2] as List<VenuePhoto>;
       final isFollowing = results[3] as bool;
+      _specialists = results[4] as List<Specialist>;
+      _campaigns = results[5] as List<Campaign>;
 
       // Final update of the venue object with all dynamic data
       _venue = _venue!.copyWith(
@@ -231,5 +243,57 @@ class VenueDetailsProvider extends ChangeNotifier {
     } catch (e) {
       print('Error refreshing reviews: $e');
     }
+  }
+
+  /// Refresh specialists data
+  Future<void> refreshSpecialists() async {
+    if (_venue == null) return;
+
+    try {
+      _specialists = await _repository.getVenueSpecialists(_venue!.id);
+      notifyListeners();
+    } catch (e) {
+      print('Error refreshing specialists: $e');
+    }
+  }
+
+  /// Refresh campaigns data
+  Future<void> refreshCampaigns() async {
+    if (_venue == null) return;
+
+    try {
+      _campaigns = await _repository.getVenueCampaigns(_venue!.id);
+      notifyListeners();
+    } catch (e) {
+      print('Error refreshing campaigns: $e');
+    }
+  }
+
+  /// Refresh photos data
+  Future<void> refreshPhotos() async {
+    if (_venue == null) return;
+
+    try {
+      final photos = await _repository.getVenuePhotos(_venue!.id);
+      _venue = _venue!.copyWith(galleryPhotos: photos);
+      notifyListeners();
+    } catch (e) {
+      print('Error refreshing photos: $e');
+    }
+  }
+
+  /// Get hero/primary image from gallery
+  VenuePhoto? get heroImage {
+    if (_venue?.galleryPhotos == null || _venue!.galleryPhotos!.isEmpty) {
+      return null;
+    }
+
+    // Find hero image
+    final hero = _venue!.galleryPhotos!.firstWhere(
+      (photo) => photo.isHeroImage,
+      orElse: () => _venue!.galleryPhotos!.first,
+    );
+
+    return hero;
   }
 }

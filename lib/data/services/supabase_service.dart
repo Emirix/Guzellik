@@ -43,7 +43,7 @@ class SupabaseService {
     required String email,
     required String password,
   }) async {
-    return await _client.auth.signInWithPassword(
+    return _client.auth.signInWithPassword(
       email: email,
       password: password,
     );
@@ -55,7 +55,7 @@ class SupabaseService {
     required String password,
     Map<String, dynamic>? metadata,
   }) async {
-    return await _client.auth.signUp(
+    return _client.auth.signUp(
       email: email,
       password: password,
       data: metadata,
@@ -118,7 +118,7 @@ class SupabaseService {
 
   /// Update user metadata
   Future<UserResponse> updateUserMetadata(Map<String, dynamic> metadata) async {
-    return await _client.auth.updateUser(UserAttributes(data: metadata));
+    return _client.auth.updateUser(UserAttributes(data: metadata));
   }
 
   /// Query builder for a table

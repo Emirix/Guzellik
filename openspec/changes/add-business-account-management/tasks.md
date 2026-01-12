@@ -1,0 +1,392 @@
+# Tasks: İşletme Hesabı Yönetimi
+
+## Phase 1: Database Schema & Backend (Priority: HIGH)
+
+### Task 1.1: Create database migration for business accounts
+- [x] Create migration file `add_business_account_fields.sql`
+- [x] Add `is_business_account` boolean to profiles table
+- [x] Add `business_venue_id` UUID to profiles table
+- [x] Create foreign key constraint to venues table
+- [x] Test migration on local Supabase instance
+- [x] **Validation**: Query profiles table and verify new columns exist
+
+### Task 1.2: Create business_subscriptions table
+- [x] Create migration file `create_business_subscriptions.sql`
+- [x] Define table schema with all required columns
+- [x] Add foreign key to profiles table
+- [x] Create indexes on profile_id and status
+- [x] Add default subscription for existing business accounts
+- [x] **Validation**: Insert test subscription and query successfully
+
+### Task 1.3: Implement RLS policies for business data
+- [x] Create policy for business owners to access their venue
+- [x] Create policy for subscription data access
+- [x] Create policy for business feature gating
+- [x] Test policies with different user roles
+- [x] **Validation**: Verify non-business users cannot access business data
+
+### Task 1.4: Create database functions for business operations
+- [x] Create function `get_business_subscription(profile_id UUID)`
+- [x] Create function `check_business_feature(profile_id UUID, feature TEXT)`
+- [x] Create function `get_business_venue(profile_id UUID)`
+- [x] Test functions with sample data
+- [x] **Validation**: Functions return correct data for test users
+
+---
+
+## Phase 2: Flutter Data Layer (Priority: HIGH)
+
+### Task 2.1: Create BusinessSubscription model
+- [x] Create `lib/data/models/business_subscription.dart`
+- [x] Define model class with all fields
+- [x] Implement `fromJson` and `toJson` methods
+- [x] Add computed properties (isActive, daysRemaining)
+- [x] Write unit tests for model
+- [x] **Validation**: Model correctly parses JSON from Supabase
+
+### Task 2.2: Create BusinessMode enum and utilities
+- [x] Create `lib/core/enums/business_mode.dart`
+- [x] Define BusinessMode enum (normal, business)
+- [x] Create utility functions for mode management
+- [x] **Validation**: Enum values are correctly defined
+
+### Task 2.3: Create BusinessRepository
+- [x] Create `lib/data/repositories/business_repository.dart`
+- [x] Implement `checkBusinessAccount(userId)` method
+- [x] Implement `getBusinessVenue(userId)` method
+- [x] Implement `getSubscription(userId)` method
+- [x] Implement `updateBusinessMode(userId, mode)` method
+- [x] Write unit tests with mocked Supabase client
+- [x] **Validation**: Repository methods return expected data
+
+### Task 2.4: Create SubscriptionRepository
+- [x] Create `lib/data/repositories/subscription_repository.dart`
+- [x] Implement `getSubscription(profileId)` method
+- [x] Implement `checkFeatureAccess(profileId, feature)` method
+- [x] Implement `getFeatureLimit(profileId, feature)` method
+- [x] Write unit tests
+- [x] **Validation**: Repository correctly fetches subscription data
+
+---
+
+## Phase 3: Flutter State Management (Priority: HIGH)
+
+### Task 3.1: Create BusinessProvider
+- [x] Create `lib/presentation/providers/business_provider.dart`
+- [x] Implement mode state management (normal/business)
+- [x] Implement business data loading (venue, subscription)
+- [x] Implement mode switching logic
+- [x] Add loading and error states
+- [x] Integrate with BusinessRepository
+- [x] Write unit tests
+- [x] **Validation**: Provider correctly manages business mode state
+
+### Task 3.2: Create SubscriptionProvider
+- [x] Create `lib/presentation/providers/subscription_provider.dart`
+- [x] Implement subscription data loading
+- [x] Implement feature availability checking
+- [x] Implement days remaining calculation
+- [x] Add caching for subscription data
+- [x] Integrate with SubscriptionRepository
+- [x] Write unit tests
+- [x] **Validation**: Provider correctly manages subscription state
+
+### Task 3.3: Update AuthProvider for business account detection
+- [x] Modify `lib/presentation/providers/auth_provider.dart`
+- [x] Add business account check after login
+- [x] Trigger business mode selection if needed
+- [x] Integrate with BusinessProvider
+- [x] **Validation**: Business accounts are detected on login
+
+---
+
+## Phase 4: Flutter UI - Authentication & Mode Selection (Priority: HIGH)
+
+### Task 4.1: Create BusinessModeSelectionDialog
+- [x] Create `lib/presentation/widgets/business/business_mode_dialog.dart`
+- [x] Design dialog UI with two options
+- [x] Implement "İşletme Olarak Devam Et" button
+- [x] Implement "Normal Kullanıcı Olarak Devam Et" button
+- [x] Add animations and transitions
+- [x] **Validation**: Dialog shows after business account login
+
+### Task 4.2: Integrate mode selection into login flow
+- [x] Update `lib/presentation/screens/auth/login_screen.dart`
+- [x] Show mode selection dialog after successful login
+- [x] Navigate to appropriate home based on selection
+- [x] Handle dialog dismissal
+- [x] **Validation**: Login flow works for both business and normal users
+
+### Task 4.3: Implement session-based mode persistence
+- [x] Use SharedPreferences to store current mode
+- [x] Load mode preference on app start
+- [x] Clear mode preference on logout
+- [x] **Validation**: Mode persists during session and resets on logout
+
+---
+
+## Phase 5: Flutter UI - Business Navigation (Priority: HIGH)
+
+### Task 5.1: Create BusinessBottomNav widget
+- [x] Create `lib/presentation/widgets/common/business_bottom_nav.dart`
+- [x] Implement 3-tab navigation (Profilim, Abonelik, Mağaza)
+- [x] Design tab icons and labels
+- [x] Implement tab selection logic
+- [x] Match design aesthetic with app theme
+- [x] **Validation**: Business nav shows in business mode
+
+### Task 5.2: Update CustomBottomNav to support mode switching
+- [x] Modify `lib/presentation/widgets/common/custom_bottom_nav.dart`
+- [x] Add conditional rendering based on BusinessProvider
+- [x] Show BusinessBottomNav when in business mode
+- [x] Show normal nav when in normal mode
+- [x] **Validation**: Navigation switches correctly between modes
+
+### Task 5.3: Update app router with business routes
+- [x] Modify `lib/core/utils/app_router.dart`
+- [x] Add `/business/subscription` route
+- [x] Add `/business/store` route
+- [x] Add `/business/profile` route (if needed)
+- [x] Implement route guards for business mode
+- [x] **Validation**: Business routes are accessible only in business mode
+
+---
+
+## Phase 6: Flutter UI - Subscription Screen (Priority: MEDIUM)
+
+### Task 6.1: Create SubscriptionScreen
+- [x] Create `lib/presentation/screens/business/subscription_screen.dart`
+- [x] Implement screen layout based on design/admin-abonelik/image.png
+- [x] Add business logo/branding section
+- [x] Add welcome message
+- [x] **Validation**: Screen renders correctly
+
+### Task 6.2: Create SubscriptionCard widget
+- [x] Create `lib/presentation/widgets/business/subscription_card.dart`
+- [x] Implement subscription type badge
+- [x] Add subscription name display
+- [x] Add days remaining display
+- [x] Implement progress bar with gradient
+- [x] Add renewal date display
+- [x] **Validation**: Card displays subscription data correctly
+
+### Task 6.3: Implement "Admin Panele Git" button
+- [x] Add button to SubscriptionScreen
+- [x] Implement URL opening logic using url_launcher
+- [x] Get admin URL from AdminConfig
+- [x] Append venue ID as query parameter
+- [x] **Validation**: Button opens admin panel in browser
+
+### Task 6.4: Create quick action cards
+- [x] Create "Raporlar" card
+- [x] Create "Ayarlar" card
+- [x] Implement tap handlers (placeholder for now)
+- [x] **Validation**: Cards are tappable and show appropriate feedback
+
+### Task 6.5: Implement bottom tabs
+- [x] Create bottom tab bar with YARDIM, DESTEK, ÇIKIŞ YAP
+- [x] Implement tab tap handlers
+- [x] Add logout confirmation dialog
+- [x] **Validation**: Tabs are functional
+
+---
+
+## Phase 7: Flutter UI - Store Screen (Priority: LOW)
+
+### Task 7.1: Create StoreScreen (mockup)
+- [x] Create `lib/presentation/screens/business/store_screen.dart`
+- [x] Implement grid layout for feature cards
+- [x] Create feature card widget
+- [x] Add "Yakında" badges to all features
+- [x] **Validation**: Screen displays mockup correctly
+
+### Task 7.2: Design feature cards
+- [x] Create cards for: Öne Çıkma, Kampanya Ekleme, Bildirim Gönderme
+- [x] Add feature icons and descriptions
+- [x] Add placeholder pricing
+- [x] **Validation**: Cards look premium and match app design
+
+---
+
+## Phase 8: Flutter UI - Profile Screen Updates (Priority: MEDIUM)
+
+### Task 8.1: Add business mode buttons to ProfileScreen
+- [x] Modify `lib/presentation/screens/profile_screen.dart`
+- [x] Add "Yönetim Paneli" button (business mode only)
+- [x] Add "Normal Hesaba Geç" button (business mode only)
+- [x] Implement button tap handlers
+- [x] **Validation**: Buttons show only in business mode
+
+### Task 8.2: Implement "Yönetim Paneli" button action
+- [x] Get admin URL from AdminConfig
+- [x] Get venue ID from BusinessProvider
+- [x] Open URL in external browser
+- [x] **Validation**: Button opens admin panel correctly
+
+### Task 8.3: Implement "Normal Hesaba Geç" button action
+- [x] Call BusinessProvider.switchMode(BusinessMode.normal)
+- [x] Navigate to explore screen
+- [x] Update bottom navigation
+- [x] **Validation**: Mode switches correctly
+
+### Task 8.4: Add "İşletme Moduna Geç" button for normal mode
+- [x] Show button in normal mode if is_business_account = true
+- [x] Implement tap handler to switch to business mode
+- [x] **Validation**: Users can switch back to business mode
+
+---
+
+## Phase 9: Configuration & Admin Panel Setup (Priority: MEDIUM)
+
+### Task 9.1: Create AdminConfig file
+- [x] Create `lib/config/admin_config.dart`
+- [x] Define adminPanelUrl constant
+- [x] Create getAdminUrl(venueId) helper function
+- [x] Add comments for environment-specific URLs
+- [x] **Validation**: Config file is accessible from app
+
+### Task 9.2: Initialize React project for admin panel
+- [x] Create `admin/` directory
+- [x] Run `npx create-vite@latest admin --template react` or similar
+- [x] Install dependencies (react, react-router, @supabase/supabase-js)
+- [x] Set up project structure
+- [x] **Validation**: Admin project runs with `npm run dev`
+
+### Task 9.3: Set up Supabase client in admin panel
+- [x] Create `admin/src/services/supabase.ts`
+- [x] Initialize Supabase client with project URL and anon key
+- [x] Implement auth helpers
+- [x] **Validation**: Admin panel can authenticate with Supabase
+
+### Task 9.4: Create admin panel layout components
+- [x] Create `admin/src/components/layout/Sidebar.tsx`
+- [x] Create `admin/src/components/layout/Header.tsx`
+- [x] Create `admin/src/components/layout/Layout.tsx`
+- [x] Implement responsive design
+- [x] **Validation**: Layout renders correctly on different screen sizes
+
+---
+
+## Phase 10: Admin Panel - Core Pages (Priority: LOW)
+
+### Task 10.1: Create Dashboard page
+- [x] Create `admin/src/pages/Dashboard.tsx`
+- [x] Add placeholder stats cards
+- [x] Add recent appointments section
+- [x] Add recent reviews section
+- [x] **Validation**: Dashboard page renders
+
+### Task 10.2: Create Campaigns page (placeholder)
+- [x] Create `admin/src/pages/Campaigns.tsx`
+- [x] Add "Yakında" message
+- [x] Add basic layout structure
+- [x] **Validation**: Page is accessible from sidebar
+
+### Task 10.3: Create Appointments page (placeholder)
+- [x] Create `admin/src/pages/Appointments.tsx`
+- [x] Add "Yakında" message
+- [x] Add basic layout structure
+- [x] **Validation**: Page is accessible from sidebar
+
+### Task 10.4: Create Specialists page (placeholder)
+- [x] Create `admin/src/pages/Specialists.tsx`
+- [x] Add "Yakında" message
+- [x] Add basic layout structure
+- [x] **Validation**: Page is accessible from sidebar
+
+### Task 10.5: Create Gallery page (placeholder)
+- [x] Create `admin/src/pages/Gallery.tsx`
+- [x] Add "Yakında" message
+- [x] Add basic layout structure
+- [x] **Validation**: Page is accessible from sidebar
+
+### Task 10.6: Create Notifications page (placeholder)
+- [x] Create `admin/src/pages/Notifications.tsx`
+- [x] Add "Yakında" message
+- [x] Add basic layout structure
+- [x] **Validation**: Page is accessible from sidebar
+
+### Task 10.7: Create Settings page (placeholder)
+- [x] Create `admin/src/pages/Settings.tsx`
+- [x] Add "Yakında" message
+- [x] Add basic layout structure
+- [x] **Validation**: Page is accessible from sidebar
+
+---
+
+## Phase 11: Testing & Validation (Priority: MEDIUM)
+
+### Task 11.1: Write integration tests for business mode flow
+- [x] Test login with business account
+- [x] Test mode selection dialog
+- [x] Test mode switching
+- [x] Test navigation in business mode
+- [x] **Validation**: All tests pass
+
+### Task 11.2: Write widget tests for business components
+- [x] Test BusinessModeSelectionDialog
+- [x] Test BusinessBottomNav
+- [x] Test SubscriptionCard
+- [x] Test StoreScreen
+- [x] **Validation**: All widget tests pass
+
+### Task 11.3: Manual testing on different devices
+- [x] Test on Android phone
+- [x] Test on iOS phone (if available)
+- [x] Test on tablet
+- [x] Test admin panel on desktop browser
+- [x] Test admin panel on mobile browser
+- [x] **Validation**: App works correctly on all devices
+
+### Task 11.4: Test with real business account data
+- [x] Create test business account in Supabase
+- [x] Create test venue and subscription
+- [x] Test complete flow from login to admin panel
+- [x] **Validation**: Real data flows correctly through the system
+
+---
+
+## Phase 12: Documentation & Deployment (Priority: LOW)
+
+### Task 12.1: Update README with business account info
+- [x] Document business account setup process
+- [x] Document admin panel setup and deployment
+- [x] Add screenshots of business mode
+- [x] **Validation**: Documentation is clear and complete
+
+### Task 12.2: Create admin panel deployment guide
+- [x] Document deployment to Vercel/Netlify
+- [x] Document environment variables setup
+- [x] Document custom domain configuration
+- [x] **Validation**: Admin panel can be deployed following guide
+
+### Task 12.3: Update API documentation
+- [x] Document new database tables
+- [x] Document new RPC functions
+- [x] Document RLS policies
+- [x] **Validation**: API docs are up to date
+
+---
+
+## Dependencies & Sequencing
+
+- **Phase 1** must complete before Phase 2
+- **Phase 2** must complete before Phase 3
+- **Phase 3** must complete before Phase 4
+- **Phase 4** and Phase 5 can run in parallel
+- **Phase 6, 7, 8** can run in parallel after Phase 5
+- **Phase 9** can start after Phase 1
+- **Phase 10** can start after Phase 9.3
+- **Phase 11** should run after all implementation phases
+- **Phase 12** is final and can run anytime
+
+## Estimated Effort
+
+- **Phase 1-3**: 2-3 days (Backend & Data Layer)
+- **Phase 4-5**: 2-3 days (Auth & Navigation)
+- **Phase 6-8**: 3-4 days (UI Screens)
+- **Phase 9-10**: 3-4 days (Admin Panel)
+- **Phase 11**: 1-2 days (Testing)
+- **Phase 12**: 1 day (Documentation)
+
+**Total**: ~12-17 days for complete implementation

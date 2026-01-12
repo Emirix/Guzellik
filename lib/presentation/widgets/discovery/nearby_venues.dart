@@ -18,7 +18,7 @@ class NearbyVenues extends StatelessWidget {
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
         if (provider.isLoadingNearby && provider.nearbyVenues.isEmpty) {
-          return const NearbyVenuesShimmer();
+          return const RepaintBoundary(child: NearbyVenuesShimmer());
         }
 
         if (provider.nearbyVenues.isEmpty) {
@@ -74,7 +74,9 @@ class NearbyVenues extends StatelessWidget {
             if (provider.isLoadingMoreNearby)
               const Padding(
                 padding: EdgeInsets.only(top: 12),
-                child: NearbyVenuesShimmer(itemCount: 1),
+                child: RepaintBoundary(
+                  child: NearbyVenuesShimmer(itemCount: 1),
+                ),
               ),
             if (!provider.hasMoreNearby && nearbyVenues.isNotEmpty)
               const Padding(

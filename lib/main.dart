@@ -24,6 +24,16 @@ import 'presentation/providers/location_onboarding_provider.dart';
 import 'presentation/providers/category_provider.dart';
 import 'presentation/providers/favorites_provider.dart';
 import 'presentation/providers/campaign_provider.dart';
+import 'presentation/providers/business_provider.dart';
+import 'presentation/providers/subscription_provider.dart';
+import 'presentation/providers/admin_services_provider.dart';
+import 'presentation/providers/admin_gallery_provider.dart';
+import 'presentation/providers/admin_specialists_provider.dart';
+import 'presentation/providers/admin_campaigns_provider.dart';
+import 'presentation/providers/admin_basic_info_provider.dart';
+import 'presentation/providers/admin_working_hours_provider.dart';
+import 'presentation/providers/admin_location_provider.dart';
+import 'presentation/providers/credit_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -128,6 +138,16 @@ class GuzellikApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => FavoritesProvider(venueRepository: VenueRepository()),
         ),
+        ChangeNotifierProvider(create: (_) => BusinessProvider()),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
+        ChangeNotifierProvider(create: (_) => AdminServicesProvider()),
+        ChangeNotifierProvider(create: (_) => AdminGalleryProvider()),
+        ChangeNotifierProvider(create: (_) => AdminSpecialistsProvider()),
+        ChangeNotifierProvider(create: (_) => AdminCampaignsProvider()),
+        ChangeNotifierProvider(create: (_) => AdminBasicInfoProvider()),
+        ChangeNotifierProvider(create: (_) => AdminWorkingHoursProvider()),
+        ChangeNotifierProvider(create: (_) => AdminLocationProvider()),
+        ChangeNotifierProvider(create: (_) => CreditProvider()),
       ],
       child: Consumer<AppStateProvider>(
         builder: (context, appState, _) {

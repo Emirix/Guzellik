@@ -84,19 +84,35 @@ class AboutTab extends StatelessWidget {
     // Convert venue working hours to the format expected by WorkingHoursCard
     final Map<String, String> formattedHours = {};
 
+    // Helper function to format a single day's hours
+    String formatDayHours(dynamic dayData) {
+      if (dayData == null) return 'Kapalı';
+
+      if (dayData is Map) {
+        final isOpen = dayData['open'] == true;
+        if (!isOpen) return 'Kapalı';
+
+        final start = dayData['start']?.toString() ?? '09:00';
+        final end = dayData['end']?.toString() ?? '20:00';
+        return '$start - $end';
+      }
+
+      return dayData.toString();
+    }
+
     // Check if we have individual days or grouped format
     if (venue.workingHours.containsKey('monday')) {
       // Individual days format - group weekdays
-      final weekdayHours = venue.workingHours['monday']?.toString() ?? 'Kapalı';
-      formattedHours['Hafta içi'] = weekdayHours;
-      formattedHours['Cumartesi'] =
-          venue.workingHours['saturday']?.toString() ?? 'Kapalı';
-      formattedHours['Pazar'] =
-          venue.workingHours['sunday']?.toString() ?? 'Kapalı';
+      final mondayHours = formatDayHours(venue.workingHours['monday']);
+      formattedHours['Hafta içi'] = mondayHours;
+      formattedHours['Cumartesi'] = formatDayHours(
+        venue.workingHours['saturday'],
+      );
+      formattedHours['Pazar'] = formatDayHours(venue.workingHours['sunday']);
     } else {
       // Already in grouped format
       venue.workingHours.forEach((key, value) {
-        formattedHours[key] = value.toString();
+        formattedHours[key] = formatDayHours(value);
       });
     }
 

@@ -4,7 +4,7 @@ import 'package:guzellik_app/presentation/widgets/common/custom_buttons.dart';
 
 void main() {
   group('PrimaryButton Widget Tests', () {
-    testWidgets('renders button text correctly', (WidgetTester tester) async {
+    testWidgets('renders button text correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -19,7 +19,7 @@ void main() {
       expect(find.text('Test Button'), findsOneWidget);
     });
 
-    testWidgets('shows circular progress indicator when loading', (WidgetTester tester) async {
+    testWidgets('shows circular progress indicator when loading', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

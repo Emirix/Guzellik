@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="tr" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity | Yönetim Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ec3c68',
+                        secondary: '#1b0e11',
+                        accent: '#d4af37',
+                        background: '#fcfcfc',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-group:focus-within label {
+            color: #ec3c68;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ec3c68 0%, #ff4d7d 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(236, 60, 104, 0.3);
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(236, 60, 104, 0.1);
+            border-top: 3px solid #ec3c68;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ec3c68;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="text-secondary overflow-hidden">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-secondary text-white p-6 flex flex-col gap-8">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-white">bolt</span>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight">Yönetim</h1>
+            </div>
+
+            <nav class="flex-1 flex flex-col gap-2">
+                <button onclick="switchTab('business')" id="btn-business"
+                    class="nav-btn active flex items-center gap-3 p-3 rounded-xl bg-primary text-white transition-all">
+                    <span class="material-symbols-outlined">storefront</span>
+                    <span class="font-medium">İşletme Ekle</span>
+                </button>
+                <button onclick="switchTab('subscription')" id="btn-subscription"
+                    class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-white/60 hover:text-white">
+                    <span class="material-symbols-outlined">card_membership</span>
+                    <span class="font-medium">Abonelik Atama</span>
+                </button>
+            </nav>
+
+            <div id="auth-section" class="mt-auto p-4 bg-white/5 rounded-2xl border border-white/10">
+                <div id="login-form">
+                    <p class="text-[10px] uppercase font-bold text-white/40 mb-3 tracking-widest">Admin Girişi</p>
+                    <div class="space-y-2">
+                        <input type="email" id="admin-email" placeholder="E-posta"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:border-primary transition-all">
+                        <input type="password" id="admin-password" placeholder="Şifre"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:border-primary transition-all">
+                        <button onclick="handleLogin()" id="login-btn"
+                            class="w-full bg-primary text-white font-bold py-2 rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all">Giriş
+                            Yap</button>
+                    </div>
+                </div>
+                <div id="user-info" class="hidden">
+                    <p class="text-[10px] uppercase font-bold text-white/40 mb-1">Aktif Admin</p>
+                    <div class="flex items-center justify-between">
+                        <span id="admin-name" class="text-xs font-medium truncate max-w-[120px]">Yükleniyor...</span>
+                        <button onclick="handleLogout()"
+                            class="material-symbols-outlined text-sm text-white/40 hover:text-red-400">logout</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-8 bg-gray-50/50">
+            <!-- Business Tab -->
+            <section id="tab-business" class="tab-content max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h2 class="text-3xl font-bold">Yeni İşletme Ekle</h2>
+                        <p class="text-gray-500 mt-1">Sistem üzerinde yeni bir güzellik merkezi veya salon oluşturun.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-3xl p-8 space-y-6">
+                    <form id="business-form" onsubmit="event.preventDefault(); handleAddBusiness();"
+                        class="grid grid-cols-2 gap-6">
+                        <!-- Owner Selection -->
+                        <div class="col-span-2 space-y-2">
+                            <label class="text-sm font-semibold text-gray-700 ml-1">İşletme Sahibi (Profil)</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">person</span>
+                                <input type="text" id="owner-search" placeholder="İsim veya ID ile ara..."
+                                    class="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all">
+                                <div id="owner-results"
+                                    class="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 hidden max-h-60 overflow-y-auto">
+                                    <!-- Results will appear here -->
+                                </div>
+                                <input type="hidden" id="selected-owner-id" required>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700 ml-1">İşletme Adı</label>
+                            <input type="text" id="biz-name" required placeholder="Örn: Işıltı Güzellik Merkezi"
+                                class="w-full px-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700 ml-1">Kategori</label>
+                            <select id="biz-category" required
+                                class="w-full px-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all appearance-none cursor-pointer">
+                                <option value="">Kategori Seçin...</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 col-span-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-700 ml-1">İl</label>
+                                <select id="biz-province" required onchange="handleProvinceChange(this.value)"
+                                    class="w-full px-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all appearance-none cursor-pointer">
+                                    <option value="">İl Seçin...</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-700 ml-1">İlçe</label>
+                                <select id="dist-id" required
+                                    class="w-full px-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all appearance-none cursor-pointer">
+                                    <option value="">Önce İl Seçin...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-span-2 space-y-2">
+                            <label class="text-sm font-semibold text-gray-700 ml-1">Tam Adres</label>
+                            <input type="text" id="biz-address" required placeholder="Sokak, No, Kapı..."
+                                class="w-full px-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all">
+                        </div>
+
+                        <div class="col-span-2 space-y-2">
+                            <label class="text-sm font-semibold text-gray-700 ml-1">Açıklama</label>
+                            <textarea id="biz-description" rows="3" placeholder="İşletme hakkında kısa bilgi..."
+                                class="w-full px-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all"></textarea>
+                        </div>
+
+                        <div class="flex items-center gap-4 py-2">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="biz-verified" class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                                </div>
+                                <span class="ml-3 text-sm font-medium text-gray-700">Doğrulanmış İşletme</span>
+                            </label>
+                        </div>
+
+                        <div class="col-span-2">
+                            <button type="submit" id="biz-submit-btn"
+                                class="w-full btn-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">add_circle</span>
+                                İşletmeyi Oluştur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Subscription Tab -->
+            <section id="tab-subscription"
+                class="tab-content hidden max-w-4xl mx-auto space-y-8 animate-in slide-in-from-right duration-500">
+                <div>
+                    <h2 class="text-3xl font-bold">Abonelik Ataması</h2>
+                    <p class="text-gray-500 mt-1">İşletmelere veya sahiplerine özel abonelik paketleri tanımlayın.</p>
+                </div>
+
+                <div class="glass-card rounded-3xl p-8 space-y-6">
+                    <form id="sub-form" onsubmit="event.preventDefault(); handleAssignSubscription();"
+                        class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700 ml-1">Abonelik Atanacak İşletme</label>
+                            <div class="relative">
+                                <span
+                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                                <input type="text" id="sub-venue-search" placeholder="İşletme adı veya ID ile ara..."
+                                    class="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all">
+                                <div id="sub-venue-results"
+                                    class="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 hidden max-h-60 overflow-y-auto">
+                                </div>
+                                <input type="hidden" id="sub-selected-venue-id" required>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-700 ml-1">Abonelik Tipi</label>
+                                <div
+                                    class="w-full px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50 text-gray-700 font-bold flex items-center justify-between">
+                                    <span>İşletme Aboneliği</span>
+                                    <span class="material-symbols-outlined text-primary text-sm">verified</span>
+                                </div>
+                                <input type="hidden" id="sub-type" value="business">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-700 ml-1">Bitiş Tarihi</label>
+                                <input type="date" id="sub-expires"
+                                    class="w-full px-4 py-3 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="sub-submit-btn"
+                            class="w-full btn-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">verified_user</span>
+                            Aboneliği Aktifleştir
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Recent Subscriptions -->
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold px-1">Son Atanan Abonelikler</h3>
+                    <div id="recent-subs" class="grid gap-4">
+                        <!-- Items will appear here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notifications Toast -->
+    <div id="toast"
+        class="fixed bottom-8 right-8 z-[100] transform translate-y-24 opacity-0 transition-all duration-300">
+        <div class="bg-secondary text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
+            <span id="toast-icon" class="material-symbols-outlined">check_circle</span>
+            <span id="toast-message" class="font-medium text-sm">İşlem başarılı!</span>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const SUPABASE_URL = 'https://bovusiymseuxvmgabtfi.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_fICPBi3ciN1H1VQp9B8SMQ_Tf-YyvIk';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // State
+        let currentTab = 'business';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupSearch('owner-search', 'owner-results', 'selected-owner-id');
+            setupVenueSearch('sub-venue-search', 'sub-venue-results', 'sub-selected-venue-id');
+            fetchRecentSubscriptions();
+            fetchProvinces();
+            fetchCategories();
+            checkSession();
+        });
+
+        // Auth Management
+        async function checkSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            updateAuthUI(session);
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const btn = document.getElementById('login-btn');
+
+            if (!email || !password) return showToast('Lütfen bilgileri girin', 'error');
+
+            btn.disabled = true;
+            btn.innerText = 'Giriş yapılıyor...';
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                showToast(error.message, 'error');
+                btn.disabled = false;
+                btn.innerText = 'Giriş Yap';
+            } else {
+                updateAuthUI(data.session);
+                showToast('Hoş geldiniz!');
+            }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            updateAuthUI(null);
+            showToast('Çıkış yapıldı');
+        }
+
+        function updateAuthUI(session) {
+            const loginForm = document.getElementById('login-form');
+            const userInfo = document.getElementById('user-info');
+
+            if (session) {
+                loginForm.classList.add('hidden');
+                userInfo.classList.remove('hidden');
+                document.getElementById('admin-name').innerText = session.user.email;
+            } else {
+                loginForm.classList.remove('hidden');
+                userInfo.classList.add('hidden');
+            }
+        }
+
+        // Tab Management
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('bg-primary', 'text-white');
+                b.classList.add('text-white/60', 'hover:bg-white/5');
+            });
+
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-${tab}`);
+            activeBtn.classList.remove('text-white/60', 'hover:bg-white/5');
+            activeBtn.classList.add('bg-primary', 'text-white');
+
+            currentTab = tab;
+        }
+
+        // Search Setup
+        function setupSearch(inputId, resultsId, hiddenId) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            const hidden = document.getElementById(hiddenId);
+
+            let timeout = null;
+
+            input.addEventListener('input', (e) => {
+                clearTimeout(timeout);
+                const query = e.target.value;
+
+                if (query.length < 2) {
+                    results.classList.add('hidden');
+                    return;
+                }
+
+                timeout = setTimeout(async () => {
+                    const { data, error } = await supabaseClient
+                        .from('profiles')
+                        .select('id, full_name, avatar_url')
+                        .ilike('full_name', `%${query}%`)
+                        .limit(5);
+
+                    if (data) {
+                        results.innerHTML = data.map(profile => `
+                            <div onclick="selectProfile('${profile.id}', '${profile.full_name}', '${resultsId}', '${inputId}', '${hiddenId}')" 
+                                class="flex items-center gap-3 p-4 hover:bg-primary/5 cursor-pointer transition-colors border-b border-gray-50 last:border-0">
+                                <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                                    ${profile.avatar_url ? `<img src="${profile.avatar_url}" class="w-full h-full object-cover">` : `<span class="material-symbols-outlined flex items-center justify-center h-full text-gray-400">person</span>`}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm">${profile.full_name || 'İsimsiz Kullanıcı'}</p>
+                                    <p class="text-[10px] text-gray-400 font-mono">${profile.id}</p>
+                                </div>
+                            </div>
+                        `).join('') || '<div class="p-4 text-center text-gray-400 text-sm">Sonuç bulunamadı</div>';
+                        results.classList.remove('hidden');
+                    }
+                }, 300);
+            });
+
+            // Close on click outside
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !results.contains(e.target)) {
+                    results.classList.add('hidden');
+                }
+            });
+        }
+
+        function selectProfile(id, name, resultsId, inputId, hiddenId) {
+            document.getElementById(inputId).value = name;
+            document.getElementById(hiddenId).value = id;
+            document.getElementById(resultsId).classList.add('hidden');
+        }
+
+        // Venue Search Setup
+        function setupVenueSearch(inputId, resultsId, hiddenId) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            const hidden = document.getElementById(hiddenId);
+
+            let timeout = null;
+
+            input.addEventListener('input', (e) => {
+                clearTimeout(timeout);
+                const query = e.target.value;
+
+                if (query.length < 2) {
+                    results.classList.add('hidden');
+                    return;
+                }
+
+                timeout = setTimeout(async () => {
+                    const { data, error } = await supabaseClient
+                        .from('venues')
+                        .select('id, name')
+                        .ilike('name', `%${query}%`)
+                        .limit(5);
+
+                    if (data) {
+                        results.innerHTML = data.map(venue => `
+                            <div onclick="selectProfile('${venue.id}', '${venue.name}', '${resultsId}', '${inputId}', '${hiddenId}')" 
+                                class="flex items-center gap-3 p-4 hover:bg-primary/5 cursor-pointer transition-colors border-b border-gray-50 last:border-0">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <span class="material-symbols-outlined">storefront</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm">${venue.name}</p>
+                                    <p class="text-[10px] text-gray-400 font-mono">${venue.id}</p>
+                                </div>
+                            </div>
+                        `).join('') || '<div class="p-4 text-center text-gray-400 text-sm">İşletme bulunamadı</div>';
+                        results.classList.remove('hidden');
+                    }
+                }, 300);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !results.contains(e.target)) {
+                    results.classList.add('hidden');
+                }
+            });
+        }
+
+        // Location Management
+        async function fetchProvinces() {
+            const { data, error } = await supabaseClient
+                .from('provinces')
+                .select('id, name')
+                .order('name');
+
+            if (data) {
+                const select = document.getElementById('biz-province');
+                select.innerHTML = '<option value="">İl Seçin...</option>' +
+                    data.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            }
+        }
+
+        async function handleProvinceChange(provinceId) {
+            const distSelect = document.getElementById('dist-id');
+            if (!provinceId) {
+                distSelect.innerHTML = '<option value="">Önce İl Seçin...</option>';
+                return;
+            }
+
+            distSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+
+            const { data, error } = await supabaseClient
+                .from('districts')
+                .select('id, name')
+                .eq('province_id', provinceId)
+                .order('name');
+
+            if (data) {
+                distSelect.innerHTML = '<option value="">İlçe Seçin...</option>' +
+                    data.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+            }
+        }
+
+        async function fetchCategories() {
+            const { data, error } = await supabaseClient
+                .from('venue_categories')
+                .select('id, name')
+                .eq('is_active', true)
+                .order('name');
+
+            if (data) {
+                const select = document.getElementById('biz-category');
+                select.innerHTML = '<option value="">Kategori Seçin...</option>' +
+                    data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+        }
+
+        // Action Handlers
+        async function handleAddBusiness() {
+            const btn = document.getElementById('biz-submit-btn');
+            let ownerId = document.getElementById('selected-owner-id').value;
+            const ownerSearchText = document.getElementById('owner-search').value;
+
+            // Auto-resolve owner if not selected from list
+            if (!ownerId && ownerSearchText) {
+                const { data } = await supabaseClient
+                    .from('profiles')
+                    .select('id')
+                    .ilike('full_name', `%${ownerSearchText}%`)
+                    .limit(1);
+                if (data && data.length > 0) ownerId = data[0].id;
+            }
+
+            if (!ownerId) {
+                showToast('Geçerli bir kullanıcı bulunamadı. Lütfen ismi kontrol edin.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading-spinner"></div> Oluşturuluyor...';
+
+            const payload = {
+                owner_id: ownerId,
+                name: document.getElementById('biz-name').value,
+                address: document.getElementById('biz-address').value,
+                description: document.getElementById('biz-description').value,
+                is_verified: document.getElementById('biz-verified').checked,
+                province_id: parseInt(document.getElementById('biz-province').value),
+                district_id: document.getElementById('dist-id').value,
+                category_id: document.getElementById('biz-category').value,
+                location: 'POINT(28.9784 41.0082)'
+            };
+
+            const { data, error } = await supabaseClient
+                .from('venues')
+                .insert([payload])
+                .select();
+
+            if (error) {
+                showToast(error.message, 'error');
+            } else {
+                showToast('İşletme başarıyla oluşturuldu!');
+                document.getElementById('business-form').reset();
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-symbols-outlined">add_circle</span> İşletmeyi Oluştur';
+        }
+
+        async function handleAssignSubscription() {
+            const btn = document.getElementById('sub-submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading-spinner"></div> Tanımlanıyor...';
+
+            const venueId = document.getElementById('sub-selected-venue-id').value;
+            const subType = document.getElementById('sub-type').value;
+            const expiresAt = document.getElementById('sub-expires').value;
+
+            // Insert Subscription
+            const { error } = await supabaseClient
+                .from('venues_subscription')
+                .insert([{
+                    venue_id: venueId,
+                    subscription_type: subType,
+                    status: 'active',
+                    expires_at: expiresAt || null,
+                    features: {
+                        "campaigns": { "enabled": true },
+                        "notifications": { "enabled": true },
+                        "analytics": { "enabled": true }
+                    }
+                }]);
+
+            if (error) {
+                showToast(error.message, 'error');
+            } else {
+                showToast(`İşletme Aboneliği başarıyla aktifleştirildi!`);
+                document.getElementById('sub-form').reset();
+                fetchRecentSubscriptions();
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-symbols-outlined">verified_user</span> Aboneliği Aktifleştir';
+        }
+
+        async function fetchRecentSubscriptions() {
+            const { data, error } = await supabaseClient
+                .from('venues_subscription')
+                .select('venue_id, subscription_type, started_at, venues(name)')
+                .order('created_at', { ascending: false })
+                .limit(5);
+
+            if (data) {
+                const container = document.getElementById('recent-subs');
+                container.innerHTML = data.map(sub => `
+                    <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined">storefront</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm">${sub.venues?.name || 'İsimsiz'}</p>
+                                <p class="text-[10px] text-gray-500">${new Date(sub.started_at).toLocaleDateString('tr-TR')}</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-primary/10 text-primary">
+                            İŞLETME
+                        </span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Utils
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-message');
+            const icon = document.getElementById('toast-icon');
+
+            msg.innerText = message;
+            icon.innerText = type === 'success' ? 'check_circle' : 'error';
+            icon.className = `material-symbols-outlined ${type === 'success' ? 'text-green-400' : 'text-red-400'}`;
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

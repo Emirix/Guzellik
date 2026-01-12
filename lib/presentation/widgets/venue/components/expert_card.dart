@@ -97,25 +97,6 @@ class ExpertCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-
-            // Rating (if available)
-            if (expert.rating != null) ...[
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.star, size: 16, color: AppColors.gold),
-                  const SizedBox(width: 4),
-                  Text(
-                    expert.rating!.toStringAsFixed(1),
-                    style: AppTextStyles.caption.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ],
           ],
         ),
       ),

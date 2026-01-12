@@ -4,6 +4,8 @@ import '../models/venue_filter.dart';
 import '../models/review.dart';
 import '../models/venue_photo.dart';
 import '../models/venue_category.dart';
+import '../models/specialist.dart';
+import '../models/campaign.dart';
 import '../services/supabase_service.dart';
 import '../../core/services/cache_service.dart';
 
@@ -47,7 +49,7 @@ class VenueRepository {
 
   Future<List<Venue>> getVenues() async {
     final response = await _supabase
-        .from('venues_with_coords')
+        .from('venues')
         .select('*, venue_categories(*)');
     return (response as List).map((json) => Venue.fromJson(json)).toList();
   }
@@ -77,8 +79,12 @@ class VenueRepository {
     }
 
     final response = await _supabase
-        .from('featured_venues')
+        .from('venues')
         .select('*, venue_categories(*)')
+        .eq('is_active', true)
+        .gte('rating', 4.0)
+        .order('rating', ascending: false)
+        .order('name', ascending: true)
         .range(offset, offset + limit - 1);
 
     final venues = (response as List)
@@ -105,7 +111,7 @@ class VenueRepository {
     if (cached != null) return cached;
 
     final response = await _supabase
-        .from('venues_with_coords')
+        .from('venues')
         .select('*, venue_categories(*)')
         .eq('id', id)
         .single();
@@ -207,19 +213,16 @@ class VenueRepository {
 
       final response = await _supabase
           .from('follows')
-          .select('venue_id, venues_with_coords(*, venue_categories(*))')
+          .select('venue_id, venues(*, venue_categories(*))')
           .eq('user_id', userId);
 
-      return (response as List)
-          .where((item) => item['venues_with_coords'] != null)
-          .map((item) {
-            final venueJson = Map<String, dynamic>.from(
-              item['venues_with_coords'],
-            );
-            venueJson['is_following'] = true;
-            return Venue.fromJson(venueJson);
-          })
-          .toList();
+      return (response as List).where((item) => item['venues'] != null).map((
+        item,
+      ) {
+        final venueJson = Map<String, dynamic>.from(item['venues']);
+        venueJson['is_following'] = true;
+        return Venue.fromJson(venueJson);
+      }).toList();
     } catch (e) {
       print('Error getting followed venues: $e');
       return [];
@@ -289,20 +292,17 @@ class VenueRepository {
 
       final response = await _supabase
           .from('user_favorites')
-          .select('venue_id, venues_with_coords(*, venue_categories(*))')
+          .select('venue_id, venues(*, venue_categories(*))')
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
-      return (response as List)
-          .where((item) => item['venues_with_coords'] != null)
-          .map((item) {
-            final venueJson = Map<String, dynamic>.from(
-              item['venues_with_coords'],
-            );
-            venueJson['is_favorited'] = true;
-            return Venue.fromJson(venueJson);
-          })
-          .toList();
+      return (response as List).where((item) => item['venues'] != null).map((
+        item,
+      ) {
+        final venueJson = Map<String, dynamic>.from(item['venues']);
+        venueJson['is_favorited'] = true;
+        return Venue.fromJson(venueJson);
+      }).toList();
     } catch (e) {
       print('Error getting favorite venues: $e');
       return [];
@@ -559,5 +559,68 @@ class VenueRepository {
     );
 
     return response.map((json) => Service.fromJson(json)).toList();
+  }
+
+  // Specialists Methods (Task 37)
+
+  /// Fetch all specialists for a venue, ordered by sort_order
+  Future<List<Specialist>> getVenueSpecialists(String venueId) async {
+    final response = await _supabase
+        .from('specialists')
+        .select()
+        .eq('venue_id', venueId)
+        .order('sort_order', ascending: true);
+
+    return (response as List).map((json) => Specialist.fromJson(json)).toList();
+  }
+
+  // Campaigns Methods (Task 39)
+
+  /// Fetch active campaigns for a venue
+  Future<List<Campaign>> getVenueCampaigns(String venueId) async {
+    final now = DateTime.now().toIso8601String();
+
+    final response = await _supabase
+        .from('campaigns')
+        .select()
+        .eq('venue_id', venueId)
+        .eq('is_active', true)
+        .gte('end_date', now)
+        .order('created_at', ascending: false);
+
+    return (response as List).map((json) => Campaign.fromJson(json)).toList();
+  }
+
+  /// Fetch all campaigns for a venue (including inactive/expired)
+  Future<List<Campaign>> getAllVenueCampaigns(String venueId) async {
+    final response = await _supabase
+        .from('campaigns')
+        .select()
+        .eq('venue_id', venueId)
+        .order('created_at', ascending: false);
+
+    return (response as List).map((json) => Campaign.fromJson(json)).toList();
+  }
+
+  /// Fetch featured campaigns across all venues
+  Future<List<Campaign>> getFeaturedCampaigns({int limit = 10}) async {
+    final now = DateTime.now().toIso8601String();
+
+    final response = await _supabase
+        .from('campaigns')
+        .select('*, venues:venue_id(*)')
+        .eq('is_active', true)
+        .gte('end_date', now)
+        .order('created_at', ascending: false)
+        .limit(limit);
+
+    return (response as List).map((json) => Campaign.fromJson(json)).toList();
+  }
+
+  // Gallery Methods (Task 38) - Already exists as fetchVenuePhotos
+
+  /// Alias for consistency with new naming convention
+  Future<List<VenuePhoto>> getVenuePhotos(String venueId) async {
+    return fetchVenuePhotos(venueId);
   }
 }

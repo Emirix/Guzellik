@@ -5,7 +5,7 @@ class AuthRepository {
   final SupabaseService _supabase = SupabaseService.instance;
 
   Future<AuthResponse> login(String email, String password) async {
-    return await _supabase.signInWithEmail(email: email, password: password);
+    return _supabase.signInWithEmail(email: email, password: password);
   }
 
   Future<AuthResponse> register(
@@ -13,7 +13,7 @@ class AuthRepository {
     String password,
     String fullName,
   ) async {
-    return await _supabase.signUpWithEmail(
+    return _supabase.signUpWithEmail(
       email: email,
       password: password,
       metadata: {'full_name': fullName},
