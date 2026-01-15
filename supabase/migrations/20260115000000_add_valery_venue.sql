@@ -15,7 +15,13 @@ DECLARE
     v_dudak_id UUID;
     v_laminasyon_id UUID;
     v_kas_alimi_id UUID;
+    v_base_url TEXT := 'https://bovusiymseuxvmgabtfi.supabase.co/storage/v1/object/public/venue-gallery/';
 BEGIN
+    -- 0. Create dummy owner if not exists
+    INSERT INTO public.profiles (id, full_name, avatar_url)
+    VALUES (v_owner_id, 'Admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin')
+    ON CONFLICT (id) DO NOTHING;
+
     -- 1. Get Category and District IDs
     SELECT id INTO v_category_id FROM public.venue_categories WHERE slug = 'guzellik-salonu' LIMIT 1;
     SELECT id INTO v_district_id FROM public.districts WHERE name = 'BODRUM' AND province_id = 48 LIMIT 1;
@@ -33,7 +39,8 @@ BEGIN
         is_preferred, 
         owner_id, 
         social_links,
-        venue_category_id,
+        category_id,
+        working_hours, 
         hero_images
     )
     VALUES (
@@ -53,79 +60,77 @@ BEGIN
             'instagram', 'valeryguzelliksalonubodrum'
         ),
         v_category_id,
-        -- Using local-like paths or placeholders for hero images (first one as hero)
-        jsonb_build_array('venue-gallery/' || v_venue_id || '/WhatsApp Image 2026-01-15 at 13.00.36.jpeg')
-    );
+        '{"monday": "09:30 - 19:00", "tuesday": "09:30 - 19:00", "wednesday": "09:30 - 19:00", "thursday": "09:30 - 19:00", "friday": "09:30 - 19:00", "saturday": "09:30 - 19:00", "sunday": "09:30 - 19:00"}'::jsonb,
+        jsonb_build_array(v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.36.jpeg')
+    )
+    ON CONFLICT (id) DO UPDATE SET
+        working_hours = EXCLUDED.working_hours,
+        social_links = EXCLUDED.social_links,
+        description = EXCLUDED.description;
 
-    -- 3. Working Hours (09.30 - 19.00 Every Day)
-    FOR i IN 0..6 LOOP
-        INSERT INTO public.venue_hours (venue_id, day_of_week, open_time, close_time, is_closed)
-        VALUES (v_venue_id, i, '09:30:00', '19:00:00', false);
-    END LOOP;
-
-    -- 4. Specialists
+    -- 3. Specialists
     INSERT INTO public.specialists (venue_id, name, profession, gender)
     VALUES 
     (v_venue_id, 'Sude Yatkın', 'Cilt Bakımı Uzmanı', 'Kadın'),
-    (v_venue_id, 'Buse Korkmaz', 'Masör ve Lazer Uzmanı', 'Kadın');
+    (v_venue_id, 'Buse Korkmaz', 'Masör ve Lazer Uzmanı', 'Kadın')
+    ON CONFLICT DO NOTHING;
 
-    -- 5. Services (Check and Insert if not exists)
+    -- 4. Services (Check and Insert if not exists)
     
-    -- Function-like logic to get or create service categories
     -- Lazer Epilasyon
     SELECT id INTO v_lazer_id FROM public.service_categories WHERE name = 'Lazer Epilasyon' LIMIT 1;
     IF v_lazer_id IS NULL THEN
-        INSERT INTO public.service_categories (name, sub_category, average_duration_minutes, venue_category_id)
-        VALUES ('Lazer Epilasyon', 'Epilasyon - Lazer', 60, v_category_id) RETURNING id INTO v_lazer_id;
+        INSERT INTO public.service_categories (name, sub_category, description, average_duration_minutes, venue_category_id)
+        VALUES ('Lazer Epilasyon', 'Epilasyon - Lazer', 'Profesyonel lazer epilasyon hizmeti.', 60, v_category_id) RETURNING id INTO v_lazer_id;
     END IF;
 
     -- Cilt Bakımı
     SELECT id INTO v_cilt_id FROM public.service_categories WHERE name = 'Cilt Bakımı' LIMIT 1;
     IF v_cilt_id IS NULL THEN
-        INSERT INTO public.service_categories (name, sub_category, average_duration_minutes, venue_category_id)
-        VALUES ('Cilt Bakımı', 'Cilt Bakımı - Yüz', 60, v_category_id) RETURNING id INTO v_cilt_id;
+        INSERT INTO public.service_categories (name, sub_category, description, average_duration_minutes, venue_category_id)
+        VALUES ('Cilt Bakımı', 'Cilt Bakımı - Yüz', 'Derinlemesine cilt bakımı ve temizliği.', 60, v_category_id) RETURNING id INTO v_cilt_id;
     END IF;
 
     -- Bölgesel İncelme
     SELECT id INTO v_incelme_id FROM public.service_categories WHERE name = 'Bölgesel İncelme' LIMIT 1;
     IF v_incelme_id IS NULL THEN
-        INSERT INTO public.service_categories (name, sub_category, average_duration_minutes, venue_category_id)
-        VALUES ('Bölgesel İncelme', 'İncelme - Bölgesel', 45, v_category_id) RETURNING id INTO v_incelme_id;
+        INSERT INTO public.service_categories (name, sub_category, description, average_duration_minutes, venue_category_id)
+        VALUES ('Bölgesel İncelme', 'İncelme - Bölgesel', 'Vücut şekillendirme ve bölgesel incelme.', 45, v_category_id) RETURNING id INTO v_incelme_id;
     END IF;
 
     -- Medikal Masaj
     SELECT id INTO v_masaj_id FROM public.service_categories WHERE name = 'Medikal Masaj' LIMIT 1;
     IF v_masaj_id IS NULL THEN
-        INSERT INTO public.service_categories (name, sub_category, average_duration_minutes, venue_category_id)
-        VALUES ('Medikal Masaj', 'Masaj', 60, v_category_id) RETURNING id INTO v_masaj_id;
+        INSERT INTO public.service_categories (name, sub_category, description, average_duration_minutes, venue_category_id)
+        VALUES ('Medikal Masaj', 'Masaj', 'Uzman masörler eşliğinde medikal masaj.', 60, v_category_id) RETURNING id INTO v_masaj_id;
     END IF;
 
-    -- Microblading (Already exists usually)
+    -- Microblading
     SELECT id INTO v_micro_id FROM public.service_categories WHERE name = 'Microblading' LIMIT 1;
     IF v_micro_id IS NULL THEN
-        INSERT INTO public.service_categories (name, sub_category, average_duration_minutes, venue_category_id)
-        VALUES ('Microblading', 'Makyaj - Kalıcı', 120, v_category_id) RETURNING id INTO v_micro_id;
+        INSERT INTO public.service_categories (name, sub_category, description, average_duration_minutes, venue_category_id)
+        VALUES ('Microblading', 'Makyaj - Kalıcı', 'Kaş tasarımı ve Microblading uygulaması.', 120, v_category_id) RETURNING id INTO v_micro_id;
     END IF;
 
     -- Dudak Vitamini
     SELECT id INTO v_dudak_id FROM public.service_categories WHERE name = 'Dudak Vitamini' LIMIT 1;
     IF v_dudak_id IS NULL THEN
-        INSERT INTO public.service_categories (name, sub_category, average_duration_minutes, venue_category_id)
-        VALUES ('Dudak Vitamini', 'Estetik - Uygulama', 45, v_category_id) RETURNING id INTO v_dudak_id;
+        INSERT INTO public.service_categories (name, sub_category, description, average_duration_minutes, venue_category_id)
+        VALUES ('Dudak Vitamini', 'Estetik - Uygulama', 'Dudak canlandırma ve vitamin bakımı.', 45, v_category_id) RETURNING id INTO v_dudak_id;
     END IF;
 
     -- Kirpik Kaş Laminasyon
     SELECT id INTO v_laminasyon_id FROM public.service_categories WHERE name = 'Kirpik Kaş Laminasyon' LIMIT 1;
     IF v_laminasyon_id IS NULL THEN
-        INSERT INTO public.service_categories (name, sub_category, average_duration_minutes, venue_category_id)
-        VALUES ('Kirpik Kaş Laminasyon', 'Kaş & Kirpik - Tasarım', 60, v_category_id) RETURNING id INTO v_laminasyon_id;
+        INSERT INTO public.service_categories (name, sub_category, description, average_duration_minutes, venue_category_id)
+        VALUES ('Kirpik Kaş Laminasyon', 'Kaş & Kirpik - Tasarım', 'Kirpik lifting ve kaş laminasyonu.', 60, v_category_id) RETURNING id INTO v_laminasyon_id;
     END IF;
 
     -- Altın Oran Kaş Alımı
     SELECT id INTO v_kas_alimi_id FROM public.service_categories WHERE name = 'Altın Oran Kaş Alımı' LIMIT 1;
     IF v_kas_alimi_id IS NULL THEN
-        INSERT INTO public.service_categories (name, sub_category, average_duration_minutes, venue_category_id)
-        VALUES ('Altın Oran Kaş Alımı', 'Kaş & Kirpik - Tasarım', 30, v_category_id) RETURNING id INTO v_kas_alimi_id;
+        INSERT INTO public.service_categories (name, sub_category, description, average_duration_minutes, venue_category_id)
+        VALUES ('Altın Oran Kaş Alımı', 'Kaş & Kirpik - Tasarım', 'Yüz hattına uygun altın oran kaş alımı.', 30, v_category_id) RETURNING id INTO v_kas_alimi_id;
     END IF;
 
     -- Link Services to Venue
@@ -141,12 +146,13 @@ BEGIN
     (v_venue_id, v_kas_alimi_id)
     ON CONFLICT DO NOTHING;
 
-    -- 6. Gallery Photos
+    -- 5. Gallery Photos
     INSERT INTO public.venue_photos (venue_id, url, title, category, sort_order)
     VALUES 
-    (v_venue_id, 'venue-gallery/' || v_venue_id || '/WhatsApp Image 2026-01-15 at 13.00.36.jpeg', 'Galeri 1', 'interior', 1),
-    (v_venue_id, 'venue-gallery/' || v_venue_id || '/WhatsApp Image 2026-01-15 at 13.00.37 (1).jpeg', 'Galeri 2', 'interior', 2),
-    (v_venue_id, 'venue-gallery/' || v_venue_id || '/WhatsApp Image 2026-01-15 at 13.00.37 (2).jpeg', 'Galeri 3', 'interior', 3),
-    (v_venue_id, 'venue-gallery/' || v_venue_id || '/WhatsApp Image 2026-01-15 at 13.00.37.jpeg', 'Galeri 4', 'interior', 4);
+    (v_venue_id, v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.36.jpeg', 'Galeri 1', 'interior', 1),
+    (v_venue_id, v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.37%20(1).jpeg', 'Galeri 2', 'interior', 2),
+    (v_venue_id, v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.37%20(2).jpeg', 'Galeri 3', 'interior', 3),
+    (v_venue_id, v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.37.jpeg', 'Galeri 4', 'interior', 4)
+    ON CONFLICT DO NOTHING;
 
 END $$;
