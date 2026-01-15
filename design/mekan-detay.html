@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mekan Detay - Lina Estetik & Güzellik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ee2b5b;
+            --primary-light: rgba(238, 43, 91, 0.1);
+            --background-light: #fff9fa;
+            --nude: #f3e7ea;
+            --gold: #D4AF37;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --green-100: #dcfce7;
+            --green-500: #22c55e;
+            --green-700: #15803d;
+            --amber-400: #fbbf24;
+            --whatsapp: #25D366;
+            --instagram: #E1306C;
+            --blue-500: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--background-light);
+            color: var(--gray-900);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 100px;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400;
+        }
+
+        .filled {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 360px;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            z-index: 1;
+        }
+
+        .hero-nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(12px);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .hero-dots {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .dot.active {
+            background: white;
+        }
+
+        /* Content Container */
+        .content {
+            position: relative;
+            margin-top: -32px;
+            z-index: 10;
+            background: var(--background-light);
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+
+        .section {
+            padding: 0 20px;
+        }
+
+        /* Venue Header */
+        .venue-header {
+            padding: 24px 20px 16px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .venue-info {
+            flex: 1;
+        }
+
+        .venue-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .venue-meta {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .venue-meta .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .venue-logo {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .venue-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Rating & Follow Row */
+        .rating-row {
+            padding: 0 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .rating-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--nude);
+        }
+
+        .rating-score {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stars {
+            display: flex;
+            color: var(--amber-400);
+        }
+
+        .stars .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        .rating-count {
+            font-size: 12px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        .follow-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            padding: 8px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .follow-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            padding: 0 20px 24px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: white;
+            border: 1px solid var(--nude);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .action-item:hover .action-icon {
+            transform: scale(1.05);
+        }
+
+        .action-icon .material-symbols-outlined {
+            font-size: 24px;
+        }
+
+        .action-icon.whatsapp .material-symbols-outlined { color: var(--whatsapp); }
+        .action-icon.call .material-symbols-outlined { color: var(--primary); }
+        .action-icon.map .material-symbols-outlined { color: var(--blue-500); }
+        .action-icon.instagram .material-symbols-outlined { color: var(--instagram); }
+
+        .action-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: var(--nude);
+        }
+
+        .section-divider {
+            height: 8px;
+            background: rgba(243, 231, 234, 0.3);
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 24px 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .about-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--gray-600);
+        }
+
+        .read-more {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
+        /* Experts Section */
+        .experts-section {
+            padding: 24px 0;
+        }
+
+        .experts-header {
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .see-all-btn {
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .experts-scroll {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 20px 16px;
+            gap: 16px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .experts-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .expert-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 90px;
+        }
+
+        .expert-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            padding: 4px;
+            border: 2px solid transparent;
+        }
+
+        .expert-avatar.featured {
+            border-color: rgba(238, 43, 91, 0.2);
+        }
+
+        .expert-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .expert-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gray-900);
+            text-align: center;
+        }
+
+        .expert-title {
+            font-size: 10px;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        /* Working Hours */
+        .hours-section {
+            padding: 24px 20px;
+        }
+
+        .hours-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .open-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: var(--green-100);
+            color: var(--green-700);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .open-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green-500);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hours-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--nude);
+        }
+
+        .hours-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            padding: 4px 0;
+        }
+
+        .hours-row:not(:first-child) {
+            border-top: 1px dashed var(--gray-100);
+            margin-top: 4px;
+            padding-top: 8px;
+        }
+
+        .hours-day {
+            color: var(--gray-500);
+        }
+
+        .hours-time {
+            font-weight: 600;
+        }
+
+        .hours-time.closed {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Map Preview */
+        .map-preview {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+
+        .map-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .map-preview:hover img {
+            opacity: 1;
+        }
+
+        .map-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .map-button .material-symbols-outlined {
+            color: var(--primary);
+        }
+
+        .map-button span:last-child {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .address-text {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-top: 12px;
+            line-height: 1.4;
+        }
+
+        /* Certificates */
+        .certificates-section {
+            padding: 24px 20px;
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .certificate-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--nude);
+        }
+
+        .certificate-card .material-symbols-outlined {
+            font-size: 32px;
+            color: var(--gold);
+        }
+
+        .certificate-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .certificate-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .certificate-subtitle {
+            font-size: 10px;
+            color: var(--gray-500);
+        }
+
+        /* Features */
+        .features-section {
+            padding: 0 20px 24px;
+        }
+
+        .features-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .feature-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: rgba(243, 231, 234, 0.5);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .feature-tag .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        /* Reviews */
+        .reviews-section {
+            padding: 24px 20px 32px;
+        }
+
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .review-card {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--nude);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .reviewer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reviewer-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .reviewer-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .review-date {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .review-stars {
+            display: flex;
+            color: var(--amber-400);
+            margin-bottom: 12px;
+        }
+
+        .review-stars .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        .review-text {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Bottom Bar */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid var(--gray-100);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .price-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-label {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .price-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .price-value span {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--gray-400);
+        }
+
+        .booking-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(238, 43, 91, 0.3);
+            transition: all 0.2s;
+        }
+
+        .booking-btn:hover {
+            background: #d42550;
+            transform: translateY(-1px);
+        }
+
+        .booking-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            body {
+                max-width: 480px;
+                margin: 0 auto;
+                box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            }
+
+            .bottom-bar {
+                max-width: 480px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            body {
+                max-width: 420px;
+            }
+
+            .bottom-bar {
+                max-width: 420px;
+            }
+        }
+
+        /* Safe area for mobile */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-bar {
+                padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            }
+
+            body {
+                padding-bottom: calc(100px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-nav">
+            <button class="nav-btn">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="nav-right">
+                <button class="nav-btn">
+                    <span class="material-symbols-outlined">favorite</span>
+                </button>
+                <button class="nav-btn">
+                    <span class="material-symbols-outlined">ios_share</span>
+                </button>
+            </div>
+        </div>
+        <div class="hero-dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800" alt="Güzellik merkezi iç mekan" class="hero-image">
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Venue Header -->
+        <div class="venue-header">
+            <div class="venue-info">
+                <h1 class="venue-name">Lina Estetik & Güzellik</h1>
+                <div class="venue-meta">
+                    <span class="material-symbols-outlined">location_on</span>
+                    <span>Kadıköy, İstanbul</span>
+                    <span>•</span>
+                    <span>Cilt Bakımı & Lazer</span>
+                </div>
+            </div>
+            <div class="venue-logo">
+                <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=200" alt="Lina Estetik Logo">
+            </div>
+        </div>
+
+        <!-- Rating & Follow -->
+        <div class="rating-row">
+            <div class="rating-badge">
+                <span class="rating-score">4.8</span>
+                <div class="stars">
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span class="material-symbols-outlined filled">star_half</span>
+                </div>
+                <span class="rating-count">(124)</span>
+            </div>
+            <button class="follow-btn">Takip Et</button>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-item">
+                <div class="action-icon whatsapp">
+                    <span class="material-symbols-outlined">chat</span>
+                </div>
+                <span class="action-label">WhatsApp</span>
+            </div>
+            <div class="action-item">
+                <div class="action-icon call">
+                    <span class="material-symbols-outlined">call</span>
+                </div>
+                <span class="action-label">Ara</span>
+            </div>
+            <div class="action-item">
+                <div class="action-icon map">
+                    <span class="material-symbols-outlined">map</span>
+                </div>
+                <span class="action-label">Yol Tarifi</span>
+            </div>
+            <div class="action-item">
+                <div class="action-icon instagram">
+                    <span class="material-symbols-outlined">photo_camera</span>
+                </div>
+                <span class="action-label">Instagram</span>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- About Section -->
+        <div class="about-section">
+            <h3 class="section-title">Mekan Hakkında</h3>
+            <p class="about-text">
+                Lina Estetik, 10 yılı aşkın tecrübesiyle güzelliğinize güzellik katmak için hizmetinizde. Son teknoloji cihazlarımız ve uzman kadromuz ile hijyenik bir ortamda, kişiye özel cilt bakımı, lazer epilasyon ve medikal estetik uygulamaları sunuyoruz.
+                <span class="read-more">Devamını Oku</span>
+            </p>
+        </div>
+
+        <!-- Experts Section -->
+        <div class="experts-section">
+            <div class="experts-header">
+                <h3 class="section-title">Uzman Kadromuz</h3>
+                <button class="see-all-btn">Tümü</button>
+            </div>
+            <div class="experts-scroll">
+                <div class="expert-card">
+                    <div class="expert-avatar featured">
+                        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200" alt="Dr. Ayşe Yılmaz">
+                    </div>
+                    <span class="expert-name">Dr. Ayşe</span>
+                    <span class="expert-title">Dermatolog</span>
+                </div>
+                <div class="expert-card">
+                    <div class="expert-avatar">
+                        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200" alt="Selin Demir">
+                    </div>
+                    <span class="expert-name">Selin D.</span>
+                    <span class="expert-title">Estetisyen</span>
+                </div>
+                <div class="expert-card">
+                    <div class="expert-avatar">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200" alt="Merve Koç">
+                    </div>
+                    <span class="expert-name">Merve K.</span>
+                    <span class="expert-title">Lazer Uzm.</span>
+                </div>
+                <div class="expert-card">
+                    <div class="expert-avatar">
+                        <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=200" alt="Dr. Canan">
+                    </div>
+                    <span class="expert-name">Dr. Canan</span>
+                    <span class="expert-title">Medikal Est.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Working Hours -->
+        <div class="hours-section">
+            <div class="hours-header">
+                <h3 class="section-title">Çalışma Saatleri</h3>
+                <div class="open-badge">
+                    <span class="open-dot"></span>
+                    Şu an Açık
+                </div>
+            </div>
+            <div class="hours-card">
+                <div class="hours-row">
+                    <span class="hours-day">Hafta içi</span>
+                    <span class="hours-time">09:00 - 19:00</span>
+                </div>
+                <div class="hours-row">
+                    <span class="hours-day">Cumartesi</span>
+                    <span class="hours-time">09:00 - 17:00</span>
+                </div>
+                <div class="hours-row">
+                    <span class="hours-day">Pazar</span>
+                    <span class="hours-time closed">Kapalı</span>
+                </div>
+            </div>
+
+            <!-- Map Preview -->
+            <div class="map-preview">
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center=40.9903,29.0233&zoom=15&size=600x300&maptype=roadmap&key=demo" alt="Harita">
+                <div class="map-overlay">
+                    <div class="map-button">
+                        <span class="material-symbols-outlined">near_me</span>
+                        <span>Haritada Gör</span>
+                    </div>
+                </div>
+            </div>
+            <p class="address-text">Caferağa Mah. Bahariye Cad. No: 24/B, Kadıköy, İstanbul</p>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Certificates -->
+        <div class="certificates-section">
+            <h3 class="section-title">Sertifikalar & Ödüller</h3>
+            <div class="certificates-grid">
+                <div class="certificate-card">
+                    <span class="material-symbols-outlined">verified</span>
+                    <div class="certificate-info">
+                        <span class="certificate-title">Sağlık Bakanlığı</span>
+                        <span class="certificate-subtitle">Onaylı Merkez</span>
+                    </div>
+                </div>
+                <div class="certificate-card">
+                    <span class="material-symbols-outlined">workspace_premium</span>
+                    <div class="certificate-info">
+                        <span class="certificate-title">ISO 9001</span>
+                        <span class="certificate-subtitle">Kalite Belgesi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features-section">
+            <h3 class="section-title">Özellikler</h3>
+            <div class="features-list">
+                <span class="feature-tag">
+                    <span class="material-symbols-outlined">wifi</span>
+                    Ücretsiz Wi-Fi
+                </span>
+                <span class="feature-tag">
+                    <span class="material-symbols-outlined">accessible</span>
+                    Engelli Uygun
+                </span>
+                <span class="feature-tag">
+                    <span class="material-symbols-outlined">local_parking</span>
+                    Otopark
+                </span>
+                <span class="feature-tag">
+                    <span class="material-symbols-outlined">credit_card</span>
+                    Kredi Kartı
+                </span>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Reviews -->
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <h3 class="section-title">Değerlendirmeler</h3>
+                <button class="see-all-btn">Tümünü Gör (124)</button>
+            </div>
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Elif K." class="reviewer-avatar">
+                        <span class="reviewer-name">Elif K.</span>
+                    </div>
+                    <span class="review-date">2 gün önce</span>
+                </div>
+                <div class="review-stars">
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span class="material-symbols-outlined filled">star</span>
+                </div>
+                <p class="review-text">
+                    Dudak dolgusu işlemi için geldim, sonuçtan inanılmaz memnunum. Dr. Ayşe Hanım çok ilgiliydi, kesinlikle tavsiye ediyorum!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+        <div class="price-info">
+            <span class="price-label">Hizmet Başlangıç</span>
+            <span class="price-value">₺750<span>/seans</span></span>
+        </div>
+        <button class="booking-btn">
+            <span class="material-symbols-outlined">calendar_month</span>
+            Randevu Oluştur
+        </button>
+    </div>
+</body>
+</html>
