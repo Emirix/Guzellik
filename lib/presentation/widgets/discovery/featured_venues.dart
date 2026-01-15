@@ -259,8 +259,12 @@ class FeaturedVenueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Determine the badge type based on index for variety
-    final String? badgeText = index % 2 == 0 ? '%20 İndirim' : 'Popüler';
-    final Color badgeColor = index % 2 == 0
+    // EXCEPT for Valery (ID: 77777777-7777-7777-7777-777777777777) as requested
+    final bool isValery = venue.id == '77777777-7777-7777-7777-777777777777';
+    final String? badgeText = (index % 2 == 0 && !isValery)
+        ? '%20 İndirim'
+        : 'Popüler';
+    final Color badgeColor = (index % 2 == 0 && !isValery)
         ? AppColors.primary
         : const Color.fromRGBO(255, 255, 255, 0.3);
     final Color textColor = Colors.white;
