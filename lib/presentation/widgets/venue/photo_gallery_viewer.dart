@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import '../../../data/models/venue_photo.dart';
@@ -117,13 +118,13 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
               },
               scrollPhysics: const BouncingScrollPhysics(),
               backgroundDecoration: const BoxDecoration(color: Colors.black),
-              loadingBuilder: (context, event) => Center(
-                child: CircularProgressIndicator(
-                  value: event == null
-                      ? 0
-                      : event.cumulativeBytesLoaded /
-                            (event.expectedTotalBytes ?? 1),
-                  color: Colors.white,
+              loadingBuilder: (context, event) => Shimmer.fromColors(
+                baseColor: Colors.grey[900]!,
+                highlightColor: Colors.grey[850]!,
+                child: Container(
+                  color: Colors.black,
+                  width: double.infinity,
+                  height: double.infinity,
                 ),
               ),
             ),
@@ -146,7 +147,10 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.7),
+                    Colors.transparent,
+                  ],
                 ),
               ),
               child: Row(
@@ -187,7 +191,10 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.8),
+                  ],
                 ),
               ),
               child: Column(

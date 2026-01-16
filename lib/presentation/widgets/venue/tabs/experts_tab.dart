@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../common/empty_state.dart';
 import '../../../../data/models/venue.dart';
 import '../../../../data/models/expert.dart';
 import '../../../../data/models/specialist.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
+
 import '../components/expert_card.dart';
 import '../components/specialist_detail_bottom_sheet.dart';
 
@@ -20,13 +20,10 @@ class ExpertsTab extends StatelessWidget {
 
     if (!hasRealSpecialists && !hasExpertTeam) {
       return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40),
-          child: Text(
-            'Bu mekan için henüz uzman bilgisi eklenmemiş.',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.gray500),
-          ),
+        child: EmptyState(
+          icon: Icons.people_outline_rounded,
+          title: 'Uzman Bulunamadı',
+          message: 'Bu mekan için henüz kayıtlı uzman bilgisi bulunmuyor.',
         ),
       );
     }
@@ -34,7 +31,6 @@ class ExpertsTab extends StatelessWidget {
     final List<Specialist> displaySpecialists = hasRealSpecialists
         ? specialists
         : venue.expertTeam.map((expertData) {
-            // Check if expertData is already a Specialist or a Map
             if (expertData is Specialist) return expertData;
 
             final Map<String, dynamic> data = expertData is Map<String, dynamic>

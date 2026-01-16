@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 /// Fixed bottom bar with booking button
 /// Displays starting price and booking action button
-class BookingBottomBar extends StatelessWidget {
+class BookingBottomBar extends StatefulWidget {
   final VoidCallback onBookingTap;
   final double? rating;
   final int? reviewCount;
@@ -17,6 +18,13 @@ class BookingBottomBar extends StatelessWidget {
     this.reviewCount,
     this.startingPrice,
   });
+
+  @override
+  State<BookingBottomBar> createState() => _BookingBottomBarState();
+}
+
+class _BookingBottomBarState extends State<BookingBottomBar> {
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +69,7 @@ class BookingBottomBar extends StatelessWidget {
                   textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(
-                      '₺${(startingPrice ?? 750).toStringAsFixed(0)}',
+                      '₺${(widget.startingPrice ?? 750).toStringAsFixed(0)}',
                       style: AppTextStyles.heading2.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w800,
@@ -85,55 +93,68 @@ class BookingBottomBar extends StatelessWidget {
 
           const SizedBox(width: 16),
 
-          // Action Button - Premium Gradient
+          // Action Button - Premium Gradient with Animation
           Expanded(
             flex: 3,
-            child: Container(
-              height: 52,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    AppColors.primary.withValues(alpha: 0.9),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: onBookingTap,
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.chat_bubble_outline,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'İletişime Geç',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            letterSpacing: 0.2,
-                          ),
-                        ),
+            child: GestureDetector(
+              onTapDown: (_) {
+                setState(() => _isPressed = true);
+                HapticFeedback.mediumImpact();
+              },
+              onTapUp: (_) => setState(() => _isPressed = false),
+              onTapCancel: () => setState(() => _isPressed = false),
+              child: AnimatedScale(
+                scale: _isPressed ? 0.96 : 1.0,
+                duration: const Duration(milliseconds: 100),
+                curve: Curves.easeInOut,
+                child: Container(
+                  height: 52,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary,
+                        AppColors.primary.withValues(alpha: 0.9),
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: widget.onBookingTap,
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.chat_bubble_outline,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'İletişime Geç',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),

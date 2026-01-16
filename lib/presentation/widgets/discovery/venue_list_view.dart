@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../common/empty_state.dart';
 import 'package:provider/provider.dart';
 import '../../providers/discovery_provider.dart';
 import '../venue/venue_card.dart';
@@ -23,6 +24,21 @@ class _VenueListViewState extends State<VenueListView>
 
     return Consumer<DiscoveryProvider>(
       builder: (context, provider, child) {
+        if (provider.venues.isEmpty && !provider.isLoading) {
+          return Center(
+            child: EmptyState(
+              icon: Icons.search_off_rounded,
+              title: 'Mekan Bulunamadı',
+              message:
+                  'Seçili kriterlere uygun mekan bulunamadı. Lütfen filtrelerinizi güncelleyin.',
+              actionLabel: 'Filtreleri Temizle',
+              onAction: () => provider.updateFilter(
+                provider.filter.copyWith(categories: []),
+              ),
+            ),
+          );
+        }
+
         return SingleChildScrollView(
           padding: const EdgeInsets.only(top: 100, bottom: 80),
           child: Column(

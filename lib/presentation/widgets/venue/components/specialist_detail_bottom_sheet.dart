@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -121,34 +122,51 @@ class SpecialistDetailBottomSheet extends StatelessWidget {
   }
 
   Widget _buildProfileImage(Color accentColor) {
+    final bool isHighlighted = specialist.isFeatured;
+
     return Container(
       width: 120,
       height: 120,
+      padding: EdgeInsets.all(isHighlighted ? 4 : 0),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.nude, width: 4),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: 20,
+            color: isHighlighted
+                ? AppColors.primary.withValues(alpha: 0.2)
+                : AppColors.shadowLight,
+            blurRadius: isHighlighted ? 24 : 20,
             offset: const Offset(0, 10),
           ),
         ],
-      ),
-      child: ClipOval(
-        child: specialist.photoUrl != null && specialist.photoUrl!.isNotEmpty
-            ? CachedNetworkImage(
-                imageUrl: specialist.photoUrl!,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: AppColors.gray50,
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ),
-                errorWidget: (context, url, error) => _buildDefaultAvatar(),
+        gradient: isHighlighted
+            ? const LinearGradient(
+                colors: [AppColors.primary, AppColors.gold, AppColors.primary],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               )
-            : _buildDefaultAvatar(),
+            : null,
+      ),
+      child: Container(
+        padding: EdgeInsets.all(isHighlighted ? 4 : 4),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
+        child: ClipOval(
+          child: specialist.photoUrl != null && specialist.photoUrl!.isNotEmpty
+              ? CachedNetworkImage(
+                  imageUrl: specialist.photoUrl!,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Shimmer.fromColors(
+                    baseColor: AppColors.gray200,
+                    highlightColor: AppColors.gray100,
+                    child: Container(color: AppColors.gray200),
+                  ),
+                  errorWidget: (context, url, error) => _buildDefaultAvatar(),
+                )
+              : _buildDefaultAvatar(),
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../data/models/venue.dart';
 import '../../../../data/models/review.dart';
@@ -120,16 +121,15 @@ class VenueOverviewV2 extends StatelessWidget {
                             width: 160,
                             height: 120,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              width: 160,
-                              height: 120,
-                              color: AppColors.gray100,
-                              child: const Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.primary,
-                                  ),
+                            placeholder: (context, url) => Shimmer.fromColors(
+                              baseColor: AppColors.gray200,
+                              highlightColor: AppColors.gray100,
+                              child: Container(
+                                width: 160,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  color: AppColors.gray200,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
                             ),
@@ -154,16 +154,16 @@ class VenueOverviewV2 extends StatelessWidget {
           const SizedBox(height: 16),
         ],
 
-        // Grey Spacer
-        Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
+        // Refined Divider
+        Container(height: 6, color: AppColors.gray50),
         const SizedBox(height: 24),
 
         // 3. Experts Section
         ExpertsSectionV2(venue: venue, specialists: specialists),
         const SizedBox(height: 16),
 
-        // Grey Spacer
-        Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
+        // Refined Divider
+        Container(height: 6, color: AppColors.gray50),
         const SizedBox(height: 24),
 
         // 5. Working Hours & Map Section
@@ -179,8 +179,8 @@ class VenueOverviewV2 extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // Grey Spacer
-        Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
+        // Refined Divider
+        Container(height: 6, color: AppColors.gray50),
         const SizedBox(height: 24),
 
         // 6. Social Proof (Certificates & Features are combined in TrustBadgesGridV2)
@@ -190,8 +190,8 @@ class VenueOverviewV2 extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // Grey Spacer
-        Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
+        // Refined Divider
+        Container(height: 6, color: AppColors.gray50),
         const SizedBox(height: 24),
 
         // 7. Reviews Section
@@ -205,9 +205,9 @@ class VenueOverviewV2 extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // Grey Spacer
+        // Refined Divider
         if (venue.faq.isNotEmpty) ...[
-          Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
+          Container(height: 6, color: AppColors.gray50),
           const SizedBox(height: 24),
 
           // 8. FAQ Section

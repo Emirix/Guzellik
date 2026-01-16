@@ -9,6 +9,7 @@ class Specialist {
   final String? photoUrl;
   final String? bio;
   final int sortOrder;
+  final bool isFeatured;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -21,6 +22,7 @@ class Specialist {
     this.photoUrl,
     this.bio,
     this.sortOrder = 0,
+    this.isFeatured = false,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -35,6 +37,7 @@ class Specialist {
       photoUrl: ImageUtils.normalizeUrl(json['photo_url'] as String?),
       bio: json['bio'] as String?,
       sortOrder: json['sort_order'] as int? ?? 0,
+      isFeatured: json['is_featured'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
@@ -50,6 +53,7 @@ class Specialist {
       'photo_url': photoUrl,
       'bio': bio,
       'sort_order': sortOrder,
+      'is_featured': isFeatured,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -64,6 +68,7 @@ class Specialist {
     String? photoUrl,
     String? bio,
     int? sortOrder,
+    bool? isFeatured,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -76,6 +81,7 @@ class Specialist {
       photoUrl: photoUrl ?? this.photoUrl,
       bio: bio ?? this.bio,
       sortOrder: sortOrder ?? this.sortOrder,
+      isFeatured: isFeatured ?? this.isFeatured,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -98,7 +104,8 @@ class Specialist {
         other.gender == gender &&
         other.photoUrl == photoUrl &&
         other.bio == bio &&
-        other.sortOrder == sortOrder;
+        other.sortOrder == sortOrder &&
+        other.isFeatured == isFeatured;
   }
 
   @override
@@ -110,6 +117,7 @@ class Specialist {
         gender.hashCode ^
         photoUrl.hashCode ^
         bio.hashCode ^
-        sortOrder.hashCode;
+        sortOrder.hashCode ^
+        isFeatured.hashCode;
   }
 }

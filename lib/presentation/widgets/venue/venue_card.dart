@@ -148,14 +148,55 @@ class VenueCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${venue.address}${venue.distance != null ? ' • ${(venue.distance! / 1000).toStringAsFixed(1)} km' : ''}',
+                    _getShortAddress(venue.address),
                     style: const TextStyle(
-                      color: AppColors.secondary,
+                      color: AppColors.gray500,
                       fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      if (venue.ratingCount > 0) ...[
+                        const Icon(
+                          Icons.star_rounded,
+                          color: Colors.amber,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          venue.rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.black,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      if (venue.distance != null)
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on,
+                              color: AppColors.primary,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${(venue.distance! / 1000).toStringAsFixed(1)} km',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.gray600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   if (venue.category != null)
@@ -389,5 +430,14 @@ class VenueCard extends StatelessWidget {
         style: const TextStyle(color: AppColors.gray600, fontSize: 10),
       ),
     );
+  }
+
+  String _getShortAddress(String address) {
+    if (address.isEmpty) return 'Konum belirtilmedi';
+    final parts = address.split(RegExp(r'[,|/]')).map((e) => e.trim()).toList();
+    if (parts.length >= 2) {
+      return '${parts[parts.length - 2]}, ${parts.last}';
+    }
+    return address;
   }
 }

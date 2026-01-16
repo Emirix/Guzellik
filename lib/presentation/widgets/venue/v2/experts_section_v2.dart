@@ -109,7 +109,7 @@ class ExpertsSectionV2 extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(width: 16),
             itemBuilder: (context, index) {
               final expert = experts[index];
-              final bool isHighlighted = index == 0;
+              final bool isHighlighted = expert.isFeatured;
 
               return GestureDetector(
                 onTap: () => _showSpecialistDetails(context, expert),
@@ -139,31 +139,54 @@ class ExpertsSectionV2 extends StatelessWidget {
       width: 90,
       child: Column(
         children: [
-          // Avatar with border (highlighted for first item)
+          // Avatar with premium border and glow for featured experts
           Container(
             width: 80,
             height: 80,
-            padding: const EdgeInsets.all(3),
+            padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: isHighlighted
-                    ? AppColors.primary.withValues(alpha: 0.2)
-                    : Colors.transparent,
-                width: 2,
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 36,
-              backgroundColor: AvatarUtils.getAvatarBackgroundColor(gender),
-              backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
-              child: imageUrl == null
-                  ? Icon(
-                      Icons.person,
-                      size: 32,
-                      color: AvatarUtils.getAvatarIconColor(gender),
+              boxShadow: isHighlighted
+                  ? [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.2),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : null,
+              gradient: isHighlighted
+                  ? const LinearGradient(
+                      colors: [
+                        AppColors.primary,
+                        AppColors.gold,
+                        AppColors.primary,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     )
                   : null,
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: CircleAvatar(
+                radius: 36,
+                backgroundColor: AvatarUtils.getAvatarBackgroundColor(gender),
+                backgroundImage: imageUrl != null
+                    ? NetworkImage(imageUrl)
+                    : null,
+                child: imageUrl == null
+                    ? Icon(
+                        Icons.person,
+                        size: 32,
+                        color: AvatarUtils.getAvatarIconColor(gender),
+                      )
+                    : null,
+              ),
             ),
           ),
           const SizedBox(height: 8),

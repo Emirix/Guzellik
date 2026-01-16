@@ -632,7 +632,21 @@ class SearchProvider extends ChangeNotifier {
     try {
       // Öne çıkan mekanları önerilen olarak kullan
       final venues = await _venueRepository.getFeaturedVenues();
-      _suggestedVenues = venues;
+
+      // Update distances locally if we have current position
+      if (_userLatitude != null && _userLongitude != null) {
+        _suggestedVenues = venues.map((v) {
+          final distance = Geolocator.distanceBetween(
+            _userLatitude!,
+            _userLongitude!,
+            v.latitude,
+            v.longitude,
+          );
+          return v.copyWith(distance: distance);
+        }).toList();
+      } else {
+        _suggestedVenues = venues;
+      }
     } catch (e) {
       debugPrint('Error loading suggested venues: $e');
     } finally {

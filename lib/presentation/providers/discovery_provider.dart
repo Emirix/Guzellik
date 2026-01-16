@@ -202,6 +202,11 @@ class DiscoveryProvider extends ChangeNotifier {
 
       _hasMoreNearby = _nearbyVenues.length >= _nearbyPageSize;
       _nearbyOffset += _nearbyVenues.length;
+
+      // Ensure distances are calculated if we have position
+      if (_currentPosition != null && _nearbyVenues.isNotEmpty) {
+        _updateAllDistances();
+      }
     } catch (e) {
       debugPrint('Error fetching nearby venues: $e');
     } finally {
@@ -302,11 +307,8 @@ class DiscoveryProvider extends ChangeNotifier {
       _hasMoreFeatured = _featuredVenues.length >= _featuredPageSize;
       _featuredOffset = _featuredVenues.length;
 
-      // If position is available but distance is null (e.g. view didn't return it), calculate locally
-      if (_currentPosition != null &&
-          _featuredVenues.isNotEmpty &&
-          (_featuredVenues.first.distance == null ||
-              _featuredVenues.first.distance == 0)) {
+      // If position is available, always ensure distances are updated
+      if (_currentPosition != null && _featuredVenues.isNotEmpty) {
         _updateAllDistances();
       }
     } catch (e) {
@@ -419,6 +421,11 @@ class DiscoveryProvider extends ChangeNotifier {
 
       _hasMoreNearby = _nearbyVenues.length >= _nearbyPageSize;
       _nearbyOffset = _nearbyVenues.length;
+
+      // Ensure distances are calculated locally if we have position
+      if (_currentPosition != null && _nearbyVenues.isNotEmpty) {
+        _updateAllDistances();
+      }
     } catch (e) {
       debugPrint('Error fetching nearby venues: $e');
       // Note: Removed getVenues() fallback to enforce subscription filtering

@@ -350,6 +350,26 @@ class VenueHeroV2 extends StatelessWidget {
                 ),
               ),
             ),
+            if (venue.distance != null) ...[
+              const SizedBox(width: 8),
+              Container(
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  color: AppColors.gray300,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${(venue.distance! / 1000).toStringAsFixed(1)} km',
+                style: GoogleFonts.manrope(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
           ],
         ),
       ],

@@ -2,10 +2,38 @@ import 'package:flutter/material.dart';
 import '../../../../data/models/venue.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class WorkingHoursCardV2 extends StatelessWidget {
+class WorkingHoursCardV2 extends StatefulWidget {
   final Venue venue;
 
   const WorkingHoursCardV2({super.key, required this.venue});
+
+  @override
+  State<WorkingHoursCardV2> createState() => _WorkingHoursCardV2State();
+}
+
+class _WorkingHoursCardV2State extends State<WorkingHoursCardV2>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 0.5).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+    _pulseController.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +57,7 @@ class WorkingHoursCardV2 extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: isOpen ? const Color(0xFF22C55E) : Colors.redAccent,
-                    shape: BoxShape.circle,
-                  ),
-                ),
+                _buildStatusDot(context, isOpen),
                 const SizedBox(width: 8),
                 Text(
                   isOpen ? 'Şu an Açık' : 'Şu an Kapalı',
@@ -91,7 +112,7 @@ class WorkingHoursCardV2 extends StatelessWidget {
     };
 
     final List<Widget> widgets = [];
-    final hours = venue.workingHours;
+    final hours = widget.venue.workingHours;
 
     final sortedKeys = [
       'monday',
@@ -132,7 +153,7 @@ class WorkingHoursCardV2 extends StatelessWidget {
         'saturday',
       ];
       final currentDayKey = dayNames[now.weekday % 7];
-      final hoursRaw = venue.workingHours[currentDayKey];
+      final hoursRaw = widget.venue.workingHours[currentDayKey];
 
       // Use the formatted hours
       final formattedHours = _formatDayHours(hoursRaw);
@@ -188,6 +209,38 @@ class WorkingHoursCardV2 extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildStatusDot(BuildContext context, bool isOpen) {
+    // Check if animations should be disabled for accessibility
+    final disableAnimations = MediaQuery.of(context).disableAnimations;
+
+    if (!isOpen || disableAnimations) {
+      // Static dot for closed status or when animations are disabled
+      return Container(
+        width: 8,
+        height: 8,
+        decoration: BoxDecoration(
+          color: isOpen ? const Color(0xFF22C55E) : Colors.redAccent,
+          shape: BoxShape.circle,
+        ),
+      );
+    }
+
+    // Animated pulsing dot for open status
+    return AnimatedBuilder(
+      animation: _pulseController,
+      builder: (context, child) {
+        return Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: Color(0xFF22C55E).withValues(alpha: _pulseAnimation.value),
+            shape: BoxShape.circle,
+          ),
+        );
+      },
     );
   }
 }

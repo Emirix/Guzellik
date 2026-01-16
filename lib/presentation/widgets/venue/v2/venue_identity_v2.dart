@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../data/models/venue.dart';
@@ -7,15 +8,22 @@ import '../../../providers/auth_provider.dart';
 import '../../../../data/repositories/auth_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/utils/icon_utils.dart';
+
 import '../../../providers/venue_details_provider.dart';
 import '../../dialogs/follow_info_bottom_sheet.dart';
 import '../../dialogs/unfollow_confirmation_dialog.dart';
 
-class VenueIdentityV2 extends StatelessWidget {
+class VenueIdentityV2 extends StatefulWidget {
   final Venue venue;
 
   const VenueIdentityV2({super.key, required this.venue});
+
+  @override
+  State<VenueIdentityV2> createState() => _VenueIdentityV2State();
+}
+
+class _VenueIdentityV2State extends State<VenueIdentityV2> {
+  bool _isPressed = false;
 
   Future<void> _handleFollowTap(BuildContext context) async {
     final provider = context.read<VenueDetailsProvider>();
@@ -52,7 +60,7 @@ class VenueIdentityV2 extends StatelessWidget {
       // Show unfollow confirmation
       final confirmed = await UnfollowConfirmationDialog.show(
         context,
-        venue.name,
+        widget.venue.name,
       );
       if (!confirmed) return;
 
@@ -60,7 +68,7 @@ class VenueIdentityV2 extends StatelessWidget {
       if (success && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${venue.name} takipten çıkarıldı'),
+            content: Text('${widget.venue.name} takipten çıkarıldı'),
             backgroundColor: AppColors.success,
             duration: const Duration(seconds: 2),
           ),
@@ -105,7 +113,7 @@ class VenueIdentityV2 extends StatelessWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${venue.name} takip ediliyor'),
+              content: Text('${widget.venue.name} takip ediliyor'),
               backgroundColor: AppColors.success,
               duration: const Duration(seconds: 2),
             ),
@@ -127,47 +135,63 @@ class VenueIdentityV2 extends StatelessWidget {
     bool isLoading,
     BuildContext context,
   ) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      child: Material(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: isLoading ? null : () => _handleFollowTap(context),
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isLoading)
-                  SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.primary,
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() => _isPressed = true);
+        HapticFeedback.mediumImpact();
+      },
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.95 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeInOut,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          child: Material(
+            color: AppColors.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              onTap: isLoading ? null : () => _handleFollowTap(context),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isLoading)
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.primary,
+                          ),
+                        ),
+                      )
+                    else
+                      Icon(
+                        isFollowing ? Icons.check : Icons.add,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                    const SizedBox(width: 4),
+                    Text(
+                      isFollowing ? 'Takipte' : 'Takip Et',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: AppColors.primary,
+                        letterSpacing: 0.3,
                       ),
                     ),
-                  )
-                else
-                  Icon(
-                    isFollowing ? Icons.check : Icons.add,
-                    size: 16,
-                    color: AppColors.primary,
-                  ),
-                const SizedBox(width: 4),
-                Text(
-                  isFollowing ? 'Takipte' : 'Takip Et',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: AppColors.primary,
-                    letterSpacing: 0.3,
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -192,7 +216,7 @@ class VenueIdentityV2 extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    venue.name,
+                    widget.venue.name,
                     style: AppTextStyles.heading1.copyWith(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
@@ -218,7 +242,7 @@ class VenueIdentityV2 extends StatelessWidget {
                 const SizedBox(width: 4),
                 Flexible(
                   child: Text(
-                    venue.address,
+                    widget.venue.address,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.gray500,
                       fontSize: 13,
@@ -235,7 +259,7 @@ class VenueIdentityV2 extends StatelessWidget {
                 ),
                 Flexible(
                   child: Text(
-                    venue.category?.name ?? 'Güzellik Salonu',
+                    widget.venue.category?.name ?? 'Güzellik Salonu',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.gray500,
                       fontSize: 13,
@@ -248,7 +272,7 @@ class VenueIdentityV2 extends StatelessWidget {
             const SizedBox(height: 8),
             // Venue Description
             Text(
-              venue.description ??
+              widget.venue.description ??
                   'Bu mekan hakkında henüz detaylı bilgi eklenmemiştir. Daha fazla bilgi almak için iletişime geçebilirsiniz.',
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.gray600,
@@ -261,7 +285,7 @@ class VenueIdentityV2 extends StatelessWidget {
             const SizedBox(height: 12),
             const SizedBox(height: 12),
             // Rating Row
-            if (venue.ratingCount > 0)
+            if (widget.venue.ratingCount > 0)
               Row(
                 children: [
                   // Rating Badge - Premium design
@@ -289,7 +313,7 @@ class VenueIdentityV2 extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          venue.rating.toStringAsFixed(1),
+                          widget.venue.rating.toStringAsFixed(1),
                           style: const TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,
@@ -301,7 +325,7 @@ class VenueIdentityV2 extends StatelessWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: List.generate(5, (index) {
-                            final rating = venue.rating;
+                            final rating = widget.venue.rating;
                             if (index < rating.floor()) {
                               return const Icon(
                                 Icons.star_rounded,
@@ -326,7 +350,7 @@ class VenueIdentityV2 extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '(${venue.ratingCount})',
+                          '(${widget.venue.ratingCount})',
                           style: AppTextStyles.caption.copyWith(
                             color: AppColors.gray400,
                             fontWeight: FontWeight.w600,
