@@ -5,6 +5,7 @@ import '../../../../data/models/specialist.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../components/expert_card.dart';
+import '../components/specialist_detail_bottom_sheet.dart';
 
 class ExpertsTab extends StatelessWidget {
   final Venue venue;
@@ -30,27 +31,26 @@ class ExpertsTab extends StatelessWidget {
       );
     }
 
-    final List<Expert> experts = hasRealSpecialists
-        ? specialists.map((s) {
-            return Expert(
-              id: s.id,
-              name: s.name,
-              title: s.profession,
-              photoUrl: s.photoUrl,
-              rating: 5.0, // Default for now
-              specialty: s.profession,
-            );
-          }).toList()
+    final List<Specialist> displaySpecialists = hasRealSpecialists
+        ? specialists
         : venue.expertTeam.map((expertData) {
-            return Expert(
-              id: expertData['id']?.toString() ?? '',
-              name: expertData['name'] ?? 'İsimsiz Uzman',
-              title: expertData['specialty'] ?? expertData['title'] ?? 'Uzman',
-              photoUrl: expertData['photo_url'],
-              rating: expertData['rating'] != null
-                  ? (expertData['rating'] as num).toDouble()
-                  : null,
-              specialty: expertData['specialty'],
+            // Check if expertData is already a Specialist or a Map
+            if (expertData is Specialist) return expertData;
+
+            final Map<String, dynamic> data = expertData is Map<String, dynamic>
+                ? expertData
+                : {};
+
+            return Specialist(
+              id: data['id']?.toString() ?? '',
+              venueId: venue.id,
+              name: data['name'] ?? 'İsimsiz Uzman',
+              profession: data['specialty'] ?? data['title'] ?? 'Uzman',
+              photoUrl: data['photo_url'] ?? data['image'],
+              bio: data['bio'],
+              gender: data['gender'],
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
             );
           }).toList();
 
@@ -62,15 +62,31 @@ class ExpertsTab extends StatelessWidget {
         mainAxisSpacing: 16,
         childAspectRatio: 0.85,
       ),
-      itemCount: experts.length,
+      itemCount: displaySpecialists.length,
       itemBuilder: (context, index) {
+        final specialist = displaySpecialists[index];
+        final expert = Expert(
+          id: specialist.id,
+          name: specialist.name,
+          title: specialist.profession,
+          photoUrl: specialist.photoUrl,
+          specialty: specialist.profession,
+        );
+
         return ExpertCard(
-          expert: experts[index],
-          onTap: () {
-            // TODO: Navigate to expert profile or booking
-          },
+          expert: expert,
+          onTap: () => _showSpecialistDetails(context, specialist),
         );
       },
+    );
+  }
+
+  void _showSpecialistDetails(BuildContext context, Specialist specialist) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SpecialistDetailBottomSheet(specialist: specialist),
     );
   }
 }
