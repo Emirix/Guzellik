@@ -16,28 +16,24 @@ class AdminBasicInfoScreen extends StatefulWidget {
 
 class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
   late TextEditingController _descriptionController;
   late TextEditingController _phoneController;
   late TextEditingController _emailController;
   late TextEditingController _instagramController;
   late TextEditingController _whatsappController;
   late TextEditingController _facebookController;
-  late TextEditingController _websiteController;
 
   bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController();
     _descriptionController = TextEditingController();
     _phoneController = TextEditingController();
     _emailController = TextEditingController();
     _instagramController = TextEditingController();
     _whatsappController = TextEditingController();
     _facebookController = TextEditingController();
-    _websiteController = TextEditingController();
   }
 
   @override
@@ -57,27 +53,23 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
       final provider = context.read<AdminBasicInfoProvider>();
       await provider.loadVenueBasicInfo(venueId);
 
-      _nameController.text = provider.name;
       _descriptionController.text = provider.description;
       _phoneController.text = provider.phone;
       _emailController.text = provider.email;
       _instagramController.text = provider.instagramUrl;
       _whatsappController.text = provider.whatsappNumber;
       _facebookController.text = provider.facebookUrl;
-      _websiteController.text = provider.websiteUrl;
     }
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
     _descriptionController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
     _instagramController.dispose();
     _whatsappController.dispose();
     _facebookController.dispose();
-    _websiteController.dispose();
     super.dispose();
   }
 
@@ -114,7 +106,6 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
     try {
       await provider.updateBasicInfo(
         venueId: venueId,
-        name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
         phone: _phoneController.text.trim(),
         email: _emailController.text.trim(),
@@ -122,7 +113,6 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
           'instagram': cleanInstagram(_instagramController.text),
           'whatsapp': _whatsappController.text.trim(),
           'facebook': _facebookController.text.trim(),
-          'website': _websiteController.text.trim(),
         },
       );
 
@@ -206,18 +196,6 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
                     child: Column(
                       children: [
                         _buildInputField(
-                          controller: _nameController,
-                          label: 'İşletme Adı',
-                          hint: 'Örn: Hair Salon Vibe',
-                          icon: Icons.storefront_rounded,
-                          validator: (v) =>
-                              v?.isEmpty == true ? 'Zorunlu alan' : null,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Divider(height: 1),
-                        ),
-                        _buildInputField(
                           controller: _descriptionController,
                           label: 'Hakkında',
                           hint: 'İşletmenizi kısaca tanıtın...',
@@ -278,16 +256,6 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
                           icon: FontAwesomeIcons.whatsapp,
                           isFa: true,
                           keyboardType: TextInputType.phone,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Divider(height: 1),
-                        ),
-                        _buildInputField(
-                          controller: _websiteController,
-                          label: 'Web Sitesi',
-                          hint: 'www.isletme.com',
-                          icon: Icons.language_rounded,
                         ),
                       ],
                     ),

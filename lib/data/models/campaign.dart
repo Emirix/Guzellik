@@ -1,4 +1,5 @@
 import 'venue.dart';
+import '../../core/utils/image_utils.dart';
 
 /// Campaign model representing promotional offers from venues
 class Campaign {
@@ -111,7 +112,7 @@ class Campaign {
           : null,
       startDate: DateTime.parse(json['start_date'] as String),
       endDate: DateTime.parse(json['end_date'] as String),
-      imageUrl: json['image_url'] as String?,
+      imageUrl: ImageUtils.normalizeUrl(json['image_url'] as String?),
       isActive: json['is_active'] as bool? ?? true,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)

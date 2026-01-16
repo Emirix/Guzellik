@@ -70,4 +70,37 @@ class ImageUtils {
         return CompressFormat.jpeg;
     }
   }
+
+  /// Normalizes an image URL, converting Supabase URLs to FTP Storage URLs if needed.
+  static String? normalizeUrl(String? url) {
+    if (url == null || url.isEmpty) return url;
+    if (!url.contains('supabase.co/storage/v1/object/public/')) return url;
+
+    try {
+      // Supabase format: https://[PROJECT].supabase.co/storage/v1/object/public/[BUCKET]/[PATH]
+      // Target FTP format: https://guzellikharitam.com/storage/[BUCKET]/[PATH]
+
+      final uri = Uri.parse(url);
+      final pathSegments = uri.pathSegments;
+
+      // Minimum path segments should be: storage, v1, object, public, bucket, ...path
+      if (pathSegments.length < 5) return url;
+
+      // Get the parts after /public/
+      int publicIndex = pathSegments.indexOf('public');
+      if (publicIndex == -1 || publicIndex >= pathSegments.length - 1)
+        return url;
+
+      final bucket = pathSegments[publicIndex + 1];
+      final restOfPath = pathSegments.skip(publicIndex + 2).join('/');
+
+      // Mapping: venue-images is mapped to venue-photos in FTP for legacy compatibility
+      final finalBucket = bucket == 'venue-images' ? 'venue-photos' : bucket;
+
+      return 'https://guzellikharitam.com/storage/$finalBucket/$restOfPath';
+    } catch (e) {
+      debugPrint('Error normalizing URL $url: $e');
+      return url;
+    }
+  }
 }

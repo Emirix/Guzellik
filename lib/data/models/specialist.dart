@@ -1,3 +1,5 @@
+import '../../core/utils/image_utils.dart';
+
 class Specialist {
   final String id;
   final String venueId;
@@ -30,7 +32,7 @@ class Specialist {
       name: json['name'] as String,
       profession: json['profession'] as String,
       gender: json['gender'] as String?,
-      photoUrl: json['photo_url'] as String?,
+      photoUrl: ImageUtils.normalizeUrl(json['photo_url'] as String?),
       bio: json['bio'] as String?,
       sortOrder: json['sort_order'] as int? ?? 0,
       createdAt: DateTime.parse(json['created_at'] as String),

@@ -1,22 +1,24 @@
-import { supabase } from './supabaseClient';
+const API_URL = 'https://guzellikharitam.com/api';
+const API_KEY = 'GuzellikHaritam_Secure_2026_Key';
 
 export const photoService = {
     async uploadPhoto(file, venueId) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${venueId}/${Math.random()}.${fileExt}`;
-        const filePath = `venue-photos/${fileName}`;
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('path', `venue-photos/${venueId}`);
 
-        let { error: uploadError } = await supabase.storage
-            .from('venue-photos')
-            .upload(filePath, file);
+        const response = await fetch(`${API_URL}/upload.php`, {
+            method: 'POST',
+            headers: {
+                'Authorization': API_KEY
+            },
+            body: formData
+        });
 
-        if (uploadError) throw uploadError;
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Upload failed');
 
-        const { data: { publicUrl } } = supabase.storage
-            .from('venue-photos')
-            .getPublicUrl(filePath);
-
-        return publicUrl;
+        return result.url;
     },
 
     async getVenuePhotos(venueId) {

@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../data/models/campaign.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:path/path.dart' as path;
+import '../../data/services/storage_service.dart';
 
 class AdminCampaignsProvider extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
+  final _storageService = StorageService();
 
   List<Campaign> _campaigns = [];
   bool _isLoading = false;
@@ -54,16 +55,11 @@ class AdminCampaignsProvider extends ChangeNotifier {
     try {
       String? imageUrl;
       if (imageFile != null) {
-        final fileName =
-            'campaign_${DateTime.now().millisecondsSinceEpoch}${path.extension(imageFile.path)}';
-        final storagePath = '$venueId/$fileName';
-
-        await _supabase.storage
-            .from('campaigns')
-            .upload(storagePath, imageFile);
-        imageUrl = _supabase.storage
-            .from('campaigns')
-            .getPublicUrl(storagePath);
+        imageUrl = await _storageService.uploadImage(
+          bucket: 'campaigns',
+          path: venueId,
+          imageFile: imageFile,
+        );
       }
 
       await _supabase.from('campaigns').insert({
@@ -118,16 +114,16 @@ class AdminCampaignsProvider extends ChangeNotifier {
         final current = _campaigns.firstWhere((c) => c.id == campaignId);
         final venueId = current.venueId;
 
-        final fileName =
-            'campaign_${DateTime.now().millisecondsSinceEpoch}${path.extension(newImageFile.path)}';
-        final storagePath = '$venueId/$fileName';
+        // Delete old image if exists
+        if (current.imageUrl != null) {
+          _storageService.deleteFileByUrl(current.imageUrl!);
+        }
 
-        await _supabase.storage
-            .from('campaigns')
-            .upload(storagePath, newImageFile);
-        updates['image_url'] = _supabase.storage
-            .from('campaigns')
-            .getPublicUrl(storagePath);
+        updates['image_url'] = await _storageService.uploadImage(
+          bucket: 'campaigns',
+          path: venueId,
+          imageFile: newImageFile,
+        );
       }
 
       await _supabase.from('campaigns').update(updates).eq('id', campaignId);
@@ -151,14 +147,7 @@ class AdminCampaignsProvider extends ChangeNotifier {
       await _supabase.from('campaigns').delete().eq('id', campaignId);
 
       if (current.imageUrl != null) {
-        final uri = Uri.parse(current.imageUrl!);
-        final pathSegments = uri.pathSegments;
-        if (pathSegments.length >= 2) {
-          final storagePath = pathSegments
-              .sublist(pathSegments.length - 2)
-              .join('/');
-          await _supabase.storage.from('campaigns').remove([storagePath]);
-        }
+        await _storageService.deleteFileByUrl(current.imageUrl!);
       }
 
       await fetchCampaigns(venueId);

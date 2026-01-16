@@ -1,5 +1,6 @@
 import 'venue_category.dart';
 import 'venue_photo.dart';
+import '../../core/utils/image_utils.dart';
 
 class Venue {
   final String id;
@@ -11,6 +12,7 @@ class Venue {
   final String? imageUrl; // DEPRECATED - use heroImages instead
 
   // Gallery Support
+  final String? coverImageUrl; // Premium cover photo
   final List<String> heroImages; // Hero carousel URLs
   final List<VenuePhoto>? galleryPhotos; // Detailed gallery (lazy loaded)
 
@@ -60,6 +62,7 @@ class Venue {
     required this.latitude,
     required this.longitude,
     this.imageUrl,
+    this.coverImageUrl,
     this.heroImages = const [],
     this.galleryPhotos,
     this.category,
@@ -96,13 +99,15 @@ class Venue {
     if (json['hero_images'] != null) {
       final heroImagesJson = json['hero_images'];
       if (heroImagesJson is List) {
-        heroImagesList = heroImagesJson.map((e) => e.toString()).toList();
+        heroImagesList = heroImagesJson
+            .map((e) => ImageUtils.normalizeUrl(e.toString())!)
+            .toList();
       }
     }
 
     // Fallback: if hero_images is empty but image_url exists, use it
     if (heroImagesList.isEmpty && json['image_url'] != null) {
-      heroImagesList = [json['image_url'] as String];
+      heroImagesList = [ImageUtils.normalizeUrl(json['image_url'] as String)!];
     }
 
     // Parse gallery photos if provided
@@ -147,7 +152,10 @@ class Venue {
       address: _toString(json['address']) ?? '',
       latitude: _toDouble(json['latitude']),
       longitude: _toDouble(json['longitude']),
-      imageUrl: _toString(json['image_url']),
+      imageUrl: ImageUtils.normalizeUrl(_toString(json['image_url'])),
+      coverImageUrl: ImageUtils.normalizeUrl(
+        _toString(json['cover_image_url']),
+      ),
       heroImages: heroImagesList,
       galleryPhotos: galleryPhotosList,
       category: venueCategory,
@@ -235,6 +243,7 @@ class Venue {
       'latitude': latitude,
       'longitude': longitude,
       'image_url': imageUrl,
+      'cover_image_url': coverImageUrl,
       'hero_images': heroImages,
       'gallery_photos': galleryPhotos?.map((photo) => photo.toJson()).toList(),
       'category': category?.toJson(),
@@ -271,6 +280,7 @@ class Venue {
     double? latitude,
     double? longitude,
     String? imageUrl,
+    String? coverImageUrl,
     List<String>? heroImages,
     List<VenuePhoto>? galleryPhotos,
     VenueCategory? category,
@@ -304,6 +314,7 @@ class Venue {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       imageUrl: imageUrl ?? this.imageUrl,
+      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
       heroImages: heroImages ?? this.heroImages,
       galleryPhotos: galleryPhotos ?? this.galleryPhotos,
       category: category ?? this.category,

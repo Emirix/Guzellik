@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import '../../data/models/venue_service.dart';
 import '../../data/models/service_category.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../data/services/storage_service.dart';
 
 class AdminServicesProvider extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
+  final _storageService = StorageService();
 
   List<VenueService> _venueServices = [];
   List<ServiceCategory> _allCategories = [];
@@ -86,21 +88,12 @@ class AdminServicesProvider extends ChangeNotifier {
 
   Future<String?> uploadServiceImage(String venueId, File imageFile) async {
     try {
-      final fileExt = imageFile.path.split('.').last;
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExt';
-      final filePath = '$venueId/services/$fileName';
-
-      await _supabase.storage
-          .from('venue-services')
-          .upload(
-            filePath,
-            imageFile,
-            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-          );
-
-      return _supabase.storage.from('venue-services').getPublicUrl(filePath);
+      return await _storageService.uploadImage(
+        bucket: 'venue-services',
+        path: '$venueId/services',
+        imageFile: imageFile,
+      );
     } catch (e) {
-      // If bucket doesn't exist, try fallback bucket or rethrow
       rethrow;
     }
   }
@@ -152,6 +145,15 @@ class AdminServicesProvider extends ChangeNotifier {
     bool? isActive,
   }) async {
     try {
+      // If we are updating with a NEW custom image URL, we should delete the OLD one if it was different
+      if (customImageUrl != null && _venueServices.isNotEmpty) {
+        final current = _venueServices.firstWhere((s) => s.id == serviceId);
+        if (current.customImageUrl != null &&
+            current.customImageUrl != customImageUrl) {
+          _storageService.deleteFileByUrl(current.customImageUrl!);
+        }
+      }
+
       final updates = <String, dynamic>{};
       updates['custom_name'] = customName;
       updates['custom_description'] = customDescription;
@@ -182,8 +184,17 @@ class AdminServicesProvider extends ChangeNotifier {
         (element) => element.id == serviceId,
       );
       if (index != -1) {
-        final venueId = _venueServices[index].venueId;
+        final service = _venueServices[index];
+        final venueId = service.venueId;
+
+        // 1. Delete from DB
         await _supabase.from('venue_services').delete().eq('id', serviceId);
+
+        // 2. Delete from Storage if exists
+        if (service.customImageUrl != null) {
+          await _storageService.deleteFileByUrl(service.customImageUrl!);
+        }
+
         await fetchVenueServices(venueId);
         notifyListeners();
       }

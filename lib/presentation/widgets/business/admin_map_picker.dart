@@ -128,10 +128,14 @@ class _AdminMapPickerState extends State<AdminMapPicker> {
             ),
             onMapCreated: (controller) async {
               _mapController = controller;
-              final style = await DefaultAssetBundle.of(
-                context,
-              ).loadString('assets/maps/rose_premium_style.json');
-              _mapController?.setMapStyle(style);
+              try {
+                final style = await DefaultAssetBundle.of(
+                  context,
+                ).loadString('assets/maps/rose_premium_style.json');
+                await _mapController?.setMapStyle(style);
+              } catch (e) {
+                debugPrint('Map style loading failed: $e');
+              }
             },
             gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
               Factory<OneSequenceGestureRecognizer>(

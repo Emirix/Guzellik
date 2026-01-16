@@ -1,3 +1,5 @@
+import '../../core/utils/image_utils.dart';
+
 class Review {
   final String id;
   final String venueId;
@@ -30,7 +32,7 @@ class Review {
     if (json['profiles'] != null && json['profiles'] is Map) {
       final profile = json['profiles'];
       name = profile['full_name'];
-      avatar = profile['avatar_url'];
+      avatar = ImageUtils.normalizeUrl(profile['avatar_url']);
     }
 
     return Review(

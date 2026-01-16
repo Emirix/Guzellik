@@ -1,3 +1,5 @@
+import '../../core/utils/image_utils.dart';
+
 enum PhotoCategory {
   interior,
   exterior,
@@ -84,8 +86,8 @@ class VenuePhoto {
     return VenuePhoto(
       id: json['id'] as String? ?? '',
       venueId: json['venue_id'] as String? ?? '',
-      url: json['url'] as String? ?? '',
-      thumbnailUrl: json['thumbnail_url'] as String?,
+      url: ImageUtils.normalizeUrl(json['url'] as String? ?? '')!,
+      thumbnailUrl: ImageUtils.normalizeUrl(json['thumbnail_url'] as String?),
       title: json['title'] as String?,
       category: json['category'] != null
           ? PhotoCategory.fromJson(json['category'] as String)

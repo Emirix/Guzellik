@@ -117,6 +117,18 @@ class VenueHeroV2 extends StatelessWidget {
               child: Builder(
                 builder: (builderContext) {
                   List<String> images = [];
+
+                  // Use the main image (image_url) as first priority
+                  if (venue.imageUrl != null) {
+                    images.add(venue.imageUrl!);
+                  }
+
+                  // Use cover photo if available (if different from image_url)
+                  if (venue.coverImageUrl != null &&
+                      !images.contains(venue.coverImageUrl!)) {
+                    images.add(venue.coverImageUrl!);
+                  }
+
                   if (venue.galleryPhotos != null &&
                       venue.galleryPhotos!.isNotEmpty) {
                     final sorted = List<VenuePhoto>.from(venue.galleryPhotos!);
@@ -125,11 +137,19 @@ class VenueHeroV2 extends StatelessWidget {
                       if (!a.isHeroImage && b.isHeroImage) return 1;
                       return a.sortOrder.compareTo(b.sortOrder);
                     });
-                    images = sorted.map((p) => p.url).toList();
+
+                    final galleryUrls = sorted.map((p) => p.url).toList();
+                    for (var url in galleryUrls) {
+                      if (!images.contains(url)) {
+                        images.add(url);
+                      }
+                    }
                   } else if (venue.heroImages.isNotEmpty) {
-                    images = venue.heroImages;
-                  } else if (venue.imageUrl != null) {
-                    images = [venue.imageUrl!];
+                    for (var url in venue.heroImages) {
+                      if (!images.contains(url)) {
+                        images.add(url);
+                      }
+                    }
                   }
 
                   return VenueHeroCarousel(

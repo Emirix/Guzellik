@@ -1,3 +1,5 @@
+import '../../core/utils/image_utils.dart';
+
 class Service {
   final String id;
   final String venueServiceId;
@@ -39,9 +41,13 @@ class Service {
       venueServiceId: json['venue_service_id'] as String? ?? '',
       name: json['name'] as String? ?? 'İsimsiz Hizmet',
       description: json['description'] as String?,
-      imageUrl: json['image_url'] as String?,
-      beforePhotoUrl: json['before_photo_url'] as String?,
-      afterPhotoUrl: json['after_photo_url'] as String?,
+      imageUrl: ImageUtils.normalizeUrl(json['image_url'] as String?),
+      beforePhotoUrl: ImageUtils.normalizeUrl(
+        json['before_photo_url'] as String?,
+      ),
+      afterPhotoUrl: ImageUtils.normalizeUrl(
+        json['after_photo_url'] as String?,
+      ),
       expertName: json['expert_name'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)

@@ -45,6 +45,8 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Yakınınızdaki güzellik merkezlerini harita üzerinde görebilmek için konum izni gereklidir.</string>
 	<key>NSLocationAlwaysUsageDescription</key>

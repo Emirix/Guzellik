@@ -24,6 +24,7 @@ import '../../presentation/screens/business/admin/admin_campaigns_screen.dart';
 import '../../presentation/screens/business/admin/admin_working_hours_screen.dart';
 import '../../presentation/screens/business/admin/admin_location_screen.dart';
 import '../../presentation/screens/business/admin/admin_faq_screen.dart';
+import '../../presentation/screens/business/admin/admin_cover_photo_screen.dart';
 import '../../presentation/screens/business/admin_basic_info_screen.dart';
 import '../../presentation/widgets/common/business_bottom_nav.dart';
 import '../../presentation/providers/business_provider.dart';
@@ -252,6 +253,19 @@ class AppRouter {
           redirectPath: '/business/admin/faq',
           child: AdminFaqScreen(),
         ),
+      ),
+      GoRoute(
+        path: '/business/admin/cover-photo',
+        name: 'admin-cover-photo',
+        builder: (context, state) {
+          final businessProvider = context.read<BusinessProvider>();
+          final venue = businessProvider.businessVenue;
+          return AuthGuard(
+            requiredFor: 'Kapak Fotoğrafı',
+            redirectPath: '/business/admin/cover-photo',
+            child: AdminCoverPhotoScreen(venue: venue!),
+          );
+        },
       ),
     ],
 

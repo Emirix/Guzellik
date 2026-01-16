@@ -125,9 +125,9 @@ class MediaWithUrl with _$MediaWithUrl {
     );
   }
 
-  /// Get the full Supabase storage URL
-  String getUrl(String supabaseUrl) {
-    return '$supabaseUrl/storage/v1/object/public/media/$storagePath';
+  /// Get the full storage URL
+  String getUrl([String? _]) {
+    return 'https://guzellikharitam.com/storage/media/$storagePath';
   }
 
   /// Get alt text from metadata

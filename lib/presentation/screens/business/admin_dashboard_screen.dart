@@ -76,10 +76,9 @@ class AdminDashboardScreen extends StatelessWidget {
   }
 
   Widget _buildCoverAndProfile(BuildContext context, Venue? venue) {
-    final coverUrl = venue?.heroImages.isNotEmpty == true
-        ? venue!.heroImages.first
-        : null;
-    final logoUrl = venue?.imageUrl;
+    final coverUrl =
+        venue?.coverImageUrl ??
+        (venue?.heroImages.isNotEmpty == true ? venue!.heroImages.first : null);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -101,7 +100,7 @@ class AdminDashboardScreen extends StatelessWidget {
             decoration: BoxDecoration(color: Colors.black.withOpacity(0.2)),
             child: Center(
               child: ElevatedButton.icon(
-                onPressed: () => context.push('/business/admin/gallery'),
+                onPressed: () => context.push('/business/admin/cover-photo'),
                 icon: const Icon(Icons.photo_camera, size: 18),
                 label: const Text(
                   'Kapağı Değiştir',
@@ -122,71 +121,9 @@ class AdminDashboardScreen extends StatelessWidget {
 
         // Profile Details (Positioned relative to cover)
         Padding(
-          padding: const EdgeInsets.only(top: 180),
+          padding: const EdgeInsets.only(top: 210),
           child: Column(
             children: [
-              // Logo
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 4),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                        image: logoUrl != null
-                            ? DecorationImage(
-                                image: NetworkImage(logoUrl),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      child: logoUrl == null
-                          ? const Icon(
-                              Icons.store,
-                              size: 50,
-                              color: AppColors.primary,
-                            )
-                          : null,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
               // Venue Name & Info
               Column(
                 children: [
@@ -323,6 +260,13 @@ class AdminDashboardScreen extends StatelessWidget {
             title: 'Galeri & Medya',
             subtitle: 'Salon Görselleri, Video Tanıtımı',
             onTap: () => context.push('/business/admin/gallery'),
+          ),
+          _buildListItem(
+            context,
+            icon: Icons.add_photo_alternate,
+            title: 'Kapak Fotoğrafı',
+            subtitle: 'Profil Kapak Görselini Belirle',
+            onTap: () => context.push('/business/admin/cover-photo'),
           ),
           _buildListItem(
             context,

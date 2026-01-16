@@ -623,4 +623,20 @@ class VenueRepository {
   Future<List<VenuePhoto>> getVenuePhotos(String venueId) async {
     return fetchVenuePhotos(venueId);
   }
+
+  /// Update cover photo URL
+  Future<void> updateCoverPhoto(String venueId, String photoUrl) async {
+    try {
+      await _supabase
+          .from('venues')
+          .update({'cover_image_url': photoUrl, 'image_url': photoUrl})
+          .eq('id', venueId);
+
+      // Detay cache'ini temizle
+      _cache.invalidate(CacheService.venueDetailKey(venueId));
+    } catch (e) {
+      print('Error updating cover photo: $e');
+      rethrow;
+    }
+  }
 }

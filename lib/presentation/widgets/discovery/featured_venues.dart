@@ -290,23 +290,34 @@ class FeaturedVenueCard extends StatelessWidget {
         child: Stack(
           children: [
             // Background image with CachedNetworkImage
-            if (venue.heroImages.isNotEmpty)
-              Positioned.fill(
-                child: CachedNetworkImage(
-                  imageUrl: venue.heroImages.first,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      Container(color: AppColors.gray200),
-                  errorWidget: (context, url, error) => Container(
-                    color: AppColors.gray200,
-                    child: const Icon(
-                      Icons.store,
-                      color: AppColors.gray400,
-                      size: 48,
+            Builder(
+              builder: (context) {
+                final imageUrl =
+                    venue.imageUrl ??
+                    (venue.heroImages.isNotEmpty
+                        ? venue.heroImages.first
+                        : null);
+
+                if (imageUrl == null) return const SizedBox.shrink();
+
+                return Positioned.fill(
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Container(color: AppColors.gray200),
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColors.gray200,
+                      child: const Icon(
+                        Icons.store,
+                        color: AppColors.gray400,
+                        size: 48,
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
+            ),
 
             // Dark gradient at the bottom
             Positioned.fill(

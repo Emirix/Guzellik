@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../data/models/specialist.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:path/path.dart' as path;
+import '../../data/services/storage_service.dart';
 
 class AdminSpecialistsProvider extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
+  final _storageService = StorageService();
 
   List<Specialist> _specialists = [];
   bool _isLoading = false;
@@ -51,45 +52,24 @@ class AdminSpecialistsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      debugPrint(
-        '🔵 [addSpecialist] Başlıyor: venueId=$venueId, name=$name, profession=$profession, gender=$gender',
-      );
-
       String? photoUrl;
 
       // Image upload step
       if (imageFile != null) {
         try {
-          debugPrint('📤 [addSpecialist] Resim yükleme başlıyor...');
-          final fileName =
-              'specialist_${DateTime.now().millisecondsSinceEpoch}${path.extension(imageFile.path)}';
-          final storagePath = '$venueId/$fileName';
-
-          debugPrint('📤 [addSpecialist] Storage path: $storagePath');
-
-          await _supabase.storage
-              .from('specialists')
-              .upload(storagePath, imageFile);
-
-          debugPrint('✅ [addSpecialist] Resim yüklendi');
-
-          photoUrl = _supabase.storage
-              .from('specialists')
-              .getPublicUrl(storagePath);
-
-          debugPrint('🔗 [addSpecialist] Photo URL: $photoUrl');
+          photoUrl = await _storageService.uploadImage(
+            bucket: 'specialists',
+            path: venueId,
+            imageFile: imageFile,
+          );
         } catch (e) {
           debugPrint('❌ [addSpecialist] Resim yükleme hatası: $e');
           rethrow;
         }
-      } else {
-        debugPrint('ℹ️ [addSpecialist] Resim yok, atlanıyor');
       }
 
       // Database insert step
       try {
-        debugPrint('💾 [addSpecialist] Veritabanına ekleme başlıyor...');
-
         // Map gender to Turkish for database constraint
         String dbGender;
         switch (gender.toLowerCase()) {
@@ -112,36 +92,18 @@ class AdminSpecialistsProvider extends ChangeNotifier {
           'bio': bio,
         };
 
-        debugPrint('💾 [addSpecialist] Eklenecek veri: $insertData');
-
         await _supabase.from('specialists').insert(insertData);
-
-        debugPrint('✅ [addSpecialist] Veritabanına eklendi');
       } catch (e) {
-        debugPrint('❌ [addSpecialist] Veritabanı ekleme hatası: $e');
         rethrow;
       }
 
-      // Refresh specialists list
-      try {
-        debugPrint('🔄 [addSpecialist] Uzman listesi yenileniyor...');
-        await fetchSpecialists(venueId);
-        debugPrint('✅ [addSpecialist] İşlem başarıyla tamamlandı');
-      } catch (e) {
-        debugPrint('❌ [addSpecialist] Listeyi yenileme hatası: $e');
-        rethrow;
-      }
+      await fetchSpecialists(venueId);
     } catch (e) {
       _error = e.toString();
-      debugPrint('🔴 [addSpecialist] GENEL HATA: $e');
-      debugPrint('🔴 [addSpecialist] Hata detayı: ${e.runtimeType}');
       rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
-      debugPrint(
-        '🏁 [addSpecialist] İşlem tamamlandı, notifyListeners çağrıldı',
-      );
     }
   }
 
@@ -176,20 +138,19 @@ class AdminSpecialistsProvider extends ChangeNotifier {
       if (bio != null) updates['bio'] = bio;
 
       if (newImageFile != null) {
-        // Fetch current to delete old image if needed
         final current = _specialists.firstWhere((s) => s.id == specialistId);
         final venueId = current.venueId;
 
-        final fileName =
-            'specialist_${DateTime.now().millisecondsSinceEpoch}${path.extension(newImageFile.path)}';
-        final storagePath = '$venueId/$fileName';
+        // Delete old image if exists
+        if (current.photoUrl != null) {
+          _storageService.deleteFileByUrl(current.photoUrl!);
+        }
 
-        await _supabase.storage
-            .from('specialists')
-            .upload(storagePath, newImageFile);
-        updates['photo_url'] = _supabase.storage
-            .from('specialists')
-            .getPublicUrl(storagePath);
+        updates['photo_url'] = await _storageService.uploadImage(
+          bucket: 'specialists',
+          path: venueId,
+          imageFile: newImageFile,
+        );
       }
 
       await _supabase
@@ -216,14 +177,7 @@ class AdminSpecialistsProvider extends ChangeNotifier {
       await _supabase.from('specialists').delete().eq('id', specialistId);
 
       if (spec.photoUrl != null) {
-        final uri = Uri.parse(spec.photoUrl!);
-        final pathSegments = uri.pathSegments;
-        if (pathSegments.length >= 2) {
-          final storagePath = pathSegments
-              .sublist(pathSegments.length - 2)
-              .join('/');
-          await _supabase.storage.from('specialists').remove([storagePath]);
-        }
+        await _storageService.deleteFileByUrl(spec.photoUrl!);
       }
 
       await fetchSpecialists(venueId);

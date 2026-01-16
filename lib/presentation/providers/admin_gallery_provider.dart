@@ -3,10 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../data/models/venue_photo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:path/path.dart' as path;
+import '../../data/services/storage_service.dart';
 
 class AdminGalleryProvider extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
+  final _storageService = StorageService();
 
   List<VenuePhoto> _photos = [];
   bool _isLoading = false;
@@ -43,13 +44,7 @@ class AdminGalleryProvider extends ChangeNotifier {
   }
 
   Future<void> uploadPhoto(String venueId, File imageFile) async {
-    debugPrint('=== UPLOAD PHOTO START ===');
-    debugPrint('Venue ID: $venueId');
-    debugPrint('Image path: ${imageFile.path}');
-    debugPrint('Can add more: $canAddMore');
-
     if (!canAddMore) {
-      debugPrint('ERROR: Cannot add more photos (max 5)');
       throw Exception('Maksimum 5 fotoğraf yükleyebilirsiniz.');
     }
 
@@ -58,31 +53,14 @@ class AdminGalleryProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}${path.extension(imageFile.path)}';
-      final filePath = '$venueId/$fileName';
-      debugPrint('Upload path: $filePath');
-
-      // 1. Upload to Storage
-      debugPrint('Step 1: Uploading to storage...');
-      await _supabase.storage
-          .from('venue-gallery')
-          .upload(
-            filePath,
-            imageFile,
-            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-          );
-      debugPrint('Step 1: Upload successful');
-
-      // 2. Get Public URL
-      debugPrint('Step 2: Getting public URL...');
-      final imageUrl = _supabase.storage
-          .from('venue-gallery')
-          .getPublicUrl(filePath);
-      debugPrint('Step 2: URL: $imageUrl');
+      // 1. Upload to Storage via API (with compression)
+      final imageUrl = await _storageService.uploadImage(
+        bucket: 'venue-gallery',
+        path: venueId,
+        imageFile: imageFile,
+      );
 
       // 3. Create DB Record
-      debugPrint('Step 3: Creating DB record...');
       final newSortOrder = _photos.isEmpty
           ? 0
           : _photos.map((e) => e.sortOrder).reduce((a, b) => a > b ? a : b) + 1;
@@ -96,14 +74,9 @@ class AdminGalleryProvider extends ChangeNotifier {
         'is_hero_image': isFirst,
         'category': 'interior', // Default
       });
-      debugPrint('Step 3: DB record created');
 
-      debugPrint('Step 4: Fetching updated photos...');
       await fetchPhotos(venueId);
-      debugPrint('=== UPLOAD PHOTO SUCCESS ===');
     } catch (e) {
-      debugPrint('=== UPLOAD PHOTO ERROR ===');
-      debugPrint('Error: $e');
       _error = e.toString();
       rethrow;
     } finally {
@@ -119,16 +92,8 @@ class AdminGalleryProvider extends ChangeNotifier {
       // 1. Delete from DB
       await _supabase.from('venue_photos').delete().eq('id', photoId);
 
-      // 2. Delete from Storage (URL'den dosya yolunu çıkarıyoruz)
-      final uri = Uri.parse(photo.url);
-      final pathSegments = uri.pathSegments;
-      // public/storage/v1/object/public/venue-gallery/VENUE_ID/FILENAME
-      if (pathSegments.length >= 2) {
-        final storagePath = pathSegments
-            .sublist(pathSegments.length - 2)
-            .join('/');
-        await _supabase.storage.from('venue-gallery').remove([storagePath]);
-      }
+      // 2. Delete from Storage
+      await _storageService.deleteFileByUrl(photo.url);
 
       await fetchPhotos(photo.venueId);
     } catch (e) {

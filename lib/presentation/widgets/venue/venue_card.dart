@@ -354,10 +354,11 @@ class VenueCard extends StatelessWidget {
   }
 
   Widget _buildCardImage() {
-    // Prefer heroImages (new system), fallback to imageUrl (legacy)
-    final imageUrl = venue.heroImages.isNotEmpty
-        ? venue.heroImages.first
-        : venue.imageUrl;
+    // Priority: 1. imageUrl, 2. coverImageUrl, 3. heroImages
+    final imageUrl =
+        venue.imageUrl ??
+        venue.coverImageUrl ??
+        (venue.heroImages.isNotEmpty ? venue.heroImages.first : null);
 
     if (imageUrl != null) {
       return CachedNetworkImage(

@@ -1,3 +1,5 @@
+import '../../core/utils/image_utils.dart';
+
 class VenueCategory {
   final String id;
   final String name;
@@ -28,8 +30,8 @@ class VenueCategory {
       name: json['name'] as String,
       slug: json['slug'] as String,
       icon: json['icon'] as String?,
-      imageUrl: json['image_url'] as String?,
-      logoUrl: json['logo_url'] as String?,
+      imageUrl: ImageUtils.normalizeUrl(json['image_url'] as String?),
+      logoUrl: ImageUtils.normalizeUrl(json['logo_url'] as String?),
       description: json['description'] as String?,
       isActive: json['is_active'] as bool? ?? true,
       order: json['order'] as int?,
