@@ -30,61 +30,49 @@ class CustomBottomNav extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           height: 65,
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-          shape: const CircularNotchedRectangle(),
-          notchMargin: 8,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              // Left side
-              Expanded(
-                child: Row(
-                  children: [
-                    _buildNavItem(
-                      context,
-                      icon: Icons.explore_outlined,
-                      activeIcon: Icons.explore,
-                      label: 'Keşfet',
-                      isSelected: selectedIndex == 0,
-                      onTap: () => _handleTap(context, appState, 0),
-                    ),
-                    _buildNavItem(
-                      context,
-                      icon: Icons.search_outlined,
-                      activeIcon: Icons.search,
-                      label: 'Ara',
-                      isSelected: selectedIndex == 1,
-                      onTap: () => _handleTap(context, appState, 1),
-                    ),
-                  ],
-                ),
+              _buildNavItem(
+                context,
+                icon: Icons.explore_outlined,
+                activeIcon: Icons.explore,
+                label: 'Keşfet',
+                isSelected: selectedIndex == 0,
+                onTap: () => _handleTap(context, appState, 0),
               ),
-
-              // Middle gap for FAB
-              const SizedBox(width: 48),
-
-              // Right side
-              Expanded(
-                child: Row(
-                  children: [
-                    _buildNavItem(
-                      context,
-                      icon: Icons.notifications_outlined,
-                      activeIcon: Icons.notifications,
-                      label: 'Bildirimler',
-                      isSelected: selectedIndex == 2,
-                      badgeCount: notificationCount,
-                      onTap: () => _handleTap(context, appState, 2),
-                    ),
-                    _buildNavItem(
-                      context,
-                      icon: Icons.person_outline,
-                      activeIcon: Icons.person,
-                      label: 'Profil',
-                      isSelected: selectedIndex == 3,
-                      onTap: () => _handleTap(context, appState, 3),
-                    ),
-                  ],
-                ),
+              _buildNavItem(
+                context,
+                icon: Icons.search_outlined,
+                activeIcon: Icons.search,
+                label: 'Ara',
+                isSelected: selectedIndex == 1,
+                onTap: () => _handleTap(context, appState, 1),
+              ),
+              _buildNavItem(
+                context,
+                icon: Icons.favorite_border_rounded,
+                activeIcon: Icons.favorite_rounded,
+                label: 'Favoriler',
+                isSelected: selectedIndex == 2,
+                onTap: () => _handleTap(context, appState, 2),
+              ),
+              _buildNavItem(
+                context,
+                icon: Icons.notifications_outlined,
+                activeIcon: Icons.notifications,
+                label: 'Bildirimler',
+                isSelected: selectedIndex == 3,
+                badgeCount: notificationCount,
+                onTap: () => _handleTap(context, appState, 3),
+              ),
+              _buildNavItem(
+                context,
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
+                label: 'Profil',
+                isSelected: selectedIndex == 4,
+                onTap: () => _handleTap(context, appState, 4),
               ),
             ],
           ),
