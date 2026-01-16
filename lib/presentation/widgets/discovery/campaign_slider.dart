@@ -17,7 +17,8 @@ class CampaignSlider extends StatefulWidget {
 
 class _CampaignSliderState extends State<CampaignSlider> {
   final PageController _pageController = PageController(viewportFraction: 0.9);
-  int _currentPage = 0;
+  // PERF: ValueNotifier kullanarak sadece indicator'ı rebuild et
+  late final ValueNotifier<int> _currentPageNotifier;
 
   @override
   void initState() {
@@ -27,22 +28,14 @@ class _CampaignSliderState extends State<CampaignSlider> {
       context.read<CampaignProvider>().fetchCampaigns();
     });
 
-    _pageController.addListener(() {
-      final int next = _pageController.page!.round();
-      // Only update state when page actually changes, and use post-frame callback
-      // to batch multiple rapid updates into a single setState
-      if (_currentPage != next) {
-        _currentPage = next;
-        if (mounted) {
-          setState(() {});
-        }
-      }
-    });
+    _currentPageNotifier = ValueNotifier<int>(0);
+    // PERF: Listener kaldırıldı - onPageChanged kullanılacak
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _currentPageNotifier.dispose();
     super.dispose();
   }
 
@@ -106,38 +99,49 @@ class _CampaignSliderState extends State<CampaignSlider> {
             ),
             const SizedBox(height: 12),
 
-            // Campaign slider
-            SizedBox(
-              height: 180,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: campaigns.length,
-                itemBuilder: (context, index) {
-                  return _buildCampaignCard(campaigns[index], index);
-                },
+            // Campaign slider - RepaintBoundary ile izole et
+            RepaintBoundary(
+              child: SizedBox(
+                height: 180,
+                child: PageView.builder(
+                  controller: _pageController,
+                  // PERF: onPageChanged ile ValueNotifier güncelle - listener yerine
+                  onPageChanged: (index) {
+                    _currentPageNotifier.value = index;
+                  },
+                  itemCount: campaigns.length,
+                  itemBuilder: (context, index) {
+                    return _buildCampaignCard(campaigns[index], index);
+                  },
+                ),
               ),
             ),
 
-            // Page indicator
+            // Page indicator - ValueListenableBuilder ile sadece bu rebuild olur
             if (campaigns.length > 1) ...[
               const SizedBox(height: 12),
               Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(
-                    campaigns.length,
-                    (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: _currentPage == index ? 20 : 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: _currentPage == index
-                            ? AppColors.primary
-                            : AppColors.gray300,
-                        borderRadius: BorderRadius.circular(3),
+                child: ValueListenableBuilder<int>(
+                  valueListenable: _currentPageNotifier,
+                  builder: (context, currentPage, child) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                        campaigns.length,
+                        (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          width: currentPage == index ? 20 : 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: currentPage == index
+                                ? AppColors.primary
+                                : AppColors.gray300,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -169,13 +173,16 @@ class _CampaignSliderState extends State<CampaignSlider> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Background image or gradient
+              // Background image or gradient - RepaintBoundary ile izole et
               campaign.imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: campaign.imageUrl!,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => _buildPlaceholder(),
-                      errorWidget: (context, url, error) => _buildPlaceholder(),
+                  ? RepaintBoundary(
+                      child: CachedNetworkImage(
+                        imageUrl: campaign.imageUrl!,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => _buildPlaceholder(),
+                        errorWidget: (context, url, error) =>
+                            _buildPlaceholder(),
+                      ),
                     )
                   : _buildPlaceholder(),
 

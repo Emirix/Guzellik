@@ -46,6 +46,18 @@ class AppColors {
   static const Color warning = Color(0xFFFFB74D);
   static const Color info = Color(0xFF64B5F6);
 
+  // Avatar Background Colors (Gender-based)
+  /// Light blue background for male specialist avatars without photos
+  static const Color avatarMale = Color(0xFFE3F2FD);
+
+  /// Light pink background for female specialist avatars without photos
+  /// Matches primaryLight for theme consistency
+  static const Color avatarFemale = Color(0xFFFFEAF3);
+
+  /// Neutral gray background for specialists with unknown/unspecified gender
+  /// Matches gray100 for theme consistency
+  static const Color avatarNeutral = Color(0xFFF5F5F5);
+
   // Shadows
   static const Color shadowLight = Color(0x0F000000);
   static const Color shadowMedium = Color(0x1A000000);

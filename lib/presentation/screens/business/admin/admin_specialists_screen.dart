@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../providers/admin_specialists_provider.dart';
 import '../../../providers/business_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/avatar_utils.dart';
 import '../../../../data/models/specialist.dart';
 import 'specialist_edit_screen.dart';
 
@@ -298,14 +299,16 @@ class _SpecialistCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  backgroundColor: AvatarUtils.getAvatarBackgroundColor(
+                    specialist.gender,
+                  ),
                   backgroundImage: specialist.photoUrl != null
                       ? NetworkImage(specialist.photoUrl!)
                       : null,
                   child: specialist.photoUrl == null
                       ? const Icon(
                           Icons.person,
-                          color: AppColors.primary,
+                          color: AppColors.gray400,
                           size: 30,
                         )
                       : null,

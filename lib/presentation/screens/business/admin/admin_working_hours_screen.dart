@@ -195,7 +195,6 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        actions: const [],
       ),
       body: Consumer<AdminWorkingHoursProvider>(
         builder: (context, provider, _) {
@@ -204,9 +203,9 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             itemCount: _days.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final day = _days[index];
               final label = _dayLabels[day]!;
@@ -216,192 +215,111 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
               final isOpen = hours['open'] ?? false;
 
               return Container(
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isOpen ? Colors.white : Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isOpen
-                        ? AppColors.primary.withOpacity(0.2)
-                        : Colors.grey.withOpacity(0.3),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isOpen
-                          ? AppColors.primary.withOpacity(0.08)
-                          : Colors.black.withOpacity(0.03),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                      spreadRadius: 0,
-                    ),
-                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.gray200),
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header Row
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          // Day Icon
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: isOpen
-                                  ? AppColors.primary
-                                  : Colors.grey.shade400,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: isOpen
-                                      ? AppColors.primary.withOpacity(0.3)
-                                      : Colors.grey.withOpacity(0.2),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
+                    Row(
+                      children: [
+                        // Day Name
+                        Expanded(
+                          child: Text(
+                            label,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1B0E11),
+                            ),
+                          ),
+                        ),
+
+                        // Switch
+                        Switch.adaptive(
+                          value: isOpen,
+                          activeColor: AppColors.primary,
+                          onChanged: (value) {
+                            final newHours = Map<String, dynamic>.from(hours);
+                            newHours['open'] = value;
+                            provider.updateDayHours(day, newHours);
+                          },
+                        ),
+
+                        // Menu Button
+                        IconButton(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: AppColors.gray600,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(16),
                                 ),
-                              ],
-                            ),
-                            child: Icon(
-                              isOpen
-                                  ? Icons.schedule_rounded
-                                  : Icons.block_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-
-                          // Day Name
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  label,
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF1B0E11),
-                                  ),
-                                ),
-                                if (!isOpen)
-                                  Text(
-                                    'Kapalı',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-
-                          // Switch
-                          Transform.scale(
-                            scale: 0.9,
-                            child: Switch.adaptive(
-                              value: isOpen,
-                              activeColor: AppColors.primary,
-                              onChanged: (value) {
-                                final newHours = Map<String, dynamic>.from(
-                                  hours,
-                                );
-                                newHours['open'] = value;
-                                provider.updateDayHours(day, newHours);
-                              },
-                            ),
-                          ),
-
-                          // Menu Button
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: PopupMenuButton<String>(
-                              icon: Icon(
-                                Icons.more_horiz_rounded,
-                                color: Colors.grey.shade700,
-                                size: 20,
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              onSelected: (value) {
-                                if (value == 'apply_all') _applyToAll(day);
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 'apply_all',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.content_copy_rounded,
-                                        size: 18,
+                              builder: (context) => SafeArea(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      leading: Icon(
+                                        Icons.content_copy,
                                         color: AppColors.primary,
                                       ),
-                                      const SizedBox(width: 8),
-                                      const Text('Tüm günlere uygula'),
-                                    ],
-                                  ),
+                                      title: const Text('Tüm günlere uygula'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        _applyToAll(day);
+                                      },
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
 
                     // Time Selection (only if open)
                     if (isOpen) ...[
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: AppColors.primary.withOpacity(0.1),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildTimeButton(
+                              context,
+                              label: 'Açılış',
+                              time: (hours['start'] ?? '09:00').toString(),
+                              onTap: () => _selectTime(day, true),
+                            ),
                           ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: _buildTimeButton(
-                                context,
-                                label: 'Açılış',
-                                time: (hours['start'] ?? '09:00').toString(),
-                                icon: Icons.wb_sunny_rounded,
-                                onTap: () => _selectTime(day, true),
-                              ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildTimeButton(
+                              context,
+                              label: 'Kapanış',
+                              time: (hours['end'] ?? '20:00').toString(),
+                              onTap: () => _selectTime(day, false),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.arrow_forward_rounded,
-                                  color: AppColors.primary,
-                                  size: 16,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: _buildTimeButton(
-                                context,
-                                label: 'Kapanış',
-                                time: (hours['end'] ?? '20:00').toString(),
-                                icon: Icons.nightlight_round,
-                                onTap: () => _selectTime(day, false),
-                              ),
-                            ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ] else ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Kapalı',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.gray500,
                         ),
                       ),
                     ],
@@ -414,7 +332,7 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           child: Consumer<AdminWorkingHoursProvider>(
             builder: (context, provider, _) => ElevatedButton(
               onPressed: provider.isLoading ? null : _saveChanges,
@@ -423,7 +341,7 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 0,
               ),
@@ -437,10 +355,10 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
                       ),
                     )
                   : const Text(
-                      'Değişiklikleri Kaydet',
+                      'Kaydet',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
             ),
@@ -454,58 +372,36 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
     BuildContext context, {
     required String label,
     required String time,
-    required IconData icon,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+          color: AppColors.gray50,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.gray200),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, size: 14, color: AppColors.primary),
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+            Text(
+              label,
+              style: TextStyle(
+                color: AppColors.gray600,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
               ),
-              child: Text(
-                time,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1B0E11),
-                  letterSpacing: 0.5,
-                ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              time,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1B0E11),
               ),
             ),
           ],

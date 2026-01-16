@@ -397,8 +397,8 @@ class VenueHeroV2 extends StatelessWidget {
               flex: 2,
               child: ElevatedButton.icon(
                 onPressed: onBookingTap,
-                icon: const Icon(Icons.access_time_rounded, size: 20),
-                label: const Text('Randevu Oluştur'),
+                icon: const Icon(Icons.chat_bubble_outline, size: 20),
+                label: const Text('İletişime Geç'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

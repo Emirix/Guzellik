@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/avatar_utils.dart';
 import '../../../../data/models/expert.dart';
 
 /// Premium expert card component
@@ -50,13 +51,17 @@ class ExpertCard extends StatelessWidget {
                         imageUrl: expert.photoUrl!,
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
-                          color: AppColors.gray100,
+                          color: AvatarUtils.getAvatarBackgroundColor(
+                            expert.gender,
+                          ),
                           child: const Center(
                             child: CircularProgressIndicator(),
                           ),
                         ),
                         errorWidget: (context, url, error) => Container(
-                          color: AppColors.gray100,
+                          color: AvatarUtils.getAvatarBackgroundColor(
+                            expert.gender,
+                          ),
                           child: Icon(
                             Icons.person,
                             size: 40,
@@ -65,7 +70,9 @@ class ExpertCard extends StatelessWidget {
                         ),
                       )
                     : Container(
-                        color: AppColors.gray100,
+                        color: AvatarUtils.getAvatarBackgroundColor(
+                          expert.gender,
+                        ),
                         child: Icon(
                           Icons.person,
                           size: 40,

@@ -7,6 +7,7 @@ import '../../../providers/business_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/specialist.dart';
 import '../../../../core/utils/image_utils.dart';
+import '../../../../core/utils/avatar_utils.dart';
 
 class SpecialistEditScreen extends StatefulWidget {
   final Specialist? specialist;
@@ -149,7 +150,7 @@ class _SpecialistEditScreenState extends State<SpecialistEditScreen> {
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundColor: Colors.white,
+              backgroundColor: AvatarUtils.getAvatarBackgroundColor(_gender),
               backgroundImage: _selectedImage != null
                   ? FileImage(_selectedImage!)
                   : (_currentImageUrl != null
@@ -157,11 +158,7 @@ class _SpecialistEditScreenState extends State<SpecialistEditScreen> {
                             : null)
                         as ImageProvider?,
               child: (_selectedImage == null && _currentImageUrl == null)
-                  ? Icon(
-                      Icons.person,
-                      size: 60,
-                      color: AppColors.primary.withOpacity(0.5),
-                    )
+                  ? const Icon(Icons.person, size: 60, color: AppColors.gray400)
                   : null,
             ),
             Positioned(

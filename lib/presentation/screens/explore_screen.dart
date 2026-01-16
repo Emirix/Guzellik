@@ -153,11 +153,15 @@ class _ExploreScreenState extends State<ExploreScreen>
               child: Center(child: const ViewToggle()),
             ),
 
-            // 4. Loading Overlay - only show when actually loading data
+            // 4. Loading Overlay - RepaintBoundary ile izole et
+            // PERF: CircularProgressIndicator 60 FPS animasyon yapar
+            // RepaintBoundary olmadan tüm ekran her frame'de repaint olur
             if (provider.isLoading &&
                 provider.viewMode != DiscoveryViewMode.home)
               const Positioned.fill(
-                child: Center(child: CircularProgressIndicator()),
+                child: RepaintBoundary(
+                  child: Center(child: CircularProgressIndicator()),
+                ),
               ),
           ],
         );

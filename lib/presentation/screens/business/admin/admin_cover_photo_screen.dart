@@ -51,7 +51,10 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
       body: Consumer<AdminCoverPhotoProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.categoryPhotos.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            // PERF: Loading indicator'ı RepaintBoundary ile izole et
+            return const Center(
+              child: RepaintBoundary(child: CircularProgressIndicator()),
+            );
           }
 
           return Column(
@@ -87,26 +90,29 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                image: provider.selectedPhotoUrl != null
-                    ? DecorationImage(
-                        image: CachedNetworkImageProvider(
-                          provider.selectedPhotoUrl!,
-                        ),
-                        fit: BoxFit.cover,
+          // PERF: Preview image'ı RepaintBoundary ile izole et
+          RepaintBoundary(
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  image: provider.selectedPhotoUrl != null
+                      ? DecorationImage(
+                          image: CachedNetworkImageProvider(
+                            provider.selectedPhotoUrl!,
+                          ),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                  color: Colors.grey[200],
+                ),
+                child: provider.selectedPhotoUrl == null
+                    ? const Center(
+                        child: Icon(Icons.image, size: 48, color: Colors.grey),
                       )
                     : null,
-                color: Colors.grey[200],
               ),
-              child: provider.selectedPhotoUrl == null
-                  ? const Center(
-                      child: Icon(Icons.image, size: 48, color: Colors.grey),
-                    )
-                  : null,
             ),
           ),
           const SizedBox(height: 20),
@@ -164,55 +170,63 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
         final url = provider.categoryPhotos[index];
         final isSelected = provider.selectedPhotoUrl == url;
 
-        return GestureDetector(
-          onTap: () => provider.selectPhoto(url),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected
-                    ? Theme.of(context).primaryColor
-                    : Colors.transparent,
-                width: 3,
-              ),
-              boxShadow: [
-                if (isSelected)
-                  BoxShadow(
-                    color: Theme.of(context).primaryColor.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-              ],
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                CachedNetworkImage(
-                  imageUrl: url,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      Container(color: Colors.grey[200]),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+        // PERF: Her grid item'ı RepaintBoundary ile izole et
+        // GridView'de birçok image var, hepsi birbirini repaint ettiriyor
+        return RepaintBoundary(
+          child: GestureDetector(
+            onTap: () async => await provider.selectPhoto(url),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected
+                      ? Theme.of(context).primaryColor
+                      : Colors.transparent,
+                  width: 3,
                 ),
-                if (isSelected)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.check_circle,
-                        color: Theme.of(context).primaryColor,
-                        size: 20,
-                      ),
+                boxShadow: [
+                  if (isSelected)
+                    BoxShadow(
+                      color: Theme.of(context).primaryColor.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                ],
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // PERF: CachedNetworkImage'ı da RepaintBoundary ile sar
+                  RepaintBoundary(
+                    child: CachedNetworkImage(
+                      imageUrl: url,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          Container(color: Colors.grey[200]),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     ),
                   ),
-              ],
+                  if (isSelected)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).primaryColor,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         );
@@ -257,12 +271,14 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
               ),
             ),
             child: provider.isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
+                ? const RepaintBoundary(
+                    child: SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
                     ),
                   )
                 : const Text(

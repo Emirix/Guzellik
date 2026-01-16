@@ -455,10 +455,9 @@ class SearchProvider extends ChangeNotifier {
 
     _filter = _filter.copyWith(province: province, district: district);
 
-    notifyListeners();
-
-    // Arama yapılmışsa yeni konuma göre sonuçları güncelle
+    // Sadece arama yapılmışsa yenile, yoksa notifyListeners çağırma
     if (_hasSearched) {
+      notifyListeners();
       refreshSearch(showLoading: false);
     }
   }
@@ -480,7 +479,11 @@ class SearchProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString(_recentSearchesKey);
       if (jsonString != null) {
-        final List<dynamic> jsonList = json.decode(jsonString);
+        // JSON parsing'i isolate'te yap
+        final List<dynamic> jsonList = await compute(
+          _parseJsonList,
+          jsonString,
+        );
         _recentSearches = jsonList
             .map((e) => RecentSearch.fromJson(e))
             .toList();
@@ -495,6 +498,11 @@ class SearchProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error loading recent searches: $e');
     }
+  }
+
+  // Isolate function for JSON parsing
+  static List<dynamic> _parseJsonList(String jsonString) {
+    return json.decode(jsonString) as List<dynamic>;
   }
 
   /// Son aramalara ekler
@@ -555,7 +563,8 @@ class SearchProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString(_lastFilterKey);
       if (jsonString != null) {
-        final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
+        // JSON parsing'i isolate'te yap
+        final jsonMap = await compute(_parseJsonMap, jsonString);
         _filter = SearchFilter.fromJson(jsonMap);
         _selectedProvince = _filter.province;
         _selectedDistrict = _filter.district;
@@ -564,6 +573,11 @@ class SearchProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error loading last filter: $e');
     }
+  }
+
+  // Isolate function for JSON map parsing
+  static Map<String, dynamic> _parseJsonMap(String jsonString) {
+    return json.decode(jsonString) as Map<String, dynamic>;
   }
 
   /// Son filtreyi kaydeder

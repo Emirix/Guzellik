@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/avatar_utils.dart';
 import '../../../../data/models/specialist.dart';
 
 class SpecialistDetailBottomSheet extends StatelessWidget {
@@ -153,15 +154,9 @@ class SpecialistDetailBottomSheet extends StatelessWidget {
   }
 
   Widget _buildDefaultAvatar() {
-    final bool isFemale = specialist.gender?.toLowerCase() == 'female';
-    final Color bgColor = isFemale ? Colors.pink.shade50 : Colors.blue.shade50;
-    final Color iconColor = isFemale
-        ? Colors.pink.shade300
-        : Colors.blue.shade300;
-
     return Container(
-      color: bgColor,
-      child: Icon(Icons.person, size: 60, color: iconColor),
+      color: AvatarUtils.getAvatarBackgroundColor(specialist.gender),
+      child: const Icon(Icons.person, size: 60, color: AppColors.gray400),
     );
   }
 }

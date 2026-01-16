@@ -6,6 +6,7 @@ class Expert {
   final String? photoUrl;
   final double? rating;
   final String? specialty;
+  final String? gender;
 
   Expert({
     required this.id,
@@ -14,6 +15,7 @@ class Expert {
     this.photoUrl,
     this.rating,
     this.specialty,
+    this.gender,
   });
 
   factory Expert.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Expert {
           ? (json['rating'] as num).toDouble()
           : null,
       specialty: json['specialty'] as String?,
+      gender: json['gender'] as String?,
     );
   }
 
@@ -37,6 +40,7 @@ class Expert {
       'photo_url': photoUrl,
       'rating': rating,
       'specialty': specialty,
+      'gender': gender,
     };
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
 
 /// Card displaying venue working hours
 /// Highlights today's hours in green
@@ -36,16 +35,9 @@ class WorkingHoursCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.nude.withOpacity(0.5), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.gray200),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -54,24 +46,26 @@ class WorkingHoursCard extends StatelessWidget {
           final isClosed = entry.value.toLowerCase() == 'kapalı';
 
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 6),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   entry.key,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: isToday ? AppColors.success : AppColors.gray500,
+                  style: TextStyle(
+                    color: isToday ? AppColors.primary : AppColors.gray600,
+                    fontSize: 14,
                     fontWeight: isToday ? FontWeight.w600 : FontWeight.w400,
                   ),
                 ),
                 Text(
                   entry.value,
-                  style: AppTextStyles.bodyMedium.copyWith(
+                  style: TextStyle(
                     color: isClosed
-                        ? AppColors.primary
-                        : (isToday ? AppColors.success : AppColors.black),
-                    fontWeight: isToday ? FontWeight.w600 : FontWeight.w600,
+                        ? AppColors.gray400
+                        : (isToday ? AppColors.primary : AppColors.gray900),
+                    fontSize: 14,
+                    fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
               ],

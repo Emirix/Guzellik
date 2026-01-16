@@ -13,9 +13,10 @@ class SearchShimmerLoading extends StatefulWidget {
 }
 
 class _SearchShimmerLoadingState extends State<SearchShimmerLoading>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController _controller;
   late Animation<double> _animation;
+  bool _isAnimating = false;
 
   @override
   void initState() {
@@ -23,17 +24,48 @@ class _SearchShimmerLoadingState extends State<SearchShimmerLoading>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
-    )..repeat();
+    );
 
     _animation = Tween<double>(begin: -2, end: 2).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
     );
+
+    // PERF: WidgetsBindingObserver ile lifecycle yönetimi
+    WidgetsBinding.instance.addObserver(this);
+    _startAnimation();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _stopAnimation();
     _controller.dispose();
     super.dispose();
+  }
+
+  // PERF: App lifecycle'a göre animasyonu kontrol et
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.hidden) {
+      _stopAnimation();
+    } else if (state == AppLifecycleState.resumed && mounted) {
+      _startAnimation();
+    }
+  }
+
+  void _startAnimation() {
+    if (_isAnimating) return;
+    _isAnimating = true;
+    _controller.repeat();
+  }
+
+  void _stopAnimation() {
+    if (!_isAnimating) return;
+    _isAnimating = false;
+    _controller.stop();
   }
 
   @override

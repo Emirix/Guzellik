@@ -23,9 +23,7 @@ class BookingBottomBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        border: Border(
-          top: BorderSide(color: AppColors.gray100, width: 1),
-        ),
+        border: Border(top: BorderSide(color: AppColors.gray100, width: 1)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -121,13 +119,13 @@ class BookingBottomBar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Icon(
-                          Icons.calendar_month_outlined,
+                          Icons.chat_bubble_outline,
                           size: 20,
                           color: Colors.white,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Randevu Oluştur',
+                          'İletişime Geç',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,

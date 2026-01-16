@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../data/models/venue.dart';
 import '../../../../data/models/review.dart';
 import '../../../../data/models/specialist.dart';
@@ -110,12 +111,25 @@ class VenueOverviewV2 extends StatelessWidget {
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            photo.url,
+                          child: CachedNetworkImage(
+                            imageUrl: photo.url,
                             width: 160,
                             height: 120,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
+                            placeholder: (context, url) => Container(
+                              width: 160,
+                              height: 120,
+                              color: AppColors.gray100,
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            errorWidget: (_, __, ___) => Container(
                               width: 160,
                               height: 120,
                               color: AppColors.gray100,

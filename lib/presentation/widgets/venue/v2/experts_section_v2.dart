@@ -3,6 +3,7 @@ import '../../../../data/models/venue.dart';
 import '../../../../data/models/specialist.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/avatar_utils.dart';
 import '../components/specialist_detail_bottom_sheet.dart';
 
 class ExpertsSectionV2 extends StatelessWidget {
@@ -116,6 +117,7 @@ class ExpertsSectionV2 extends StatelessWidget {
                   name: expert.name,
                   role: expert.profession,
                   imageUrl: expert.photoUrl,
+                  gender: expert.gender,
                   isHighlighted: isHighlighted,
                 ),
               );
@@ -130,6 +132,7 @@ class ExpertsSectionV2 extends StatelessWidget {
     required String name,
     required String role,
     String? imageUrl,
+    String? gender,
     bool isHighlighted = false,
   }) {
     return SizedBox(
@@ -152,7 +155,7 @@ class ExpertsSectionV2 extends StatelessWidget {
             ),
             child: CircleAvatar(
               radius: 36,
-              backgroundColor: AppColors.nude,
+              backgroundColor: AvatarUtils.getAvatarBackgroundColor(gender),
               backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
               child: imageUrl == null
                   ? Icon(Icons.person, size: 32, color: AppColors.gray400)

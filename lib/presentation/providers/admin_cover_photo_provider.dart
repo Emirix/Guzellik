@@ -39,9 +39,31 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
     }
   }
 
-  void selectPhoto(String url) {
+  Future<void> selectPhoto(String url) async {
+    if (_venue == null) return;
+
+    final oldSelection = _selectedPhotoUrl;
     _selectedPhotoUrl = url;
     notifyListeners();
+
+    // Eğer yeni seçim bir kategori fotoğrafıysa ve eski seçim custom bir fotoğrafsa, eski custom fotoğrafı sil
+    // Kategori fotoğrafları: storage/categories/
+    // Custom fotoğraflar: venue-photos/{venueId}/cover
+    if (url.contains('storage/categories/') &&
+        oldSelection != null &&
+        oldSelection != _venue?.imageUrl &&
+        oldSelection.contains('venue-photos/') &&
+        oldSelection.contains('${_venue!.id}/cover')) {
+      try {
+        await _storageService.deleteFileByUrl(oldSelection);
+        debugPrint(
+          'Eski custom kapak fotoğrafı silindi (kategori seçildi): $oldSelection',
+        );
+      } catch (deleteError) {
+        debugPrint('Eski custom kapak fotoğrafı silinirken hata: $deleteError');
+        // Silme hatası kritik değil, devam et
+      }
+    }
   }
 
   Future<void> uploadCustomPhoto(File file) async {
@@ -49,11 +71,9 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      // Eğer mevcut seçili olan fotoğraf halihazırda bu oturumda yüklenmiş bir özelse, onu silebiliriz
-      // Ancak genellikle kaydetmeden silmemek daha güvenlidir.
-      // Yine de sunucuda çöp birikmemesi için temizlik yapalım.
       final oldSelection = _selectedPhotoUrl;
 
+      // Yeni fotoğrafı yükle
       final url = await _storageService.uploadVenueImage(
         file,
         '${_venue!.id}/cover',
@@ -62,10 +82,20 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
       _error = null;
 
       // Eğer eski seçim bir custom URL ise ve DB'deki orijinal URL değilse (yani bu oturumda yüklenmişse), onu sil
+      // Kategori fotoğrafları (storage/categories/) silinmeyecek
       if (oldSelection != null &&
           oldSelection != _venue?.imageUrl &&
-          oldSelection.contains('venue-photos/')) {
-        _storageService.deleteFileByUrl(oldSelection);
+          oldSelection.contains('venue-photos/') &&
+          oldSelection.contains('${_venue!.id}/cover')) {
+        try {
+          await _storageService.deleteFileByUrl(oldSelection);
+          debugPrint('Eski geçici kapak fotoğrafı silindi: $oldSelection');
+        } catch (deleteError) {
+          debugPrint(
+            'Eski geçici kapak fotoğrafı silinirken hata: $deleteError',
+          );
+          // Silme hatası kritik değil, devam et
+        }
       }
     } catch (e) {
       _error = 'Fotoğraf yüklenirken hata oluştu: $e';
@@ -82,14 +112,22 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
 
     _setLoading(true);
     try {
+      // Önce veritabanını güncelle
       await _venueRepository.updateCoverPhoto(_venue!.id, newUrl);
 
-      // Eski fotoğraf eğer custom bir fotoğrafsa ve yenisiyle farklıysa sil
+      // Eski fotoğraf eğer custom bir fotoğrafsa (venue-photos/ içeriyorsa) ve yeni fotoğraftan farklıysa sil
+      // Kategori fotoğrafları (storage/categories/) silinmeyecek
       if (oldUrl != null &&
           oldUrl != newUrl &&
-          oldUrl.contains('venue-photos/')) {
-        // Yangından mal kaçırır gibi silme, DB güncellendiği için artık güvenle silinebilir
-        _storageService.deleteFileByUrl(oldUrl);
+          oldUrl.contains('venue-photos/') &&
+          oldUrl.contains('${_venue!.id}/cover')) {
+        try {
+          await _storageService.deleteFileByUrl(oldUrl);
+          debugPrint('Eski kapak fotoğrafı silindi: $oldUrl');
+        } catch (deleteError) {
+          debugPrint('Eski kapak fotoğrafı silinirken hata: $deleteError');
+          // Silme hatası kritik değil, devam et
+        }
       }
 
       _venue = _venue!.copyWith(imageUrl: newUrl);

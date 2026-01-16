@@ -67,7 +67,11 @@ class _AdminFeaturesScreenState extends State<AdminFeaturesScreen> {
       body: Consumer<AdminFeaturesProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading && provider.allFeatures.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            );
           }
 
           if (provider.error != null && provider.allFeatures.isEmpty) {

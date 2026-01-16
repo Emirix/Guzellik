@@ -6,10 +6,19 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../components/working_hours_card.dart';
 
-class AboutTab extends StatelessWidget {
+class AboutTab extends StatefulWidget {
   final Venue venue;
 
   const AboutTab({super.key, required this.venue});
+
+  @override
+  State<AboutTab> createState() => _AboutTabState();
+}
+
+class _AboutTabState extends State<AboutTab> {
+  // Memoize working hours to avoid parsing on every build
+  Map<String, String>? _cachedWorkingHours;
+  String? _lastVenueId;
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +26,18 @@ class AboutTab extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       children: [
         // Contact Actions
-        if (venue.socialLinks.isNotEmpty) ...[
+        if (widget.venue.socialLinks.isNotEmpty) ...[
           _buildContactActions(),
           const SizedBox(height: 24),
         ],
 
         // Description
-        if (venue.description != null && venue.description!.isNotEmpty) ...[
+        if (widget.venue.description != null &&
+            widget.venue.description!.isNotEmpty) ...[
           Text('Mekan Hakkında', style: AppTextStyles.heading3),
           const SizedBox(height: 12),
           Text(
-            venue.description!,
+            widget.venue.description!,
             style: AppTextStyles.bodyMedium.copyWith(height: 1.6),
           ),
           const SizedBox(height: 24),
@@ -45,18 +55,21 @@ class AboutTab extends StatelessWidget {
         _buildLocationSection(context),
         const SizedBox(height: 24),
 
-        // Payment Options
-        if (venue.paymentOptions.isNotEmpty) ...[
+        // Payment Options - const Chip kullan
+        if (widget.venue.paymentOptions.isNotEmpty) ...[
           Text('Ödeme Seçenekleri', style: AppTextStyles.heading3),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: venue.paymentOptions.map((option) {
-              return Chip(
-                label: Text(option),
-                backgroundColor: AppColors.gray50,
-                side: BorderSide(color: AppColors.gray200),
+            children: widget.venue.paymentOptions.map((option) {
+              // PERF: Her chip'i RepaintBoundary ile izole et
+              return RepaintBoundary(
+                child: Chip(
+                  label: Text(option),
+                  backgroundColor: AppColors.gray50,
+                  side: const BorderSide(color: AppColors.gray200),
+                ),
               );
             }).toList(),
           ),
@@ -64,7 +77,7 @@ class AboutTab extends StatelessWidget {
         ],
 
         // Accessibility
-        if (venue.accessibility.isNotEmpty) ...[
+        if (widget.venue.accessibility.isNotEmpty) ...[
           Text('Özellikler', style: AppTextStyles.heading3),
           const SizedBox(height: 12),
           _buildAccessibilityInfo(),
@@ -73,15 +86,18 @@ class AboutTab extends StatelessWidget {
     );
   }
 
-  Widget _buildWorkingHours() {
-    if (venue.workingHours.isEmpty) {
-      return Text(
-        'Çalışma saatleri bilgisi bulunmuyor.',
-        style: AppTextStyles.bodySmall.copyWith(color: AppColors.gray500),
-      );
+  Map<String, String> _getFormattedWorkingHours() {
+    // Cache check
+    if (_lastVenueId == widget.venue.id && _cachedWorkingHours != null) {
+      return _cachedWorkingHours!;
     }
 
-    // Convert venue working hours to the format expected by WorkingHoursCard
+    if (widget.venue.workingHours.isEmpty) {
+      _cachedWorkingHours = {};
+      _lastVenueId = widget.venue.id;
+      return _cachedWorkingHours!;
+    }
+
     final Map<String, String> formattedHours = {};
 
     // Helper function to format a single day's hours
@@ -101,19 +117,36 @@ class AboutTab extends StatelessWidget {
     }
 
     // Check if we have individual days or grouped format
-    if (venue.workingHours.containsKey('monday')) {
+    if (widget.venue.workingHours.containsKey('monday')) {
       // Individual days format - group weekdays
-      final mondayHours = formatDayHours(venue.workingHours['monday']);
+      final mondayHours = formatDayHours(widget.venue.workingHours['monday']);
       formattedHours['Hafta içi'] = mondayHours;
       formattedHours['Cumartesi'] = formatDayHours(
-        venue.workingHours['saturday'],
+        widget.venue.workingHours['saturday'],
       );
-      formattedHours['Pazar'] = formatDayHours(venue.workingHours['sunday']);
+      formattedHours['Pazar'] = formatDayHours(
+        widget.venue.workingHours['sunday'],
+      );
     } else {
       // Already in grouped format
-      venue.workingHours.forEach((key, value) {
+      widget.venue.workingHours.forEach((key, value) {
         formattedHours[key] = formatDayHours(value);
       });
+    }
+
+    _cachedWorkingHours = formattedHours;
+    _lastVenueId = widget.venue.id;
+    return formattedHours;
+  }
+
+  Widget _buildWorkingHours() {
+    final formattedHours = _getFormattedWorkingHours();
+
+    if (formattedHours.isEmpty) {
+      return Text(
+        'Çalışma saatleri bilgisi bulunmuyor.',
+        style: AppTextStyles.bodySmall.copyWith(color: AppColors.gray500),
+      );
     }
 
     return WorkingHoursCard(hours: formattedHours);
@@ -159,7 +192,7 @@ class AboutTab extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                venue.address,
+                widget.venue.address,
                 style: TextStyle(fontSize: 14, color: AppColors.gray700),
               ),
             ),
@@ -169,7 +202,8 @@ class AboutTab extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () => _openMaps(venue.latitude, venue.longitude),
+            onPressed: () =>
+                _openMaps(widget.venue.latitude, widget.venue.longitude),
             icon: const Icon(Icons.directions),
             label: const Text('Yol Tarifi Al'),
             style: ElevatedButton.styleFrom(
@@ -189,7 +223,7 @@ class AboutTab extends StatelessWidget {
   Widget _buildAccessibilityInfo() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: venue.accessibility.entries.map((entry) {
+      children: widget.venue.accessibility.entries.map((entry) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: Row(
@@ -249,8 +283,8 @@ class AboutTab extends StatelessWidget {
   }
 
   Widget _buildContactActions() {
-    final phone = venue.socialLinks['phone'] as String?;
-    final whatsapp = venue.socialLinks['whatsapp'] as String?;
+    final phone = widget.venue.socialLinks['phone'] as String?;
+    final whatsapp = widget.venue.socialLinks['whatsapp'] as String?;
 
     return Row(
       children: [

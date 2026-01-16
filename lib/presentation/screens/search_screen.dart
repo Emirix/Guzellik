@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/search_provider.dart';
 import '../providers/app_state_provider.dart';
 import '../providers/discovery_provider.dart';
@@ -157,10 +158,22 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             // Background image
             if (category.imageUrl != null)
-              Image.network(
-                category.imageUrl!,
+              CachedNetworkImage(
+                imageUrl: category.imageUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
+                placeholder: (context, url) => Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary,
+                        AppColors.primary.withOpacity(0.7),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [

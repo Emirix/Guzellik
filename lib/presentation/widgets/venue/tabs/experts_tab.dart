@@ -71,6 +71,7 @@ class ExpertsTab extends StatelessWidget {
           title: specialist.profession,
           photoUrl: specialist.photoUrl,
           specialty: specialist.profession,
+          gender: specialist.gender,
         );
 
         return ExpertCard(

@@ -300,18 +300,21 @@ class FeaturedVenueCard extends StatelessWidget {
 
                 if (imageUrl == null) return const SizedBox.shrink();
 
+                // PERF: Image loading'i RepaintBoundary ile izole et
                 return Positioned.fill(
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        Container(color: AppColors.gray200),
-                    errorWidget: (context, url, error) => Container(
-                      color: AppColors.gray200,
-                      child: const Icon(
-                        Icons.store,
-                        color: AppColors.gray400,
-                        size: 48,
+                  child: RepaintBoundary(
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          Container(color: AppColors.gray200),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColors.gray200,
+                        child: const Icon(
+                          Icons.store,
+                          color: AppColors.gray400,
+                          size: 48,
+                        ),
                       ),
                     ),
                   ),
