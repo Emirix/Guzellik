@@ -123,12 +123,6 @@ class VenueHeroV2 extends StatelessWidget {
                     images.add(venue.imageUrl!);
                   }
 
-                  // Use cover photo if available (if different from image_url)
-                  if (venue.coverImageUrl != null &&
-                      !images.contains(venue.coverImageUrl!)) {
-                    images.add(venue.coverImageUrl!);
-                  }
-
                   if (venue.galleryPhotos != null &&
                       venue.galleryPhotos!.isNotEmpty) {
                     final sorted = List<VenuePhoto>.from(venue.galleryPhotos!);

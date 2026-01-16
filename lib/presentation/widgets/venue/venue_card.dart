@@ -354,10 +354,9 @@ class VenueCard extends StatelessWidget {
   }
 
   Widget _buildCardImage() {
-    // Priority: 1. imageUrl, 2. coverImageUrl, 3. heroImages
+    // Priority: 1. imageUrl, 2. heroImages
     final imageUrl =
         venue.imageUrl ??
-        venue.coverImageUrl ??
         (venue.heroImages.isNotEmpty ? venue.heroImages.first : null);
 
     if (imageUrl != null) {

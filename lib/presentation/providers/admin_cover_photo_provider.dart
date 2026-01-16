@@ -22,7 +22,7 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
 
   Future<void> init(Venue venue) async {
     _venue = venue;
-    _selectedPhotoUrl = venue.coverImageUrl;
+    _selectedPhotoUrl = venue.imageUrl;
     await loadCategoryPhotos();
   }
 
@@ -63,7 +63,7 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
 
       // Eğer eski seçim bir custom URL ise ve DB'deki orijinal URL değilse (yani bu oturumda yüklenmişse), onu sil
       if (oldSelection != null &&
-          oldSelection != _venue?.coverImageUrl &&
+          oldSelection != _venue?.imageUrl &&
           oldSelection.contains('venue-photos/')) {
         _storageService.deleteFileByUrl(oldSelection);
       }
@@ -77,7 +77,7 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
   Future<bool> saveCoverPhoto() async {
     if (_venue == null || _selectedPhotoUrl == null) return false;
 
-    final oldUrl = _venue?.coverImageUrl;
+    final oldUrl = _venue?.imageUrl;
     final newUrl = _selectedPhotoUrl!;
 
     _setLoading(true);
@@ -92,7 +92,7 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
         _storageService.deleteFileByUrl(oldUrl);
       }
 
-      _venue = _venue!.copyWith(coverImageUrl: newUrl, imageUrl: newUrl);
+      _venue = _venue!.copyWith(imageUrl: newUrl);
       _error = null;
       return true;
     } catch (e) {

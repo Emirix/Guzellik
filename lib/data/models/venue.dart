@@ -9,10 +9,7 @@ class Venue {
   final String address;
   final double latitude;
   final double longitude;
-  final String? imageUrl; // DEPRECATED - use heroImages instead
-
-  // Gallery Support
-  final String? coverImageUrl; // Premium cover photo
+  final String? imageUrl;
   final List<String> heroImages; // Hero carousel URLs
   final List<VenuePhoto>? galleryPhotos; // Detailed gallery (lazy loaded)
 
@@ -64,7 +61,6 @@ class Venue {
     required this.latitude,
     required this.longitude,
     this.imageUrl,
-    this.coverImageUrl,
     this.heroImages = const [],
     this.galleryPhotos,
     this.category,
@@ -157,9 +153,6 @@ class Venue {
       latitude: _toDouble(json['latitude']),
       longitude: _toDouble(json['longitude']),
       imageUrl: ImageUtils.normalizeUrl(_toString(json['image_url'])),
-      coverImageUrl: ImageUtils.normalizeUrl(
-        _toString(json['cover_image_url']),
-      ),
       heroImages: heroImagesList,
       galleryPhotos: galleryPhotosList,
       category: venueCategory,
@@ -249,7 +242,6 @@ class Venue {
       'latitude': latitude,
       'longitude': longitude,
       'image_url': imageUrl,
-      'cover_image_url': coverImageUrl,
       'hero_images': heroImages,
       'gallery_photos': galleryPhotos?.map((photo) => photo.toJson()).toList(),
       'category': category?.toJson(),
@@ -288,7 +280,6 @@ class Venue {
     double? latitude,
     double? longitude,
     String? imageUrl,
-    String? coverImageUrl,
     List<String>? heroImages,
     List<VenuePhoto>? galleryPhotos,
     VenueCategory? category,
@@ -324,7 +315,6 @@ class Venue {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       imageUrl: imageUrl ?? this.imageUrl,
-      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
       heroImages: heroImages ?? this.heroImages,
       galleryPhotos: galleryPhotos ?? this.galleryPhotos,
       category: category ?? this.category,

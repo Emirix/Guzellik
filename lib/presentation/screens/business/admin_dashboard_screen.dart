@@ -77,7 +77,7 @@ class AdminDashboardScreen extends StatelessWidget {
 
   Widget _buildCoverAndProfile(BuildContext context, Venue? venue) {
     final coverUrl =
-        venue?.coverImageUrl ??
+        venue?.imageUrl ??
         (venue?.heroImages.isNotEmpty == true ? venue!.heroImages.first : null);
 
     return Stack(
@@ -119,96 +119,91 @@ class AdminDashboardScreen extends StatelessWidget {
           ),
         ),
 
-        // Profile Details (Centered Card instead of Logo)
+        // Profile Details (Clear Rectangular Card)
         Padding(
-          padding: const EdgeInsets.only(top: 200),
-          child: Center(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Venue Name
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          venue?.name ?? 'İşletme Adı',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF1B0E11),
-                            letterSpacing: -0.5,
-                          ),
+          padding: const EdgeInsets.only(top: 210),
+          child: Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Venue Name
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        venue?.name ?? 'İşletme Adı',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF1B0E11),
+                          letterSpacing: -0.5,
                         ),
                       ),
-                      if (venue?.isVerified == true) ...[
-                        const SizedBox(width: 6),
-                        const Icon(
-                          Icons.verified,
-                          color: Colors.blue,
-                          size: 20,
+                    ),
+                    if (venue?.isVerified == true) ...[
+                      const SizedBox(width: 8),
+                      const Icon(Icons.verified, color: Colors.blue, size: 22),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Location (District, Province)
+                Text(
+                  (venue?.districtName != null && venue?.provinceName != null)
+                      ? '${venue?.districtName}, ${venue?.provinceName}'
+                      : (venue?.address ?? 'Konum Bilgisi'),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.gray600,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Premium Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4AF37).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.stars, color: Color(0xFFD4AF37), size: 18),
+                      SizedBox(width: 6),
+                      Text(
+                        'PREMİUM İŞLETME',
+                        style: TextStyle(
+                          color: Color(0xFFD4AF37),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
                         ),
-                      ],
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  // Location (District, Province)
-                  Text(
-                    (venue?.districtName != null && venue?.provinceName != null)
-                        ? '${venue?.districtName}, ${venue?.provinceName}'
-                        : (venue?.address ?? 'Konum Bilgisi'),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Premium Badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37).withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.stars, color: Color(0xFFD4AF37), size: 16),
-                        SizedBox(width: 4),
-                        Text(
-                          'PREMİUM İŞLETME',
-                          style: TextStyle(
-                            color: Color(0xFFD4AF37),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

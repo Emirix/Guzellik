@@ -629,7 +629,7 @@ class VenueRepository {
     try {
       await _supabase
           .from('venues')
-          .update({'cover_image_url': photoUrl, 'image_url': photoUrl})
+          .update({'image_url': photoUrl})
           .eq('id', venueId);
 
       // Detay cache'ini temizle
