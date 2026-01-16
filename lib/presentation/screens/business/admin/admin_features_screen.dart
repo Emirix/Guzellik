@@ -182,78 +182,42 @@ class _AdminFeaturesScreenState extends State<AdminFeaturesScreen> {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isSelected ? AppColors.primary : AppColors.gray200,
-          width: isSelected ? 2 : 1,
+          color: isSelected
+              ? AppColors.primary.withOpacity(0.5)
+              : AppColors.gray100,
+          width: 1,
         ),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
-      child: CheckboxListTile(
+      child: SwitchListTile(
         value: isSelected,
         onChanged: (_) => provider.toggleFeature(feature.id),
-        title: Row(
-          children: [
-            Icon(
-              _getIconData(feature.icon),
-              size: 20,
-              color: isSelected ? AppColors.primary : AppColors.gray600,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                feature.name,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                  color: isSelected ? AppColors.gray900 : AppColors.gray700,
-                ),
-              ),
-            ),
-          ],
+        title: Text(
+          feature.name,
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            color: isSelected ? AppColors.gray900 : AppColors.gray700,
+          ),
         ),
         subtitle: feature.description != null
-            ? Padding(
-                padding: const EdgeInsets.only(left: 32, top: 4),
-                child: Text(
-                  feature.description!,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.gray500,
-                  ),
+            ? Text(
+                feature.description!,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.gray500,
                 ),
               )
             : null,
         activeColor: AppColors.primary,
-        controlAffinity: ListTileControlAffinity.trailing,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       ),
     );
-  }
-
-  IconData _getIconData(String iconName) {
-    // Map icon names to IconData
-    final iconMap = {
-      'science': Icons.science,
-      'sanitizer': Icons.sanitizer,
-      'verified': Icons.verified,
-      'event_available': Icons.event_available,
-      'card_giftcard': Icons.card_giftcard,
-      'home': Icons.home,
-      'chat': Icons.chat,
-      'ac_unit': Icons.ac_unit,
-      'local_cafe': Icons.local_cafe,
-      'child_care': Icons.child_care,
-      'menu_book': Icons.menu_book,
-      'music_note': Icons.music_note,
-      'wifi': Icons.wifi,
-      'credit_card': Icons.credit_card,
-      'payments': Icons.payments,
-      'contactless': Icons.contactless,
-      'money': Icons.money,
-      'local_parking': Icons.local_parking,
-      'directions_bus': Icons.directions_bus,
-      'local_taxi': Icons.local_taxi,
-      'accessible': Icons.accessible,
-      'chat_bubble': Icons.chat_bubble,
-      'photo_camera': Icons.photo_camera,
-    };
-
-    return iconMap[iconName] ?? Icons.check_circle_outline;
   }
 }

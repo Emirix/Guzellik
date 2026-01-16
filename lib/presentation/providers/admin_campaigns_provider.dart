@@ -43,7 +43,7 @@ class AdminCampaignsProvider extends ChangeNotifier {
     String venueId, {
     required String title,
     String? description,
-    double? discountPercentage,
+    int? discountPercentage,
     double? discountAmount,
     DateTime? startDate,
     DateTime? endDate,
@@ -88,7 +88,7 @@ class AdminCampaignsProvider extends ChangeNotifier {
     String campaignId, {
     String? title,
     String? description,
-    double? discountPercentage,
+    int? discountPercentage,
     double? discountAmount,
     DateTime? startDate,
     DateTime? endDate,

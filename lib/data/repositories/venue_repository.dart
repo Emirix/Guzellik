@@ -2,6 +2,7 @@ import '../models/venue.dart';
 import '../models/service.dart';
 import '../models/venue_filter.dart';
 import '../models/review.dart';
+import '../models/venue_feature.dart';
 import '../models/venue_photo.dart';
 import '../models/venue_category.dart';
 import '../models/specialist.dart';
@@ -20,6 +21,24 @@ class VenueRepository {
 
   final SupabaseService _supabase = SupabaseService.instance;
   final CacheService _cache = CacheService.instance;
+
+  /// Get selected features for a venue with details
+  Future<List<VenueFeature>> getVenueFeatures(String venueId) async {
+    try {
+      final response = await _supabase
+          .from('venue_selected_features')
+          .select('feature_id, venue_features(*)')
+          .eq('venue_id', venueId);
+
+      return (response as List)
+          .where((item) => item['venue_features'] != null)
+          .map((item) => VenueFeature.fromJson(item['venue_features']))
+          .toList();
+    } catch (e) {
+      print('Error fetching venue features: $e');
+      return [];
+    }
+  }
 
   /// Kategorileri cache'den veya API'den getirir (30 dk cache)
   Future<List<VenueCategory>> getVenueCategories() async {

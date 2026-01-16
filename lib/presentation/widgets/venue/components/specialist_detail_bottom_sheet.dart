@@ -156,7 +156,11 @@ class SpecialistDetailBottomSheet extends StatelessWidget {
   Widget _buildDefaultAvatar() {
     return Container(
       color: AvatarUtils.getAvatarBackgroundColor(specialist.gender),
-      child: const Icon(Icons.person, size: 60, color: AppColors.gray400),
+      child: Icon(
+        Icons.person,
+        size: 60,
+        color: AvatarUtils.getAvatarIconColor(specialist.gender),
+      ),
     );
   }
 }

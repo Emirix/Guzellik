@@ -58,6 +58,16 @@ class AppColors {
   /// Matches gray100 for theme consistency
   static const Color avatarNeutral = Color(0xFFF5F5F5);
 
+  // Avatar Icon Colors (Gender-based)
+  /// Darker blue icon for male specialist avatars
+  static const Color avatarMaleIcon = Color(0xFF42A5F5);
+
+  /// Darker pink icon for female specialist avatars (using primary for consistency)
+  static const Color avatarFemaleIcon = Color(0xFFEE2B5B);
+
+  /// Gray icon for neutral avatars (using gray400)
+  static const Color avatarNeutralIcon = Color(0xFFBDBDBD);
+
   // Shadows
   static const Color shadowLight = Color(0x0F000000);
   static const Color shadowMedium = Color(0x1A000000);

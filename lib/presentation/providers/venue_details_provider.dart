@@ -5,6 +5,7 @@ import '../../data/models/service.dart';
 import '../../data/models/review.dart';
 import '../../data/models/specialist.dart';
 import '../../data/models/campaign.dart';
+import '../../data/models/venue_feature.dart';
 import '../../data/repositories/venue_repository.dart';
 
 class VenueDetailsProvider extends ChangeNotifier {
@@ -15,6 +16,7 @@ class VenueDetailsProvider extends ChangeNotifier {
   List<Review> _reviews = [];
   List<Specialist> _specialists = [];
   List<Campaign> _campaigns = [];
+  List<VenueFeature> _venueFeatures = [];
   bool _isLoading = false;
   bool _isFollowLoading = false;
   String? _error;
@@ -24,6 +26,7 @@ class VenueDetailsProvider extends ChangeNotifier {
   List<Review> get reviews => _reviews;
   List<Specialist> get specialists => _specialists;
   List<Campaign> get campaigns => _campaigns;
+  List<VenueFeature> get venueFeatures => _venueFeatures;
   bool get isLoading => _isLoading;
   bool get isFollowLoading => _isFollowLoading;
   String? get error => _error;
@@ -53,6 +56,7 @@ class VenueDetailsProvider extends ChangeNotifier {
     _reviews = [];
     _specialists = [];
     _campaigns = [];
+    _venueFeatures = [];
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -73,6 +77,7 @@ class VenueDetailsProvider extends ChangeNotifier {
         _repository.checkIfFollowing(venueId),
         _repository.getVenueSpecialists(venueId),
         _repository.getVenueCampaigns(venueId),
+        _repository.getVenueFeatures(venueId),
       ]);
 
       _services = results[0] as List<Service>;
@@ -81,6 +86,7 @@ class VenueDetailsProvider extends ChangeNotifier {
       final isFollowing = results[3] as bool;
       _specialists = results[4] as List<Specialist>;
       _campaigns = results[5] as List<Campaign>;
+      _venueFeatures = results[6] as List<VenueFeature>;
 
       // Final update of the venue object with all dynamic data
       _venue = _venue!.copyWith(

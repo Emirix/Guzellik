@@ -25,8 +25,11 @@ import '../../presentation/screens/business/admin/admin_working_hours_screen.dar
 import '../../presentation/screens/business/admin/admin_location_screen.dart';
 import '../../presentation/screens/business/admin/admin_faq_screen.dart';
 import '../../presentation/screens/business/admin/admin_cover_photo_screen.dart';
+import '../../presentation/screens/business/admin/admin_features_screen.dart';
 import '../../presentation/screens/business/admin_basic_info_screen.dart';
 import '../../presentation/widgets/common/business_bottom_nav.dart';
+import '../../data/repositories/venue_features_repository.dart';
+import '../../presentation/providers/admin_features_provider.dart';
 import '../../presentation/providers/business_provider.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
@@ -264,6 +267,26 @@ class AppRouter {
             requiredFor: 'Kapak Fotoğrafı',
             redirectPath: '/business/admin/cover-photo',
             child: AdminCoverPhotoScreen(venue: venue!),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/business/admin/features',
+        name: 'admin-features',
+        builder: (context, state) {
+          final businessProvider = context.read<BusinessProvider>();
+          final venueId = businessProvider.businessVenue?.id ?? '';
+
+          return AuthGuard(
+            requiredFor: 'Özellik Yönetimi',
+            redirectPath: '/business/admin/features',
+            child: ChangeNotifierProvider(
+              create: (context) => AdminFeaturesProvider(
+                repository: VenueFeaturesRepository(),
+                venueId: venueId,
+              ),
+              child: const AdminFeaturesScreen(),
+            ),
           );
         },
       ),

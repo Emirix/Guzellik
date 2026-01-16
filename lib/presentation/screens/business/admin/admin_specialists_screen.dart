@@ -306,9 +306,11 @@ class _SpecialistCard extends StatelessWidget {
                       ? NetworkImage(specialist.photoUrl!)
                       : null,
                   child: specialist.photoUrl == null
-                      ? const Icon(
+                      ? Icon(
                           Icons.person,
-                          color: AppColors.gray400,
+                          color: AvatarUtils.getAvatarIconColor(
+                            specialist.gender,
+                          ),
                           size: 30,
                         )
                       : null,

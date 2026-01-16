@@ -477,9 +477,7 @@ class _CampaignEditScreenState extends State<CampaignEditScreen> {
           widget.campaign!.id,
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
-          discountPercentage: _isPercentage
-              ? discountValue.toInt().toDouble()
-              : null,
+          discountPercentage: _isPercentage ? discountValue.toInt() : null,
           discountAmount: _isPercentage ? null : discountValue,
           startDate: _startDate,
           endDate: _endDate,
@@ -490,9 +488,7 @@ class _CampaignEditScreenState extends State<CampaignEditScreen> {
           venueId,
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
-          discountPercentage: _isPercentage
-              ? discountValue.toInt().toDouble()
-              : null,
+          discountPercentage: _isPercentage ? discountValue.toInt() : null,
           discountAmount: _isPercentage ? null : discountValue,
           startDate: _startDate,
           endDate: _endDate,

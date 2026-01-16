@@ -65,7 +65,9 @@ class ExpertCard extends StatelessWidget {
                           child: Icon(
                             Icons.person,
                             size: 40,
-                            color: AppColors.gray400,
+                            color: AvatarUtils.getAvatarIconColor(
+                              expert.gender,
+                            ),
                           ),
                         ),
                       )
@@ -76,7 +78,7 @@ class ExpertCard extends StatelessWidget {
                         child: Icon(
                           Icons.person,
                           size: 40,
-                          color: AppColors.gray400,
+                          color: AvatarUtils.getAvatarIconColor(expert.gender),
                         ),
                       ),
               ),

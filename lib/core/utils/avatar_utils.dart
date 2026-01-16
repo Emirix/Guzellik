@@ -43,6 +43,35 @@ class AvatarUtils {
     return AppColors.avatarNeutral;
   }
 
+  /// Returns the appropriate icon color for a specialist avatar
+  /// based on their gender.
+  static Color getAvatarIconColor(String? gender) {
+    if (gender == null || gender.isEmpty) {
+      return AppColors.avatarNeutralIcon;
+    }
+
+    final normalizedGender = gender.toLowerCase().trim();
+
+    // Male variants
+    if (normalizedGender == 'male' ||
+        normalizedGender == 'm' ||
+        normalizedGender == 'erkek' ||
+        normalizedGender == 'e') {
+      return AppColors.avatarMaleIcon;
+    }
+
+    // Female variants
+    if (normalizedGender == 'female' ||
+        normalizedGender == 'f' ||
+        normalizedGender == 'kadın' ||
+        normalizedGender == 'k') {
+      return AppColors.avatarFemaleIcon;
+    }
+
+    // Unknown/unrecognized gender
+    return AppColors.avatarNeutralIcon;
+  }
+
   // Private constructor to prevent instantiation
   AvatarUtils._();
 }

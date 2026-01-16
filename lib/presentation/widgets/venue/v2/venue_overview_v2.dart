@@ -14,10 +14,13 @@ import '../photo_gallery_viewer.dart';
 import '../../../providers/venue_details_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../data/models/venue_feature.dart';
+
 class VenueOverviewV2 extends StatelessWidget {
   final Venue venue;
   final List<Review> reviews;
   final List<Specialist> specialists;
+  final List<VenueFeature> venueFeatures;
   final VoidCallback onSeeAll;
 
   const VenueOverviewV2({
@@ -25,6 +28,7 @@ class VenueOverviewV2 extends StatelessWidget {
     required this.venue,
     required this.reviews,
     required this.specialists,
+    required this.venueFeatures,
     required this.onSeeAll,
   });
 
@@ -182,7 +186,7 @@ class VenueOverviewV2 extends StatelessWidget {
         // 6. Social Proof (Certificates & Features are combined in TrustBadgesGridV2)
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: TrustBadgesGridV2(venue: venue),
+          child: TrustBadgesGridV2(venue: venue, features: venueFeatures),
         ),
         const SizedBox(height: 16),
 

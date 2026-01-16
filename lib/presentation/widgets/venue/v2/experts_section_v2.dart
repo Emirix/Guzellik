@@ -158,7 +158,11 @@ class ExpertsSectionV2 extends StatelessWidget {
               backgroundColor: AvatarUtils.getAvatarBackgroundColor(gender),
               backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
               child: imageUrl == null
-                  ? Icon(Icons.person, size: 32, color: AppColors.gray400)
+                  ? Icon(
+                      Icons.person,
+                      size: 32,
+                      color: AvatarUtils.getAvatarIconColor(gender),
+                    )
                   : null,
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../data/models/venue.dart';
+import '../../../../data/models/venue_feature.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -8,8 +9,9 @@ import '../components/working_hours_card.dart';
 
 class AboutTab extends StatefulWidget {
   final Venue venue;
+  final List<VenueFeature> venueFeatures;
 
-  const AboutTab({super.key, required this.venue});
+  const AboutTab({super.key, required this.venue, required this.venueFeatures});
 
   @override
   State<AboutTab> createState() => _AboutTabState();
@@ -55,32 +57,46 @@ class _AboutTabState extends State<AboutTab> {
         _buildLocationSection(context),
         const SizedBox(height: 24),
 
-        // Payment Options - const Chip kullan
-        if (widget.venue.paymentOptions.isNotEmpty) ...[
-          Text('Ödeme Seçenekleri', style: AppTextStyles.heading3),
+        // Business Features (Unified)
+        if (widget.venueFeatures.isNotEmpty ||
+            widget.venue.features.isNotEmpty) ...[
+          Text('İşletme Özellikleri', style: AppTextStyles.heading3),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: widget.venue.paymentOptions.map((option) {
-              // PERF: Her chip'i RepaintBoundary ile izole et
-              return RepaintBoundary(
-                child: Chip(
-                  label: Text(option),
-                  backgroundColor: AppColors.gray50,
-                  side: const BorderSide(color: AppColors.gray200),
-                ),
-              );
-            }).toList(),
+            children:
+                (widget.venueFeatures.isNotEmpty
+                        ? widget.venueFeatures.map((f) => f.name).toList()
+                        : widget.venue.features)
+                    .map((feature) {
+                      return RepaintBoundary(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.gray50,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: AppColors.gray200.withOpacity(0.5),
+                            ),
+                          ),
+                          child: Text(
+                            feature,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.gray700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      );
+                    })
+                    .toList(),
           ),
           const SizedBox(height: 24),
-        ],
-
-        // Accessibility
-        if (widget.venue.accessibility.isNotEmpty) ...[
-          Text('Özellikler', style: AppTextStyles.heading3),
-          const SizedBox(height: 12),
-          _buildAccessibilityInfo(),
         ],
       ],
     );
@@ -218,59 +234,6 @@ class _AboutTabState extends State<AboutTab> {
         ),
       ],
     );
-  }
-
-  Widget _buildAccessibilityInfo() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: widget.venue.accessibility.entries.map((entry) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Row(
-            children: [
-              Icon(
-                _getAccessibilityIcon(entry.key),
-                color: AppColors.primary,
-                size: 20,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  '${_getAccessibilityLabel(entry.key)}: ${entry.value}',
-                  style: TextStyle(fontSize: 14, color: AppColors.gray700),
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  IconData _getAccessibilityIcon(String key) {
-    switch (key.toLowerCase()) {
-      case 'parking':
-        return Icons.local_parking;
-      case 'wheelchair':
-        return Icons.accessible;
-      case 'wifi':
-        return Icons.wifi;
-      default:
-        return Icons.check_circle_outline;
-    }
-  }
-
-  String _getAccessibilityLabel(String key) {
-    switch (key.toLowerCase()) {
-      case 'parking':
-        return 'Otopark';
-      case 'wheelchair':
-        return 'Tekerlekli Sandalye Erişimi';
-      case 'wifi':
-        return 'Wi-Fi';
-      default:
-        return key;
-    }
   }
 
   Future<void> _openMaps(double lat, double lng) async {

@@ -251,6 +251,13 @@ class AdminDashboardScreen extends StatelessWidget {
             subtitle: venue?.address ?? 'Harita konumu ve açık adres',
             onTap: () => context.push('/business/admin/location'),
           ),
+          _buildListItem(
+            context,
+            icon: Icons.checklist_rtl,
+            title: 'İşletme Özellikleri',
+            subtitle: 'Wi-Fi, Otopark, Ödeme Seçenekleri vb.',
+            onTap: () => context.push('/business/admin/features'),
+          ),
 
           _buildListItem(
             context,

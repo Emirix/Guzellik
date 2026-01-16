@@ -158,7 +158,11 @@ class _SpecialistEditScreenState extends State<SpecialistEditScreen> {
                             : null)
                         as ImageProvider?,
               child: (_selectedImage == null && _currentImageUrl == null)
-                  ? const Icon(Icons.person, size: 60, color: AppColors.gray400)
+                  ? Icon(
+                      Icons.person,
+                      size: 60,
+                      color: AvatarUtils.getAvatarIconColor(_gender),
+                    )
                   : null,
             ),
             Positioned(

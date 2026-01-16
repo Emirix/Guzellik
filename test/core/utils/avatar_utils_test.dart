@@ -69,4 +69,21 @@ void main() {
       );
     });
   });
+
+  group('AvatarUtils.getAvatarIconColor', () {
+    test('returns male icon color for "male"', () {
+      expect(AvatarUtils.getAvatarIconColor('male'), AppColors.avatarMaleIcon);
+    });
+
+    test('returns female icon color for "female"', () {
+      expect(
+        AvatarUtils.getAvatarIconColor('female'),
+        AppColors.avatarFemaleIcon,
+      );
+    });
+
+    test('returns neutral icon color for null', () {
+      expect(AvatarUtils.getAvatarIconColor(null), AppColors.avatarNeutralIcon);
+    });
+  });
 }
