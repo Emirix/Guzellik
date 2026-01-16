@@ -239,7 +239,7 @@ class _ExploreScreenState extends State<ExploreScreen>
         ),
         InkWell(
           onTap: () {
-            context.read<AppStateProvider>().setBottomNavIndex(2);
+            context.read<AppStateProvider>().setBottomNavIndex(3);
           },
           borderRadius: BorderRadius.circular(20),
           child: Container(
@@ -360,9 +360,6 @@ class _ExploreScreenState extends State<ExploreScreen>
                     ),
                   ),
                 ),
-
-                // Bottom padding for FAB
-                const SliverToBoxAdapter(child: SizedBox(height: 80)),
               ],
             ),
 

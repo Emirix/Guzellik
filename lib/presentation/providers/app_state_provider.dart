@@ -26,10 +26,10 @@ class AppStateProvider with ChangeNotifier {
   }
 
   /// Set selected bottom navigation index
-  /// Valid indices: 0=Keşfet, 1=Ara, 2=Bildirimler, 3=Profil
+  /// Valid indices: 0=Keşfet, 1=Ara, 2=Favoriler, 3=Bildirimler, 4=Profil
   void setBottomNavIndex(int index) {
-    // Ensure index is within valid range (0-3)
-    if (index < 0 || index > 3) {
+    // Ensure index is within valid range (0-4)
+    if (index < 0 || index > 4) {
       index = 0;
     }
     _selectedBottomNavIndex = index;
