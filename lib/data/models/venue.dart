@@ -50,9 +50,11 @@ class Venue {
   // Distance (transient field, populated by search RPC)
   final double? distance;
 
-  // Location IDs
+  // Location Info
   final int? provinceId;
   final String? districtId;
+  final String? provinceName;
+  final String? districtName;
 
   Venue({
     required this.id,
@@ -88,6 +90,8 @@ class Venue {
     this.distance,
     this.provinceId,
     this.districtId,
+    this.provinceName,
+    this.districtName,
   });
 
   factory Venue.fromJson(Map<String, dynamic> json) {
@@ -191,6 +195,8 @@ class Venue {
       distance: _toDoubleNullable(json['distance_meters'] ?? json['distance']),
       provinceId: _toInt(json['province_id']),
       districtId: _toString(json['district_id']),
+      provinceName: _toString(json['province_name']),
+      districtName: _toString(json['district_name']),
     );
   }
 
@@ -269,6 +275,8 @@ class Venue {
       'distance_meters': distance,
       'province_id': provinceId,
       'district_id': districtId,
+      'province_name': provinceName,
+      'district_name': districtName,
     };
   }
 
@@ -305,6 +313,8 @@ class Venue {
     double? distance,
     int? provinceId,
     String? districtId,
+    String? provinceName,
+    String? districtName,
   }) {
     return Venue(
       id: id ?? this.id,
@@ -339,6 +349,8 @@ class Venue {
       distance: distance ?? this.distance,
       provinceId: provinceId ?? this.provinceId,
       districtId: districtId ?? this.districtId,
+      provinceName: provinceName ?? this.provinceName,
+      districtName: districtName ?? this.districtName,
     );
   }
 }

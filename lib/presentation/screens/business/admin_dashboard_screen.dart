@@ -119,46 +119,75 @@ class AdminDashboardScreen extends StatelessWidget {
           ),
         ),
 
-        // Profile Details (Positioned relative to cover)
+        // Profile Details (Centered Card instead of Logo)
         Padding(
-          padding: const EdgeInsets.only(top: 210),
-          child: Column(
-            children: [
-              // Venue Name & Info
-              Column(
+          padding: const EdgeInsets.only(top: 200),
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Venue Name
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        venue?.name ?? 'İşletme Adı',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF1B0E11),
+                      Flexible(
+                        child: Text(
+                          venue?.name ?? 'İşletme Adı',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF1B0E11),
+                            letterSpacing: -0.5,
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.verified, color: Colors.blue, size: 18),
+                      if (venue?.isVerified == true) ...[
+                        const SizedBox(width: 6),
+                        const Icon(
+                          Icons.verified,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
+                      ],
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
+                  // Location (District, Province)
                   Text(
-                    venue?.address ?? 'Konum Bilgisi',
+                    (venue?.districtName != null && venue?.provinceName != null)
+                        ? '${venue?.districtName}, ${venue?.provinceName}'
+                        : (venue?.address ?? 'Konum Bilgisi'),
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
+                  // Premium Badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37).withOpacity(0.1),
+                      color: const Color(0xFFD4AF37).withOpacity(0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Row(
@@ -171,7 +200,7 @@ class AdminDashboardScreen extends StatelessWidget {
                           style: TextStyle(
                             color: Color(0xFFD4AF37),
                             fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w900,
                             letterSpacing: 1,
                           ),
                         ),
@@ -180,7 +209,7 @@ class AdminDashboardScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ],
