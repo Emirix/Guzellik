@@ -195,20 +195,7 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        actions: [
-          Consumer<AdminWorkingHoursProvider>(
-            builder: (context, provider, _) => IconButton(
-              icon: provider.isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.check_circle, color: AppColors.primary),
-              onPressed: provider.isLoading ? null : _saveChanges,
-            ),
-          ),
-        ],
+        actions: const [],
       ),
       body: Consumer<AdminWorkingHoursProvider>(
         builder: (context, provider, _) {
@@ -424,6 +411,41 @@ class _AdminWorkingHoursScreenState extends State<AdminWorkingHoursScreen> {
             },
           );
         },
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Consumer<AdminWorkingHoursProvider>(
+            builder: (context, provider, _) => ElevatedButton(
+              onPressed: provider.isLoading ? null : _saveChanges,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+              child: provider.isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      'Değişiklikleri Kaydet',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
+          ),
+        ),
       ),
     );
   }
