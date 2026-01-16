@@ -1,51 +1,8 @@
-  scripts:
-
-    - name: Build unsigned .app
-
-      script: | 
-
-        xcodebuild -workspace "ios/Runner.xcworkspace" \
-
-          -scheme "$XCODE_SCHEME" \
-
-          -configuration "Debug" \
-
-          -sdk iphonesimulator \
-
-          -derivedDataPath ios/output
-
-        # If you are building a project instead of a workspace:
-
-        # xcodebuild -project "ios/Runner.xcodeproj" \
-
-        #   -scheme "$XCODE_SCHEME" \
-
-        #   -configuration "Debug" \
-
-        #   -sdk iphonesimulator \
-
-        #   -derivedDataPath ios/output
-
-    - name: Create a .zip archive
-
-      script: | 
-
-        cd ios/output/Build/Products/Debug-iphonesimulator
-
-        zip -r ios_app.zip $XCODE_SCHEME.app
-
-  artifacts:
-
-    - ios/output/Build/Products/Debug-iphonesimulator/*.zip
-
-  publishing:
-
-    scripts:
-
-      - name: Publish App to Appetize
-
-        script: | 
-
-          zipPath="ios/output/Build/Products/Debug-iphonesimulator/ios_app.zip"
-
-          echo $(curl --location --request POST "https://$API_TOKEN@api.appetize.io/v1/apps/$APP_PUBLIC_KEY" --form "file=@$zipPath")
+scripts:
+  - name: Build iOS app for Appetize
+    script: |
+      flutter build ios --simulator
+      mkdir -p artifacts
+      cp -R build/ios/iphonesimulator/*.app artifacts/
+artifacts:
+  - artifacts/*.app
