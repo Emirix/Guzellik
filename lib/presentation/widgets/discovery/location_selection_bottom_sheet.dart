@@ -217,7 +217,7 @@ class _LocationSelectionBottomSheetState
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 0,
-        disabledBackgroundColor: AppColors.primary.withOpacity(0.7),
+        disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.7),
         disabledForegroundColor: AppColors.white,
       ),
     );

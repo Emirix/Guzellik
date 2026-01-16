@@ -37,7 +37,7 @@ class ProfileMenuItem extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: isPrimary
-                        ? AppColors.primary.withOpacity(0.1)
+                        ? AppColors.primary.withValues(alpha: 0.1)
                         : Colors.grey[100],
                     shape: BoxShape.circle,
                   ),

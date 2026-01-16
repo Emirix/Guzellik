@@ -117,7 +117,7 @@ class CampaignSortOptions extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.primary.withOpacity(0.05)
+                ? AppColors.primary.withValues(alpha: 0.05)
                 : Colors.transparent,
             border: Border(
               left: BorderSide(
@@ -132,7 +132,7 @@ class CampaignSortOptions extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.primary.withOpacity(0.1)
+                      ? AppColors.primary.withValues(alpha: 0.1)
                       : AppColors.gray100,
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -165,7 +165,7 @@ class CampaignSortOptions extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         color: isSelected
-                            ? AppColors.primary.withOpacity(0.7)
+                            ? AppColors.primary.withValues(alpha: 0.7)
                             : AppColors.gray600,
                       ),
                     ),

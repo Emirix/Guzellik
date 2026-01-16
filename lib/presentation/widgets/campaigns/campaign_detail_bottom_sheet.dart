@@ -95,7 +95,7 @@ class CampaignDetailBottomSheet extends StatelessWidget {
                               vertical: 5,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.warning.withOpacity(0.1),
+                              color: AppColors.warning.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
@@ -169,7 +169,7 @@ class CampaignDetailBottomSheet extends StatelessWidget {
       child: Icon(
         Icons.local_offer,
         size: 80,
-        color: AppColors.primary.withOpacity(0.3),
+        color: AppColors.primary.withValues(alpha: 0.3),
       ),
     );
   }
@@ -186,7 +186,7 @@ class CampaignDetailBottomSheet extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -376,7 +376,7 @@ class CampaignDetailBottomSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),

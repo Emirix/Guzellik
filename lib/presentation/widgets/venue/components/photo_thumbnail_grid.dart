@@ -76,7 +76,7 @@ class _PhotoThumbnailGridState extends State<PhotoThumbnailGrid> {
         });
       },
       backgroundColor: Colors.grey[100],
-      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+      selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
       labelStyle: TextStyle(
         color: isSelected ? Theme.of(context).primaryColor : Colors.black87,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
@@ -141,7 +141,7 @@ class _PhotoThumbnailGridState extends State<PhotoThumbnailGrid> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Icon(Icons.star, size: 16, color: Colors.amber),

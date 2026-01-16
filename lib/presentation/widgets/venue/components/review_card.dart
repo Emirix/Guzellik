@@ -22,17 +22,17 @@ class ReviewCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isOwnReview
-            ? AppColors.primary.withOpacity(0.04)
+            ? AppColors.primary.withValues(alpha: 0.04)
             : AppColors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isOwnReview
-              ? AppColors.primary.withOpacity(0.1)
+              ? AppColors.primary.withValues(alpha: 0.1)
               : AppColors.gray200,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -128,7 +128,7 @@ class ReviewCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.gold.withOpacity(0.1),
+                  color: AppColors.gold.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(

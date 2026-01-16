@@ -176,7 +176,7 @@ class _StoreScreenState extends State<StoreScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -195,8 +195,8 @@ class _StoreScreenState extends State<StoreScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.black.withOpacity(0.3),
-              Colors.black.withOpacity(0.7),
+              Colors.black.withValues(alpha: 0.3),
+              Colors.black.withValues(alpha: 0.7),
             ],
           ),
         ),
@@ -304,7 +304,7 @@ class _StoreScreenState extends State<StoreScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -316,7 +316,7 @@ class _StoreScreenState extends State<StoreScreen> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: AppColors.primary, size: 22),
@@ -387,7 +387,7 @@ class _StoreScreenState extends State<StoreScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

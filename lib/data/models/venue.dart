@@ -30,7 +30,6 @@ class Venue {
   // Detailed Info
   final Map<String, dynamic> workingHours;
   final List<dynamic> expertTeam;
-  final List<dynamic> certifications;
   final List<String> paymentOptions;
   final Map<String, dynamic> accessibility;
   final List<dynamic> faq;
@@ -73,7 +72,6 @@ class Venue {
     this.isFavorited = false,
     this.workingHours = const {},
     this.expertTeam = const [],
-    this.certifications = const [],
     this.paymentOptions = const [],
     this.accessibility = const {},
     this.faq = const [],
@@ -165,7 +163,6 @@ class Venue {
       isFavorited: _toBool(json['is_favorited']),
       workingHours: json['working_hours'] as Map<String, dynamic>? ?? {},
       expertTeam: json['expert_team'] as List<dynamic>? ?? [],
-      certifications: json['certifications'] as List<dynamic>? ?? [],
       paymentOptions:
           (json['payment_options'] as List<dynamic>?)
               ?.map((e) => e.toString())
@@ -254,7 +251,6 @@ class Venue {
       'is_favorited': isFavorited,
       'working_hours': workingHours,
       'expert_team': expertTeam,
-      'certifications': certifications,
       'payment_options': paymentOptions,
       'accessibility': accessibility,
       'faq': faq,
@@ -291,7 +287,6 @@ class Venue {
     bool? isFavorited,
     Map<String, dynamic>? workingHours,
     List<dynamic>? expertTeam,
-    List<dynamic>? certifications,
     List<String>? paymentOptions,
     Map<String, dynamic>? accessibility,
     List<dynamic>? faq,
@@ -326,7 +321,6 @@ class Venue {
       isFavorited: isFavorited ?? this.isFavorited,
       workingHours: workingHours ?? this.workingHours,
       expertTeam: expertTeam ?? this.expertTeam,
-      certifications: certifications ?? this.certifications,
       paymentOptions: paymentOptions ?? this.paymentOptions,
       accessibility: accessibility ?? this.accessibility,
       faq: faq ?? this.faq,

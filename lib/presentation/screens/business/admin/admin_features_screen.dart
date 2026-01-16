@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../providers/admin_features_provider.dart';
+import '../../../providers/business_provider.dart';
+import '../../../../data/repositories/venue_features_repository.dart';
 import '../../../../data/models/venue_feature.dart';
 
 class AdminFeaturesScreen extends StatefulWidget {
@@ -17,12 +19,36 @@ class _AdminFeaturesScreenState extends State<AdminFeaturesScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AdminFeaturesProvider>().initialize();
+      try {
+        context.read<AdminFeaturesProvider>().initialize();
+      } catch (_) {
+        // Provider will be initialized locally in build if not found here
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Check if provider exists in context (e.g. provided by router)
+    try {
+      context.read<AdminFeaturesProvider>();
+      return _buildScaffold(context);
+    } catch (_) {
+      // If not found, provide it locally using venueId from BusinessProvider
+      final businessProvider = context.read<BusinessProvider>();
+      final venueId = businessProvider.businessVenue?.id ?? '';
+
+      return ChangeNotifierProvider(
+        create: (context) => AdminFeaturesProvider(
+          repository: VenueFeaturesRepository(),
+          venueId: venueId,
+        )..initialize(),
+        child: Builder(builder: (context) => _buildScaffold(context)),
+      );
+    }
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -107,9 +133,9 @@ class _AdminFeaturesScreenState extends State<AdminFeaturesScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -183,14 +209,14 @@ class _AdminFeaturesScreenState extends State<AdminFeaturesScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.5)
+              ? AppColors.primary.withValues(alpha: 0.5)
               : AppColors.gray100,
           width: 1,
         ),
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.05),
+                  color: AppColors.primary.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),

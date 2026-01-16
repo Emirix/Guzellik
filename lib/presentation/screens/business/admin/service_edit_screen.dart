@@ -188,7 +188,7 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
                 border: Border.all(color: Colors.grey[200]!),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -213,7 +213,7 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
                           Icon(
                             Icons.add_photo_alternate_outlined,
                             size: 50,
-                            color: AppColors.primary.withOpacity(0.5),
+                            color: AppColors.primary.withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -257,7 +257,7 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -334,7 +334,7 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -371,7 +371,7 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -417,7 +417,7 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

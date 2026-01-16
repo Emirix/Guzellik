@@ -162,7 +162,7 @@ class _CampaignSliderState extends State<CampaignSlider> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -192,7 +192,7 @@ class _CampaignSliderState extends State<CampaignSlider> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
                   ),
                 ),
               ),
@@ -217,7 +217,7 @@ class _CampaignSliderState extends State<CampaignSlider> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.4),
+                            color: AppColors.primary.withValues(alpha: 0.4),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -275,7 +275,7 @@ class _CampaignSliderState extends State<CampaignSlider> {
                           Icon(
                             Icons.store,
                             size: 12,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -283,7 +283,7 @@ class _CampaignSliderState extends State<CampaignSlider> {
                               campaign.venue!.name,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.w500,
                               ),
                               maxLines: 1,
@@ -344,14 +344,14 @@ class _CampaignSliderState extends State<CampaignSlider> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.primaryLight, AppColors.primary.withOpacity(0.3)],
+          colors: [AppColors.primaryLight, AppColors.primary.withValues(alpha: 0.3)],
         ),
       ),
       child: Center(
         child: Icon(
           Icons.local_offer,
           size: 64,
-          color: AppColors.primary.withOpacity(0.5),
+          color: AppColors.primary.withValues(alpha: 0.5),
         ),
       ),
     );

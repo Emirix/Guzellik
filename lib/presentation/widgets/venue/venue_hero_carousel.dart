@@ -85,7 +85,7 @@ class _VenueHeroCarouselState extends State<VenueHeroCarousel> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -153,7 +153,7 @@ class _VenueHeroCarouselState extends State<VenueHeroCarousel> {
       width: isActive ? 24 : 8,
       height: 8,
       decoration: BoxDecoration(
-        color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
+        color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(4),
       ),
     );
@@ -182,7 +182,7 @@ class _GradientOverlay extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+          colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
         ),
       ),
     );

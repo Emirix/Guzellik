@@ -27,7 +27,7 @@ class MapMarkerUtils {
 
     // 1. Draw Shadow
     final Paint shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.2)
+      ..color = Colors.black.withValues(alpha: 0.2)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
 
     final Path shadowPath = Path();
@@ -75,7 +75,7 @@ class MapMarkerUtils {
     canvas.drawPath(pinPath, pinPaint);
 
     // 3. Draw a small dot at the bottom tip (optional, Google sometimes has it)
-    final Paint tipPaint = Paint()..color = Colors.black.withOpacity(0.1);
+    final Paint tipPaint = Paint()..color = Colors.black.withValues(alpha: 0.1);
     canvas.drawCircle(Offset(width / 2, height - 10), 4, tipPaint);
 
     // 4. Draw White Circle for Icon

@@ -148,7 +148,7 @@ class ExpertsSectionV2 extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(
                 color: isHighlighted
-                    ? AppColors.primary.withOpacity(0.2)
+                    ? AppColors.primary.withValues(alpha: 0.2)
                     : Colors.transparent,
                 width: 2,
               ),

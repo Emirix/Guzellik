@@ -404,7 +404,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -430,7 +430,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
                   ),
                 ),
               ),
@@ -474,7 +474,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
                                 ? 'Konum belirlendi • Değiştirmek için dokunun'
                                 : 'Henüz konum seçilmedi',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -485,7 +485,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -509,7 +509,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.9),
+                      color: AppColors.success.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Row(
@@ -543,8 +543,8 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.primary.withOpacity(0.1),
-            AppColors.primary.withOpacity(0.05),
+            AppColors.primary.withValues(alpha: 0.1),
+            AppColors.primary.withValues(alpha: 0.05),
           ],
         ),
       ),
@@ -555,13 +555,13 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.map_outlined,
                 size: 40,
-                color: AppColors.primary.withOpacity(0.5),
+                color: AppColors.primary.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -589,7 +589,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -620,7 +620,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(icon, size: 18, color: AppColors.primary.withOpacity(0.8)),
+              Icon(icon, size: 18, color: AppColors.primary.withValues(alpha: 0.8)),
               const SizedBox(width: 12),
               Expanded(child: child),
             ],
@@ -762,7 +762,7 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
                 child: Icon(
                   icon,
                   size: 18,
-                  color: AppColors.primary.withOpacity(0.8),
+                  color: AppColors.primary.withValues(alpha: 0.8),
                 ),
               ),
             ),
@@ -779,11 +779,11 @@ class _AdminLocationScreenState extends State<AdminLocationScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withOpacity(0.85)],
+          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.85)],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.35),
+            color: AppColors.primary.withValues(alpha: 0.35),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),

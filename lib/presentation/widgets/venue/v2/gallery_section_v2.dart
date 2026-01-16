@@ -71,7 +71,7 @@ class GallerySectionV2 extends StatelessWidget {
                     width: 40,
                     height: 3,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.5),
+                      color: AppColors.primary.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),

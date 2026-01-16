@@ -130,7 +130,7 @@ class VenueIdentityV2 extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       child: Material(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: isLoading ? null : () => _handleFollowTap(context),
@@ -274,12 +274,12 @@ class VenueIdentityV2 extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.nude.withOpacity(0.5),
+                        color: AppColors.nude.withValues(alpha: 0.5),
                         width: 1,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -318,7 +318,7 @@ class VenueIdentityV2 extends StatelessWidget {
                             } else {
                               return Icon(
                                 Icons.star_outline_rounded,
-                                color: AppColors.gold.withOpacity(0.4),
+                                color: AppColors.gold.withValues(alpha: 0.4),
                                 size: 14,
                               );
                             }

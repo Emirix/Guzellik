@@ -18,14 +18,14 @@ class AdminDashboardScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFFCFCFC),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0.8),
+        backgroundColor: Colors.white.withValues(alpha: 0.8),
         elevation: 0,
         centerTitle: true,
         scrolledUnderElevation: 0,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: Colors.grey.withOpacity(0.1), width: 1),
+              bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.1), width: 1),
             ),
           ),
         ),
@@ -97,7 +97,7 @@ class AdminDashboardScreen extends StatelessWidget {
                 : null,
           ),
           child: Container(
-            decoration: BoxDecoration(color: Colors.black.withOpacity(0.2)),
+            decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.2)),
             child: Center(
               child: ElevatedButton.icon(
                 onPressed: () => context.push('/business/admin/cover-photo'),
@@ -107,7 +107,7 @@ class AdminDashboardScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.9),
+                  backgroundColor: Colors.white.withValues(alpha: 0.9),
                   foregroundColor: const Color(0xFF1B0E11),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -131,7 +131,7 @@ class AdminDashboardScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
@@ -183,7 +183,7 @@ class AdminDashboardScreen extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD4AF37).withOpacity(0.15),
+                    color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: const Row(
@@ -326,12 +326,12 @@ class AdminDashboardScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.withOpacity(0.05)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.05)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -346,7 +346,7 @@ class AdminDashboardScreen extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(icon, color: AppColors.primary, size: 24),
@@ -374,7 +374,7 @@ class AdminDashboardScreen extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.1),
+                                color: Colors.green.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -437,7 +437,7 @@ class AdminDashboardScreen extends StatelessWidget {
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             elevation: 8,
-            shadowColor: AppColors.primary.withOpacity(0.4),
+            shadowColor: AppColors.primary.withValues(alpha: 0.4),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),

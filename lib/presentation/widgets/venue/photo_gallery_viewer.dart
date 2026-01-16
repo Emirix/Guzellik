@@ -146,7 +146,7 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                  colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
                 ),
               ),
               child: Row(
@@ -187,7 +187,7 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
                 ),
               ),
               child: Column(
@@ -210,7 +210,7 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                       Text(
                         _currentPhoto.category.displayName,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 14,
                         ),
                       ),
@@ -218,7 +218,7 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                       Text(
                         _formatDate(_currentPhoto.uploadedAt),
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                           fontSize: 14,
                         ),
                       ),

@@ -23,7 +23,7 @@ class MapPreviewCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 20,
                     offset: const Offset(0, 4),
                   ),
@@ -45,7 +45,7 @@ class MapPreviewCard extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.3),
+                            Colors.black.withValues(alpha: 0.3),
                           ],
                         ),
                       ),
@@ -67,7 +67,7 @@ class MapPreviewCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(30),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
+                                  color: Colors.black.withValues(alpha: 0.15),
                                   blurRadius: 15,
                                   offset: const Offset(0, 4),
                                 ),
@@ -101,7 +101,7 @@ class MapPreviewCard extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
@@ -153,7 +153,7 @@ class _MapPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final waterPaint = Paint()
-      ..color = const Color(0xFFB2EBF2).withOpacity(0.8)
+      ..color = const Color(0xFFB2EBF2).withValues(alpha: 0.8)
       ..style = PaintingStyle.fill;
 
     final mainRoadPaint = Paint()
@@ -163,13 +163,13 @@ class _MapPatternPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final smallRoadPaint = Paint()
-      ..color = Colors.white.withOpacity(0.6)
+      ..color = Colors.white.withValues(alpha: 0.6)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     final buildingPaint = Paint()
-      ..color = const Color(0xFFC8E6C9).withOpacity(0.5)
+      ..color = const Color(0xFFC8E6C9).withValues(alpha: 0.5)
       ..style = PaintingStyle.fill;
 
     // 1. Su Alanı (Sol taraf veya bir köşe)
@@ -265,7 +265,7 @@ class _MapPatternPainter extends CustomPainter {
 
     // Pin Shadow
     final markerShadowPaint = Paint()
-      ..color = AppColors.primary.withOpacity(0.15)
+      ..color = AppColors.primary.withValues(alpha: 0.15)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
 
     canvas.drawCircle(

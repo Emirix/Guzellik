@@ -155,7 +155,7 @@ class VenueOverviewV2 extends StatelessWidget {
         ],
 
         // Grey Spacer
-        Container(height: 8, color: AppColors.nude.withOpacity(0.3)),
+        Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
         const SizedBox(height: 24),
 
         // 3. Experts Section
@@ -163,7 +163,7 @@ class VenueOverviewV2 extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Grey Spacer
-        Container(height: 8, color: AppColors.nude.withOpacity(0.3)),
+        Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
         const SizedBox(height: 24),
 
         // 5. Working Hours & Map Section
@@ -180,7 +180,7 @@ class VenueOverviewV2 extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Grey Spacer
-        Container(height: 8, color: AppColors.nude.withOpacity(0.3)),
+        Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
         const SizedBox(height: 24),
 
         // 6. Social Proof (Certificates & Features are combined in TrustBadgesGridV2)
@@ -191,7 +191,7 @@ class VenueOverviewV2 extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Grey Spacer
-        Container(height: 8, color: AppColors.nude.withOpacity(0.3)),
+        Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
         const SizedBox(height: 24),
 
         // 7. Reviews Section
@@ -207,7 +207,7 @@ class VenueOverviewV2 extends StatelessWidget {
 
         // Grey Spacer
         if (venue.faq.isNotEmpty) ...[
-          Container(height: 8, color: AppColors.nude.withOpacity(0.3)),
+          Container(height: 8, color: AppColors.nude.withValues(alpha: 0.3)),
           const SizedBox(height: 24),
 
           // 8. FAQ Section

@@ -149,7 +149,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        AppColors.primary.withOpacity(0.15),
+                        AppColors.primary.withValues(alpha: 0.15),
                         const Color(0xFFF8F6F6),
                       ],
                     ),
@@ -164,7 +164,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -287,7 +287,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withOpacity(0.4),
+                                color: AppColors.primary.withValues(alpha: 0.4),
                                 blurRadius: 16,
                                 offset: const Offset(0, 6),
                               ),

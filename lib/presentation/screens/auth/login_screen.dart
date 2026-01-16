@@ -203,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.2),
+                              color: AppColors.primary.withValues(alpha: 0.2),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -259,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         hintText: 'isim@ornek.com',
                         hintStyle: TextStyle(
-                          color: const Color(0xFF955062).withOpacity(0.5),
+                          color: const Color(0xFF955062).withValues(alpha: 0.5),
                           fontSize: 14,
                         ),
                         prefixIcon: const Icon(
@@ -328,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         hintText: '••••••••',
                         hintStyle: TextStyle(
-                          color: const Color(0xFF955062).withOpacity(0.5),
+                          color: const Color(0xFF955062).withValues(alpha: 0.5),
                           fontSize: 14,
                         ),
                         prefixIcon: const Icon(
@@ -425,7 +425,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.4),
+                            color: AppColors.primary.withValues(alpha: 0.4),
                             blurRadius: 16,
                             offset: const Offset(0, 6),
                           ),
@@ -484,7 +484,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         'VEYA ŞUNUNLA DEVAM ET',
                         style: TextStyle(
                           fontSize: 11,
-                          color: const Color(0xFF955062).withOpacity(0.8),
+                          color: const Color(0xFF955062).withValues(alpha: 0.8),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
                         ),
@@ -576,7 +576,7 @@ class _LoginScreenState extends State<LoginScreen> {
             border: Border.all(color: const Color(0xFFE6D1D6)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

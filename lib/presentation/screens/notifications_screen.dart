@@ -50,7 +50,7 @@ class NotificationsScreen extends StatelessWidget {
                     icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                     style: IconButton.styleFrom(
                       backgroundColor: Colors.white,
-                      shadowColor: Colors.black.withOpacity(0.1),
+                      shadowColor: Colors.black.withValues(alpha: 0.1),
                       elevation: 2,
                     ),
                   ),

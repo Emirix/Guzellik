@@ -90,7 +90,7 @@ class SearchInitialView extends StatelessWidget {
                           border: Border.all(color: AppColors.gray100),
                           boxShadow: [
                             BoxShadow(
-                              color: color.withOpacity(0.06),
+                              color: color.withValues(alpha: 0.06),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -103,7 +103,7 @@ class SearchInitialView extends StatelessWidget {
                               width: 56,
                               height: 56,
                               decoration: BoxDecoration(
-                                color: color.withOpacity(0.1),
+                                color: color.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(icon, color: color, size: 28),

@@ -115,7 +115,7 @@ class _BeforeAfterViewerState extends State<BeforeAfterViewer> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                  colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
                 ),
               ),
               child: Row(
@@ -163,7 +163,7 @@ class _BeforeAfterViewerState extends State<BeforeAfterViewer> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
                 ),
               ),
               child: Column(
@@ -183,7 +183,7 @@ class _BeforeAfterViewerState extends State<BeforeAfterViewer> {
                     Text(
                       widget.description!,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 14,
                       ),
                     ),
@@ -275,7 +275,7 @@ class _BeforeAfterViewerState extends State<BeforeAfterViewer> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -301,7 +301,7 @@ class _BeforeAfterViewerState extends State<BeforeAfterViewer> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(2, 0),
                       ),
@@ -334,7 +334,7 @@ class _BeforeAfterViewerState extends State<BeforeAfterViewer> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.8),
+        color: color.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

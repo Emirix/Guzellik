@@ -45,7 +45,15 @@ class _SpecialistEditScreenState extends State<SpecialistEditScreen> {
     _nameController.text = specialist.name;
     _professionController.text = specialist.profession;
     _bioController.text = specialist.bio ?? '';
-    _gender = specialist.gender?.toLowerCase() ?? 'female';
+
+    // Normalize gender to match our internal keys ('male' or 'female')
+    final g = specialist.gender?.toLowerCase().trim() ?? 'female';
+    if (g == 'male' || g == 'm' || g == 'erkek' || g == 'e') {
+      _gender = 'male';
+    } else {
+      _gender = 'female';
+    }
+
     _currentImageUrl = specialist.photoUrl;
   }
 
@@ -195,7 +203,7 @@ class _SpecialistEditScreenState extends State<SpecialistEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -241,7 +249,7 @@ class _SpecialistEditScreenState extends State<SpecialistEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -265,7 +273,7 @@ class _SpecialistEditScreenState extends State<SpecialistEditScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.1)
+              ? AppColors.primary.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(

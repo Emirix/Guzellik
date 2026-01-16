@@ -115,7 +115,7 @@ class _CampaignsScreenState extends State<CampaignsScreen> {
             Icon(
               Icons.error_outline,
               size: 64,
-              color: AppColors.error.withOpacity(0.5),
+              color: AppColors.error.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(

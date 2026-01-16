@@ -34,7 +34,7 @@ class QuickActionButton extends StatelessWidget {
               color: backgroundColor ?? AppColors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: AppColors.nude.withOpacity(0.5),
+                color: AppColors.nude.withValues(alpha: 0.5),
                 width: 1,
               ),
               boxShadow: [

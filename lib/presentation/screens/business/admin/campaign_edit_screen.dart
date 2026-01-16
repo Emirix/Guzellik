@@ -203,7 +203,7 @@ class _CampaignEditScreenState extends State<CampaignEditScreen> {
                           Icon(
                             Icons.add_photo_alternate_outlined,
                             size: 50,
-                            color: AppColors.primary.withOpacity(0.5),
+                            color: AppColors.primary.withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: 8),
                           const Text(
@@ -228,7 +228,7 @@ class _CampaignEditScreenState extends State<CampaignEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -264,7 +264,7 @@ class _CampaignEditScreenState extends State<CampaignEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -301,7 +301,7 @@ class _CampaignEditScreenState extends State<CampaignEditScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.1)
+              ? AppColors.primary.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
@@ -331,7 +331,7 @@ class _CampaignEditScreenState extends State<CampaignEditScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

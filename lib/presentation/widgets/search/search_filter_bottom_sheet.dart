@@ -119,7 +119,7 @@ class _SearchFilterBottomSheetState extends State<SearchFilterBottomSheet> {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, -2),
                     ),
@@ -245,7 +245,7 @@ class _SearchFilterBottomSheetState extends State<SearchFilterBottomSheet> {
             activeTrackColor: AppColors.primary,
             inactiveTrackColor: AppColors.gray200,
             thumbColor: AppColors.primary,
-            overlayColor: AppColors.primary.withOpacity(0.2),
+            overlayColor: AppColors.primary.withValues(alpha: 0.2),
           ),
           child: Slider(
             value: distance,

@@ -100,14 +100,14 @@ class _SearchableLocationDropdownState<T>
                 color: _errorText != null
                     ? Colors.red
                     : hasValue
-                    ? AppColors.primary.withOpacity(0.3)
+                    ? AppColors.primary.withValues(alpha: 0.3)
                     : const Color(0xFFE6D1D6),
                 width: hasValue ? 1.5 : 1,
               ),
               boxShadow: hasValue
                   ? [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.08),
+                        color: AppColors.primary.withValues(alpha: 0.08),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -122,7 +122,7 @@ class _SearchableLocationDropdownState<T>
                     widget.prefixIcon,
                     color: hasValue
                         ? AppColors.primary
-                        : const Color(0xFF955062).withOpacity(0.6),
+                        : const Color(0xFF955062).withValues(alpha: 0.6),
                     size: 20,
                   ),
                   const SizedBox(width: 12),
@@ -136,7 +136,7 @@ class _SearchableLocationDropdownState<T>
                       fontSize: 14,
                       color: hasValue
                           ? const Color(0xFF1B0E11)
-                          : const Color(0xFF955062).withOpacity(0.5),
+                          : const Color(0xFF955062).withValues(alpha: 0.5),
                       fontWeight: hasValue
                           ? FontWeight.w500
                           : FontWeight.normal,
@@ -362,7 +362,7 @@ class _SearchModalState<T> extends State<_SearchModal<T>> {
                           height: 40,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppColors.primary.withOpacity(0.1)
+                                ? AppColors.primary.withValues(alpha: 0.1)
                                 : Colors.grey.shade50,
                             shape: BoxShape.circle,
                           ),

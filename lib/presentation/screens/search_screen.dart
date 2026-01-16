@@ -145,7 +145,7 @@ class _SearchScreenState extends State<SearchScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -166,7 +166,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     gradient: LinearGradient(
                       colors: [
                         AppColors.primary,
-                        AppColors.primary.withOpacity(0.7),
+                        AppColors.primary.withValues(alpha: 0.7),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -178,7 +178,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     gradient: LinearGradient(
                       colors: [
                         AppColors.primary,
-                        AppColors.primary.withOpacity(0.7),
+                        AppColors.primary.withValues(alpha: 0.7),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -192,7 +192,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   gradient: LinearGradient(
                     colors: [
                       AppColors.primary,
-                      AppColors.primary.withOpacity(0.7),
+                      AppColors.primary.withValues(alpha: 0.7),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -204,8 +204,8 @@ class _SearchScreenState extends State<SearchScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withOpacity(0.6),
-                    Colors.black.withOpacity(0.3),
+                    Colors.black.withValues(alpha: 0.6),
+                    Colors.black.withValues(alpha: 0.3),
                   ],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
@@ -222,10 +222,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -248,7 +248,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontWeight: FontWeight.w500,
                             letterSpacing: 0.5,
                           ),
@@ -275,7 +275,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -381,7 +381,7 @@ class _SearchScreenState extends State<SearchScreen> {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(

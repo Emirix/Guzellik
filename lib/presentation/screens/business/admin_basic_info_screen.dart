@@ -291,7 +291,7 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -350,7 +350,7 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
                 child: Icon(
                   icon,
                   size: 18,
-                  color: AppColors.primary.withOpacity(0.8),
+                  color: AppColors.primary.withValues(alpha: 0.8),
                 ),
               ),
             ),
@@ -367,11 +367,11 @@ class _AdminBasicInfoScreenState extends State<AdminBasicInfoScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withOpacity(0.85)],
+          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.85)],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.35),
+            color: AppColors.primary.withValues(alpha: 0.35),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),

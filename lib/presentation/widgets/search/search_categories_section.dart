@@ -77,11 +77,11 @@ class SearchCategoriesSection extends StatelessWidget {
                             width: 60,
                             height: 60,
                             decoration: BoxDecoration(
-                              color: color.withOpacity(0.1),
+                              color: color.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: color.withOpacity(0.05),
+                                  color: color.withValues(alpha: 0.05),
                                   blurRadius: 8,
                                   offset: const Offset(0, 4),
                                 ),

@@ -130,7 +130,7 @@ class _SplashScreenState extends State<SplashScreen>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: goldColor.withOpacity(0.1),
+                            color: goldColor.withValues(alpha: 0.1),
                             blurRadius: 100,
                             spreadRadius: 20,
                           ),
@@ -145,10 +145,10 @@ class _SplashScreenState extends State<SplashScreen>
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        border: Border.all(color: goldColor.withOpacity(0.05)),
+                        border: Border.all(color: goldColor.withValues(alpha: 0.05)),
                         boxShadow: [
                           BoxShadow(
-                            color: goldColor.withOpacity(0.1),
+                            color: goldColor.withValues(alpha: 0.1),
                             blurRadius: 15,
                             offset: const Offset(0, 8),
                           ),
@@ -185,7 +185,7 @@ class _SplashScreenState extends State<SplashScreen>
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 3.5,
-                      color: brandPink.withOpacity(0.8),
+                      color: brandPink.withValues(alpha: 0.8),
                     ),
                   ),
                 ),
@@ -212,7 +212,7 @@ class _SplashScreenState extends State<SplashScreen>
                         builder: (context, child) {
                           return LinearProgressIndicator(
                             value: _progressAnimation.value,
-                            backgroundColor: goldColor.withOpacity(0.15),
+                            backgroundColor: goldColor.withValues(alpha: 0.15),
                             valueColor: const AlwaysStoppedAnimation<Color>(
                               goldColor,
                             ),
@@ -229,7 +229,7 @@ class _SplashScreenState extends State<SplashScreen>
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 2.0,
-                        color: goldColor.withOpacity(0.6),
+                        color: goldColor.withValues(alpha: 0.6),
                       ),
                     ),
                   ),

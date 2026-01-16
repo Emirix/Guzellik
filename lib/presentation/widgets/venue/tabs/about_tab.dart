@@ -80,7 +80,7 @@ class _AboutTabState extends State<AboutTab> {
                             color: AppColors.gray50,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: AppColors.gray200.withOpacity(0.5),
+                              color: AppColors.gray200.withValues(alpha: 0.5),
                             ),
                           ),
                           child: Text(

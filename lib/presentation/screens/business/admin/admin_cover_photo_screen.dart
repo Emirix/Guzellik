@@ -76,7 +76,7 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -187,7 +187,7 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
                 boxShadow: [
                   if (isSelected)
                     BoxShadow(
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),

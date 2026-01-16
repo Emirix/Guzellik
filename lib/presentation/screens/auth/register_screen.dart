@@ -107,7 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -124,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        const Color(0xFFF8F6F6).withOpacity(0.3),
+                        const Color(0xFFF8F6F6).withValues(alpha: 0.3),
                         const Color(0xFFF8F6F6),
                       ],
                       stops: const [0.0, 0.6, 1.0],
@@ -152,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.2),
+                              color: AppColors.primary.withValues(alpha: 0.2),
                               blurRadius: 16,
                               offset: const Offset(0, 6),
                             ),
@@ -318,7 +318,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withOpacity(0.4),
+                                color: AppColors.primary.withValues(alpha: 0.4),
                                 blurRadius: 16,
                                 offset: const Offset(0, 6),
                               ),
@@ -438,7 +438,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: const Color(0xFF955062).withOpacity(0.5),
+              color: const Color(0xFF955062).withValues(alpha: 0.5),
               fontSize: 14,
             ),
             prefixIcon: Icon(icon, color: const Color(0xFF955062), size: 20),

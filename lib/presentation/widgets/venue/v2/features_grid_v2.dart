@@ -62,7 +62,7 @@ class FeaturesGridV2 extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.nude.withOpacity(0.5),
+        color: AppColors.nude.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(

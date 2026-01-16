@@ -22,7 +22,7 @@ class ExpertCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.nude.withOpacity(0.5), width: 1),
+          border: Border.all(color: AppColors.nude.withValues(alpha: 0.5), width: 1),
           boxShadow: [
             BoxShadow(
               color: AppColors.shadowLight,
@@ -41,7 +41,7 @@ class ExpertCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),

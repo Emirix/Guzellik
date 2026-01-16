@@ -73,10 +73,10 @@ class ProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFDFBFB).withOpacity(0.95),
+                color: const Color(0xFFFDFBFB).withValues(alpha: 0.95),
                 border: Border(
                   bottom: BorderSide(
-                    color: const Color(0xFFF3E8EA).withOpacity(0.5),
+                    color: const Color(0xFFF3E8EA).withValues(alpha: 0.5),
                   ),
                 ),
               ),
@@ -170,7 +170,7 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.03),
+                                  color: Colors.black.withValues(alpha: 0.03),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -227,7 +227,7 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.03),
+                                  color: Colors.black.withValues(alpha: 0.03),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -306,7 +306,7 @@ class ProfileScreen extends StatelessWidget {
                                             BoxShadow(
                                               color: const Color(
                                                 0xFFE8B4BC,
-                                              ).withOpacity(0.3),
+                                              ).withValues(alpha: 0.3),
                                               blurRadius: 12,
                                               offset: const Offset(0, 4),
                                             ),
@@ -322,7 +322,7 @@ class ProfileScreen extends StatelessWidget {
                                                   ),
                                                   decoration: BoxDecoration(
                                                     color: Colors.white
-                                                        .withOpacity(0.3),
+                                                        .withValues(alpha: 0.3),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           8,
@@ -356,7 +356,7 @@ class ProfileScreen extends StatelessWidget {
                                                             : 'Normal Modda',
                                                         style: TextStyle(
                                                           color: Colors.white
-                                                              .withOpacity(0.9),
+                                                              .withValues(alpha: 0.9),
                                                           fontSize: 12,
                                                         ),
                                                       ),
@@ -547,7 +547,7 @@ class ProfileScreen extends StatelessWidget {
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.primary,
                                     side: BorderSide(
-                                      color: AppColors.primary.withOpacity(0.2),
+                                      color: AppColors.primary.withValues(alpha: 0.2),
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),

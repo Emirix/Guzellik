@@ -277,15 +277,15 @@ class AppRouter {
           final businessProvider = context.read<BusinessProvider>();
           final venueId = businessProvider.businessVenue?.id ?? '';
 
-          return AuthGuard(
-            requiredFor: 'Özellik Yönetimi',
-            redirectPath: '/business/admin/features',
-            child: ChangeNotifierProvider(
-              create: (context) => AdminFeaturesProvider(
-                repository: VenueFeaturesRepository(),
-                venueId: venueId,
-              ),
-              child: const AdminFeaturesScreen(),
+          return ChangeNotifierProvider(
+            create: (context) => AdminFeaturesProvider(
+              repository: VenueFeaturesRepository(),
+              venueId: venueId,
+            )..initialize(),
+            child: const AuthGuard(
+              requiredFor: 'Özellik Yönetimi',
+              redirectPath: '/business/admin/features',
+              child: AdminFeaturesScreen(),
             ),
           );
         },

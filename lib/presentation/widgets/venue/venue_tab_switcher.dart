@@ -44,7 +44,7 @@ class _VenueTabSwitcherDelegate extends SliverPersistentHeaderDelegate {
           border: Border.all(color: AppColors.nude, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -59,7 +59,7 @@ class _VenueTabSwitcherDelegate extends SliverPersistentHeaderDelegate {
             color: AppColors.primary,
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.25),
+                color: AppColors.primary.withValues(alpha: 0.25),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),

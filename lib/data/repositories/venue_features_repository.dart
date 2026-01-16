@@ -1,12 +1,11 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/venue_feature.dart';
-
 import '../services/supabase_service.dart';
 
 class VenueFeaturesRepository {
   final SupabaseClient _supabase;
 
-  VenueFeaturesRepository([SupabaseClient? supabase])
+  VenueFeaturesRepository({SupabaseClient? supabase})
     : _supabase = supabase ?? SupabaseService.instance.client;
 
   /// Get all available features

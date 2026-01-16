@@ -44,7 +44,7 @@ class VenueQuickActionsV2 extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -105,7 +105,7 @@ class VenueQuickActionsV2 extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.05),
+                color: iconColor.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
               child: Center(child: Icon(icon, color: iconColor, size: 22)),

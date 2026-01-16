@@ -36,10 +36,10 @@ class TrustBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: badgeData.color.withOpacity(0.1),
+        color: badgeData.color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: badgeData.color.withOpacity(0.3),
+          color: badgeData.color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

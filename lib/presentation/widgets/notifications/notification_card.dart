@@ -43,12 +43,12 @@ class NotificationCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: notification.type == NotificationType.campaign
-                  ? AppColors.gold.withOpacity(0.3)
+                  ? AppColors.gold.withValues(alpha: 0.3)
                   : AppColors.gray100,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha: 0.02),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -115,7 +115,7 @@ class NotificationCard extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.gold.withOpacity(0.1),
+                              color: AppColors.gold.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Text(
@@ -134,7 +134,7 @@ class NotificationCard extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Text(
@@ -167,7 +167,7 @@ class NotificationCard extends StatelessWidget {
       case NotificationType.campaign:
         iconData = Icons.stars;
         iconColor = AppColors.gold;
-        bgColor = AppColors.goldLight.withOpacity(0.15);
+        bgColor = AppColors.goldLight.withValues(alpha: 0.15);
         break;
       case NotificationType.appointment:
         iconData = Icons.calendar_today_outlined;
