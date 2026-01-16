@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Güzellik Haritam - İşletme Kayıt Formu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ee2b5b;
+            --primary-dark: #cc1f4a;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #334155;
+            --accent: #22d3ee;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-sub);
+            font-size: 1.1rem;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        section:last-child {
+            border-bottom: none;
+        }
+
+        section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-sub);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(238, 43, 91, 0.1);
+        }
+
+        .working-hours-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .btn-add {
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--accent);
+            border: 1px dashed var(--accent);
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .dynamic-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .btn-remove {
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .output-section {
+            margin-top: 40px;
+        }
+
+        #generate-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, #b31d42 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 10px 20px -5px rgba(238, 43, 91, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        #generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(238, 43, 91, 0.5);
+        }
+
+        #sql-output {
+            margin-top: 20px;
+            background: #000;
+            color: #d1d5db;
+            padding: 20px;
+            border-radius: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+            max-height: 500px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .copy-btn {
+            display: none;
+            margin-top: 10px;
+            background: var(--text-sub);
+            color: var(--bg);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Responsive Improvements */
+        @media (max-width: 768px) {
+            .form-card { padding: 20px; }
+            header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Yeni Mekan Ekle</h1>
+        <p>Bilgileri girin ve Supabase için SQL sorgusunu anında oluşturun.</p>
+    </header>
+
+    <div class="form-card">
+        <!-- Genel Bilgiler -->
+        <section>
+            <h2>📍 Genel Bilgiler</h2>
+            <div class="grid">
+                <div class="input-group">
+                    <label for="v_name">Mekan Adı</label>
+                    <input type="text" id="v_name" placeholder="Örn: Valery Güzellik Salonu">
+                </div>
+                <div class="input-group">
+                    <label for="v_category">Kategori Slug</label>
+                    <select id="v_category">
+                        <option value="guzellik-salonu">Güzellik Salonu</option>
+                        <option value="berber">Berber</option>
+                        <option value="kuafor">Kuaför</option>
+                        <option value="spa-merkezi">SPA Merkezi</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="v_desc">Açıklama</label>
+                <textarea id="v_desc" rows="2" placeholder="İşletmenizi kısaca tanıtın..."></textarea>
+            </div>
+            <div class="input-group">
+                <label for="v_address">Tam Adres</label>
+                <textarea id="v_address" rows="2" placeholder="Sokak, No, İlçe, İl"></textarea>
+            </div>
+            <div class="grid">
+                <div class="input-group">
+                    <label for="v_province">İl Plaka Kodu (örn: 48)</label>
+                    <input type="number" id="v_province" value="48">
+                </div>
+                <div class="input-group">
+                    <label for="v_lat">Enlem (Latitude)</label>
+                    <input type="text" id="v_lat" placeholder="37.0381">
+                </div>
+                <div class="input-group">
+                    <label for="v_lng">Boylam (Longitude)</label>
+                    <input type="text" id="v_lng" placeholder="27.4244">
+                </div>
+            </div>
+        </section>
+
+        <!-- İletişim -->
+        <section>
+            <h2>📱 İletişim ve Sosyal Medya</h2>
+            <div class="grid">
+                <div class="input-group">
+                    <label for="v_phone">Telefon</label>
+                    <input type="text" id="v_phone" placeholder="05XX XXX XX XX">
+                </div>
+                <div class="input-group">
+                    <label for="v_whatsapp">WhatsApp (Kodsuz)</label>
+                    <input type="text" id="v_whatsapp" placeholder="905XXXXXXXXX">
+                </div>
+                <div class="input-group">
+                    <label for="v_instagram">Instagram Kullanıcı Adı</label>
+                    <input type="text" id="v_instagram" placeholder="isletmeadi">
+                </div>
+            </div>
+        </section>
+
+        <!-- Çalışma Saatleri -->
+        <section>
+            <h2>⏰ Çalışma Saatleri</h2>
+            <div class="working-hours-grid" id="working-hours">
+                <!-- Otomatik doldurma için JS kullanılacak -->
+            </div>
+        </section>
+
+        <!-- Uzmanlar -->
+        <section>
+            <h2>👥 Uzman Kadrosu</h2>
+            <div id="specialists-container">
+                <div class="dynamic-row">
+                    <input type="text" placeholder="Ad Soyad" class="spec-name">
+                    <input type="text" placeholder="Uzmanlık Alanı" class="spec-job">
+                    <select class="spec-gender">
+                        <option value="Kadın">Kadın</option>
+                        <option value="Erkek">Erkek</option>
+                    </select>
+                    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>
+                </div>
+            </div>
+            <button class="btn-add" onclick="addSpecialist()">+ Uzman Ekle</button>
+        </section>
+
+        <!-- Hizmetler -->
+        <section>
+            <h2>💅 Hizmetler</h2>
+            <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 10px;">Virgül ile ayırarak yazın (Örn: Lazer Epilasyon, Cilt Bakımı)</p>
+            <textarea id="v_services" rows="2" placeholder="Lazer Epilasyon, Cilt Bakımı, Masaj..."></textarea>
+        </section>
+
+        <!-- Fotoğraflar -->
+        <section>
+            <h2>🖼️ Galeri Fotoğrafları</h2>
+            <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 10px;">Tam URL girin (Hero olarak ilk fotoğraf kullanılacaktır)</p>
+            <div id="photos-container">
+                <div class="dynamic-row">
+                    <input type="text" placeholder="https://..." class="photo-url">
+                    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>
+                </div>
+            </div>
+            <button class="btn-add" onclick="addPhoto()">+ Fotoğraf URL Ekle</button>
+        </section>
+
+        <button id="generate-btn">SQL Sorgusunu Oluştur</button>
+
+        <div class="output-section">
+            <button class="copy-btn" id="copy-btn" onclick="copySql()">Kodu Kopyala</button>
+            <pre id="sql-output"></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const daysTr = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+
+    const hoursContainer = document.getElementById('working-hours');
+    days.forEach((day, i) => {
+        const div = document.createElement('div');
+        div.className = 'input-group';
+        div.innerHTML = `
+            <label>${daysTr[i]}</label>
+            <input type="text" id="h_${day}" value="09:30 - 19:00">
+        `;
+        hoursContainer.appendChild(div);
+    });
+
+    function addSpecialist() {
+        const container = document.getElementById('specialists-container');
+        const div = document.createElement('div');
+        div.className = 'dynamic-row';
+        div.innerHTML = `
+            <input type="text" placeholder="Ad Soyad" class="spec-name">
+            <input type="text" placeholder="Uzmanlık Alanı" class="spec-job">
+            <select class="spec-gender">
+                <option value="Kadın">Kadın</option>
+                <option value="Erkek">Erkek</option>
+            </select>
+            <button class="btn-remove" onclick="this.parentElement.remove()">×</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function addPhoto() {
+        const container = document.getElementById('photos-container');
+        const div = document.createElement('div');
+        div.className = 'dynamic-row';
+        div.innerHTML = `
+            <input type="text" placeholder="https://..." class="photo-url">
+            <button class="btn-remove" onclick="this.parentElement.remove()">×</button>
+        `;
+        container.appendChild(div);
+    }
+
+    document.getElementById('generate-btn').addEventListener('click', () => {
+        const name = document.getElementById('v_name').value || 'Mekan Adı';
+        const category = document.getElementById('v_category').value;
+        const desc = document.getElementById('v_desc').value;
+        const address = document.getElementById('v_address').value;
+        const lat = document.getElementById('v_lat').value || '0.0';
+        const lng = document.getElementById('v_lng').value || '0.0';
+        const province = document.getElementById('v_province').value;
+        const phone = document.getElementById('v_phone').value;
+        const wa = document.getElementById('v_whatsapp').value;
+        const ig = document.getElementById('v_instagram').value;
+        
+        const workingHours = {};
+        days.forEach(day => {
+            workingHours[day] = document.getElementById(`h_${day}`).value;
+        });
+
+        const specs = Array.from(document.querySelectorAll('.spec-name')).map((el, i) => ({
+            name: el.value,
+            job: document.querySelectorAll('.spec-job')[i].value,
+            gender: document.querySelectorAll('.spec-gender')[i].value
+        })).filter(s => s.name);
+
+        const services = document.getElementById('v_services').value.split(',').map(s => s.trim()).filter(s => s);
+        const photos = Array.from(document.querySelectorAll('.photo-url')).map(el => el.value).filter(p => p);
+
+        const venueId = crypto.randomUUID();
+        const ownerId = '00000000-0000-0000-0000-000000000000';
+
+        let sql = `-- Migration: Add Venue ${name}\nDO $$\nDECLARE\n    v_venue_id UUID := '${venueId}';\n    v_owner_id UUID := '${ownerId}';\n    v_category_id UUID;\n    v_district_id UUID;\nBEGIN\n    -- 1. Get Category\n    SELECT id INTO v_category_id FROM public.venue_categories WHERE slug = '${category}' LIMIT 1;\n\n    -- 2. Insert Venue\n    INSERT INTO public.venues (id, name, description, address, location, province_id, is_verified, is_preferred, owner_id, social_links, category_id, working_hours, hero_images, is_active, rating, review_count)\n    VALUES (\n        v_venue_id, '${name}', '${desc}', '${address}',\n        ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography, ${province}, true, true, v_owner_id,\n        jsonb_build_object('phone', '${phone}', 'whatsapp', '${wa}', 'instagram', '${ig}'),\n        v_category_id, '${JSON.stringify(workingHours)}'::jsonb,\n        jsonb_build_array('${photos[0] || ''}'),\n        true, 4.9, 1\n    ) ON CONFLICT (id) DO NOTHING;\n\n`;
+
+        // Specialists
+        if (specs.length > 0) {
+            sql += `    -- 3. Specialists\n    INSERT INTO public.specialists (venue_id, name, profession, gender)\n    VALUES \n    ${specs.map(s => `('${venueId}', '${s.name}', '${s.job}', '${s.gender}')`).join(',\n    ')} ON CONFLICT DO NOTHING;\n\n`;
+        }
+
+        // Services
+        if (services.length > 0) {
+            sql += `    -- 4. Services\n`;
+            services.forEach(s => {
+                const varName = `v_srv_${s.replace(/\s+/g, '_').toLowerCase()}`;
+                sql += `    INSERT INTO public.service_categories (name, description, venue_category_id) VALUES ('${s}', '${s} hizmeti.', v_category_id) ON CONFLICT (name) DO NOTHING;\n`;
+            });
+            sql += `\n    INSERT INTO public.venue_services (venue_id, service_category_id)\n    SELECT v_venue_id, id FROM public.service_categories WHERE name = ANY(ARRAY[${services.map(s => `'${s}'`).join(',')}]);\n\n`;
+        }
+
+        // Photos
+        if (photos.length > 0) {
+            sql += `    -- 5. Photos\n    INSERT INTO public.venue_photos (venue_id, url, title, category, sort_order)\n    VALUES \n    ${photos.map((p, i) => `('${venueId}', '${p}', 'Foto ${i+1}', 'interior', ${i+1})`).join(',\n    ')} ON CONFLICT DO NOTHING;\n\n`;
+        }
+
+        // Subscription
+        sql += `    -- 6. Subscription\n    INSERT INTO public.venues_subscription (venue_id, status, subscription_type, started_at, expires_at)\n    VALUES (v_venue_id, 'active', 'premium', now(), now() + interval '1 year');\n\nEND $$;`;
+
+        const output = document.getElementById('sql-output');
+        output.textContent = sql;
+        output.style.display = 'block';
+        document.getElementById('copy-btn').style.display = 'block';
+    });
+
+    function copySql() {
+        const text = document.getElementById('sql-output').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('copy-btn');
+            btn.textContent = 'Kopyalandı!';
+            setTimeout(() => btn.textContent = 'Kodu Kopyala', 2000);
+        });
+    }
+</script>
+
+</body>
+</html>
