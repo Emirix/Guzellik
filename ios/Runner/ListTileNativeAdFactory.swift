@@ -2,9 +2,9 @@ import Foundation
 import google_mobile_ads
 
 /// Native Ad Factory - listTile formatında reklamlar için
-class ListTileNativeAdFactory: FLTNativeAdFactory {
+public class ListTileNativeAdFactory: FLTNativeAdFactory {
     
-    func createNativeAd(_ nativeAd: GADNativeAd, customOptions: [AnyHashable : Any]? = nil) -> GADNativeAdView? {
+    public func createNativeAd(_ nativeAd: GADNativeAd, customOptions: [AnyHashable : Any]? = nil) -> GADNativeAdView? {
         // xib dosyasından view yükle
         let nibView = Bundle.main.loadNibNamed("ListTileNativeAdView", owner: nil, options: nil)?.first
         guard let nativeAdView = nibView as? GADNativeAdView else {
