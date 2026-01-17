@@ -7,6 +7,7 @@ VALUES
 ('Ombre & Sombre', 'Renklendirme', 'Saç diplerinden uçlarına doğru açılan renk geçişi işlemi.', 180, 'brush', 'd89c9e27-e239-49a3-b141-3333aa5efab8'),
 ('Facelight', 'Renklendirme', 'Yüz hattını ön plana çıkaran ön saç tutamlarını aydınlatma işlemi.', 120, 'brush', 'd89c9e27-e239-49a3-b141-3333aa5efab8'),
 ('Freelight', 'Renklendirme', 'Saça doğal güneş ışıltısı veren serbest el boyama tekniği.', 120, 'brush', 'd89c9e27-e239-49a3-b141-3333aa5efab8'),
+('Saç Boyama', 'Renklendirme', 'Tüm saça uygulanan profesyonel tek renk boyama işlemi.', 120, 'brush', 'd89c9e27-e239-49a3-b141-3333aa5efab8'),
 ('Kişisel Renklendirme', 'Renklendirme', 'Kişinin ten rengine ve stiline özel renk danışmanlığı ve uygulama.', 60, 'color_lens', 'd89c9e27-e239-49a3-b141-3333aa5efab8'),
 
 -- Kuaförler (Saç Bakımı & Onarım)
@@ -18,7 +19,8 @@ VALUES
 
 -- Güzellik Salonu (Makyaj Uygulamaları)
 ('Özel Gün Makyajı', 'Makyaj Uygulamaları', 'Düğün, nişan ve özel davetler için profesyonel makyaj uygulaması.', 60, 'face_retouching_natural', '83c4ea6e-9f0d-4eed-b60c-a4d2e0aa9602'),
-('Porselen Makyaj', 'Makyaj Uygulamaları', 'Yüksek kapatıcılık ve uzun süre kalıcılık sağlayan profesyonel porselen makyaj.', 90, 'face_3', '83c4ea6e-9f0d-4eed-b60c-a4d2e0aa9602')
-ON CONFLICT (id) DO NOTHING; -- Using ID if it was fixed, but we are using default gen_random_uuid(). 
--- Actually, ON CONFLICT (name, venue_category_id) would be better if we had a unique constraint there.
--- For now, this SQL file is just for documentation/version control since I already applied them via MCP.
+('Porselen Makyaj', 'Makyaj Uygulamaları', 'Yüksek kapatıcılık ve uzun süre kalıcılık sağlayan profesyonel porselen makyaj.', 90, 'face_3', '83c4ea6e-9f0d-4eed-b60c-a4d2e0aa9602'),
+
+-- Güzellik Salonu (Epilasyon)
+('Sir Ağda', 'Epilasyon', 'Klasik sir ağda ile tüy alma işlemi.', 45, 'content_cut', '83c4ea6e-9f0d-4eed-b60c-a4d2e0aa9602')
+ON CONFLICT (id) DO NOTHING;

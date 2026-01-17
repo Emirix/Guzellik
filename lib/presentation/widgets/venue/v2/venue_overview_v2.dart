@@ -263,12 +263,13 @@ class VenueOverviewV2 extends StatelessWidget {
         const SizedBox(height: 24),
 
         // 3. Experts Section
-        ExpertsSectionV2(venue: venue, specialists: specialists),
-        const SizedBox(height: 16),
-
-        // Refined Divider
-        Container(height: 6, color: AppColors.gray50),
-        const SizedBox(height: 24),
+        if (specialists.isNotEmpty) ...[
+          ExpertsSectionV2(venue: venue, specialists: specialists),
+          const SizedBox(height: 16),
+          // Refined Divider
+          Container(height: 6, color: AppColors.gray50),
+          const SizedBox(height: 24),
+        ],
 
         // 5. Working Hours & Map Section
         Padding(

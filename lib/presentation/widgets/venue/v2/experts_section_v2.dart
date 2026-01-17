@@ -18,50 +18,9 @@ class ExpertsSectionV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Priority: 1. specialists (from Provider), 2. expertTeam (from Venue model), 3. Mock data
-    final hasRealSpecialists = specialists.isNotEmpty;
-    final hasExpertTeam = venue.expertTeam.isNotEmpty;
-
-    final List<Specialist> experts = hasRealSpecialists
-        ? specialists
-        : (hasExpertTeam
-              ? venue.expertTeam.map((e) {
-                  if (e is Specialist) return e;
-                  final data = e is Map<String, dynamic> ? e : {};
-                  return Specialist(
-                    id: data['id']?.toString() ?? '',
-                    venueId: venue.id,
-                    name: data['name'] ?? 'İsimsiz',
-                    profession: data['role'] ?? data['specialty'] ?? 'Uzman',
-                    photoUrl: data['image'] ?? data['photo_url'],
-                    bio: data['bio'],
-                    gender: data['gender'],
-                    createdAt: DateTime.now(),
-                    updatedAt: DateTime.now(),
-                  );
-                }).toList()
-              : [
-                  Specialist(
-                    id: '1',
-                    venueId: venue.id,
-                    name: 'Dr. Ayşe',
-                    profession: 'Dermatolog',
-                    photoUrl:
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuB9TT_rIHHBzi_pasiuMyN-qI0cBjxJUM0b8fadhatxKTNFFyY1-kUuL10pjuyeyvLc95r7MYILtlsFs7Gn9ZP2be2t-S4E39YyQ3I_7oHBQx8jNAE3yxm5Gzj9yQTtM762-3J8EHEv8fBPM0YXxZvOUuYkm7lrRbro-WJJJe_IZbQRcWhUwzJgJxxIzz7hfbrtc8NfiPCwZbJCRFeVS4r9dJcoFVt6Iq2MJy5Obd2hx7PFGs6YOUbOQq_nqX1nBxnb38nJh45gTw',
-                    createdAt: DateTime.now(),
-                    updatedAt: DateTime.now(),
-                  ),
-                  Specialist(
-                    id: '2',
-                    venueId: venue.id,
-                    name: 'Selin D.',
-                    profession: 'Estetisyen',
-                    photoUrl:
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuAbLZiKbwQ5GFbrgTYLlppu8QhKNXgrX9d-E6g_qcF4_BYqYz0SXH6NMhpkaXtM8YcTTMMf4-_FI2xRieGuh5ZASxBJTMekWX1rRjb4yHCYDRhO-mmP0ZdWWkykhTvkTrO0ERX1cmnXTcy-T_IuMp-A3o7KK7-1AfBkq0b0-ecTbBXRpaNiaQiweN4lfrI9iBmwtzG1MWUfSD1bmh8w-VYzAM3eZPq9AAeKmpvpFJlxMKe-ZO0fgHkn16PeFxNfTxIEo_znqkmDVg',
-                    createdAt: DateTime.now(),
-                    updatedAt: DateTime.now(),
-                  ),
-                ]);
+    if (specialists.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,10 +64,10 @@ class ExpertsSectionV2 extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
-            itemCount: experts.length,
+            itemCount: specialists.length,
             separatorBuilder: (context, index) => const SizedBox(width: 16),
             itemBuilder: (context, index) {
-              final expert = experts[index];
+              final expert = specialists[index];
               final bool isHighlighted = expert.isFeatured;
 
               return GestureDetector(
