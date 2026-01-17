@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../providers/location_onboarding_provider.dart';
 import '../providers/discovery_provider.dart';
 import '../widgets/discovery/location_selection_bottom_sheet.dart';
+import '../widgets/discovery/location_service_request_bottom_sheet.dart';
 
 /// Screen that handles location onboarding flow
 /// Shows loading, GPS request, and triggers manual selection when needed
@@ -17,16 +18,36 @@ class LocationOnboardingScreen extends StatefulWidget {
       _LocationOnboardingScreenState();
 }
 
-class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
+class _LocationOnboardingScreenState extends State<LocationOnboardingScreen>
+    with WidgetsBindingObserver {
   bool _hasShownManualSelection = false;
+  bool _hasShownServiceRequest = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Start location check after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkLocation();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Re-check location status when back from settings
+      final provider = context.read<LocationOnboardingProvider>();
+      if (provider.state == OnboardingState.showingServiceRequest) {
+        provider.checkLocationStatus();
+      }
+    }
   }
 
   Future<void> _checkLocation() async {
@@ -56,6 +77,26 @@ class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
       ),
     ).then((_) {
       _hasShownManualSelection = false;
+    });
+  }
+
+  void _showServiceRequestSheet() {
+    if (_hasShownServiceRequest) return;
+    _hasShownServiceRequest = true;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (context) => const LocationServiceRequestBottomSheet(),
+    ).then((_) {
+      _hasShownServiceRequest = false;
+
+      // If the sheet was closed and state is still showingServiceRequest,
+      // it means the user explicitly closed it or navigated back without enabling.
+      // We handle fallback logic in the sheet buttons, but this is a safety.
     });
   }
 
@@ -93,6 +134,12 @@ class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
     if (provider.state == OnboardingState.showingManual) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showManualSelectionSheet();
+      });
+    }
+
+    if (provider.state == OnboardingState.showingServiceRequest) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showServiceRequestSheet();
       });
     }
 

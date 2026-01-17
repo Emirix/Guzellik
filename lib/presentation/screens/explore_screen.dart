@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 import '../providers/discovery_provider.dart';
@@ -7,7 +6,6 @@ import '../providers/app_state_provider.dart';
 import '../widgets/discovery/map_view.dart';
 import '../widgets/discovery/venue_list_view.dart';
 import '../widgets/discovery/view_toggle.dart';
-import '../widgets/discovery/location_selection_bottom_sheet.dart';
 import '../widgets/discovery/featured_venues.dart';
 import '../widgets/discovery/category_icons.dart';
 import '../widgets/discovery/nearby_venues.dart';
@@ -179,66 +177,26 @@ class _ExploreScreenState extends State<ExploreScreen>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: InkWell(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => const LocationSelectionBottomSheet(),
-              );
-            },
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
+          child: Row(
+            children: [
+              const Icon(
+                Icons.location_on_rounded,
+                color: AppColors.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  provider.currentLocationName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.gray900,
                   ),
-                  child: SvgPicture.asset(
-                    'assets/logo-transparent.svg',
-                    width: 28,
-                    height: 28,
-                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Konum',
-                        style: TextStyle(
-                          color: AppColors.gray500,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              provider.currentLocationName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Icon(
-                            Icons.expand_more,
-                            color: AppColors.gray900,
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         InkWell(

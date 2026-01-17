@@ -194,6 +194,11 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Get user profile
+  Future<Map<String, dynamic>?> getProfile() async {
+    return _authService.getProfile();
+  }
+
   /// Update user profile
   Future<bool> updateProfile({
     String? fullName,

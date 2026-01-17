@@ -97,6 +97,26 @@ class LocationRepository {
     }
   }
 
+  /// Get province by ID
+  Future<Province?> getProvinceById(int id) async {
+    final provinces = await fetchProvinces();
+    try {
+      return provinces.firstWhere((p) => p.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Get district by ID
+  Future<District?> getDistrictById(int provinceId, String id) async {
+    final districts = await fetchDistrictsByProvince(provinceId);
+    try {
+      return districts.firstWhere((d) => d.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// Clear all cached data
   void clearCache() {
     _provincesCache = null;

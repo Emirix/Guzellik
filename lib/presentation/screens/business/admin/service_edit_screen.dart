@@ -51,133 +51,404 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           isEditing ? 'Hizmeti Düzenle' : 'Yeni Hizmet Ekle',
           style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+            color: AppColors.black,
+            letterSpacing: -0.5,
           ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.black87,
-            size: 20,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.gray50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: AppColors.black,
+                size: 16,
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
           ),
-          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
             )
           : Form(
               key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 12),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
 
-                    // Section: Service Selection
-                    _buildSectionTitle('Hizmet Seçimi'),
-                    const SizedBox(height: 12),
-                    _buildCategorySelectionSection(),
+                          // Header Card for visual flair
+                          _buildPremiumHeader(),
 
-                    const SizedBox(height: 24),
+                          const SizedBox(height: 32),
 
-                    // Section: Pricing & Duration
-                    _buildSectionTitle('Fiyatlandırma & Süre (Opsiyonel)'),
-                    const SizedBox(height: 12),
-                    _buildPricingSection(),
+                          // Section: Service Selection
+                          _buildSectionLabel(
+                            'Hizmet Tanımı',
+                            Icons.spa_rounded,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildCategorySelectionSection(),
 
-                    const SizedBox(height: 40),
+                          const SizedBox(height: 24),
 
-                    _buildSubmitButton(),
-                    const SizedBox(height: 20),
-                  ],
-                ),
+                          // Section: Pricing & Duration
+                          _buildSectionLabel('Detaylar', Icons.tune_rounded),
+                          const SizedBox(height: 12),
+                          _buildPricingSection(),
+
+                          const SizedBox(height: 32),
+
+                          _buildHelperText(),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _buildBottomAction(),
+                ],
               ),
             ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        color: Colors.grey[600],
-        letterSpacing: 0.5,
-      ),
-    );
-  }
-
-  Widget _buildCategorySelectionSection() {
+  Widget _buildPremiumHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppColors.primary.withValues(alpha: 0.25),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isEditing) ...[
-            _buildInfoTile('Seçili Hizmet', widget.service!.serviceName ?? '-'),
-            const SizedBox(height: 8),
-            _buildInfoTile('Kategori', widget.service!.serviceCategory ?? '-'),
-          ] else ...[
-            GestureDetector(
-              onTap: _showSearchableCategoryDialog,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.grey[200]!),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search, color: AppColors.primary),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _selectedCategory != null
-                            ? '${_selectedCategory!.subCategory} > ${_selectedCategory!.name}'
-                            : 'Arama yaparak hizmet seçin...',
-                        style: TextStyle(
-                          color: _selectedCategory != null
-                              ? Colors.black87
-                              : Colors.grey[400],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Icon(Icons.expand_more, color: Colors.grey[400]),
-                  ],
-                ),
-              ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            isEditing
+                ? 'Hizmet Bilgilerini Güncelle'
+                : 'Hizmet Portföyünü Genişlet',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Müşterilerinize sunduğunuz kalitenin ilk adımı burada atılır.',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.8),
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionLabel(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.primary),
+        const SizedBox(width: 8),
+        Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: AppColors.gray600,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategorySelectionSection() {
+    return GestureDetector(
+      onTap: isEditing ? null : _showSearchableCategoryDialog,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isEditing
+                ? AppColors.gray100
+                : AppColors.primary.withValues(alpha: 0.1),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.gray500.withValues(alpha: 0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
           ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.category_rounded,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isEditing ? 'Hizmet Türü' : 'Seçim Yapın',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.gray500,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isEditing
+                        ? widget.service!.serviceName ?? '-'
+                        : _selectedCategory != null
+                        ? _selectedCategory!.name
+                        : 'Bir hizmet kategorisi seçin',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (!isEditing)
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16,
+                color: AppColors.primary,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPricingSection() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildPremiumTextField(
+            controller: _priceController,
+            label: 'Fiyat',
+            suffix: '₺',
+            icon: Icons.payments_rounded,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _buildPremiumTextField(
+            controller: _durationController,
+            label: 'Süre',
+            suffix: 'dk',
+            icon: Icons.timer_rounded,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPremiumTextField({
+    required TextEditingController controller,
+    required String label,
+    required String suffix,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.gray50,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.gray100),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 14, color: AppColors.gray500),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.gray500,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppColors.black,
+            ),
+            decoration: InputDecoration(
+              suffixText: suffix,
+              suffixStyle: const TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 8),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHelperText() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.gold.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.gold.withValues(alpha: 0.1)),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.info_outline_rounded,
+            color: AppColors.gold,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Text(
+              'Fiyat ve süre alanlarını boş bırakırsanız sistem varsayılan değerleri kullanacaktır.',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.goldDark,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomAction() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        24,
+        16,
+        24,
+        MediaQuery.of(context).padding.bottom + 16,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton(
+          onPressed: _isLoading ? null : _saveService,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.black,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+          child: Text(
+            isEditing ? 'DEĞİŞİKLİKLERİ KAYDET' : 'HİZMETİ PORTFÖYE EKLE',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -188,157 +459,12 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
-        return _SearchableCategoryList(
-          categories: provider.allCategories,
-          onSelected: (cat) {
-            setState(() => _selectedCategory = cat);
-            Navigator.pop(context);
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildPricingSection() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildTextField(
-              controller: _priceController,
-              label: 'Fiyat (₺)',
-              hint: '0.00',
-              icon: Icons.payments_outlined,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildTextField(
-              controller: _durationController,
-              label: 'Süre (Dakika)',
-              hint: '30',
-              icon: Icons.access_time,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String? hint,
-    required IconData icon,
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
-    List<TextInputFormatter>? inputFormatters,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: Colors.black54,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          maxLines: maxLines,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          validator: validator,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-            prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
-            filled: true,
-            fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.all(16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: Colors.grey[100]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: Colors.grey[200]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(
-                color: AppColors.primary,
-                width: 1.5,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoTile(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(color: Colors.black54, fontSize: 14),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-            color: AppColors.primary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSubmitButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _saveService,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-        ),
-        child: Text(
-          isEditing ? 'KAYDET' : 'HİZMETİ OLUŞTUR',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+      builder: (context) => _SearchableCategoryList(
+        categories: provider.allCategories,
+        onSelected: (cat) {
+          setState(() => _selectedCategory = cat);
+          Navigator.pop(context);
+        },
       ),
     );
   }
@@ -425,52 +551,124 @@ class _SearchableCategoryListState extends State<_SearchableCategoryList> {
         children: [
           const SizedBox(height: 12),
           Container(
-            width: 40,
-            height: 4,
+            width: 48,
+            height: 5,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
+              color: AppColors.gray200,
+              borderRadius: BorderRadius.circular(2.5),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
+          const Text(
+            'Hizmet Seçimi',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: AppColors.black,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Katalogdan bir hizmet türü belirleyin',
+            style: TextStyle(color: AppColors.gray500, fontSize: 13),
+          ),
+          const SizedBox(height: 24),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextField(
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: 'Hizmet veya kategori ara...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.primary),
-                filled: true,
-                fillColor: Colors.grey[50],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  borderSide: BorderSide.none,
-                ),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.gray50,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.gray100),
               ),
-              onChanged: (v) => setState(() => _searchQuery = v),
+              child: TextField(
+                autofocus: true,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  hintText: 'Hizmet veya kategori ara...',
+                  hintStyle: TextStyle(color: AppColors.gray400, fontSize: 14),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    color: AppColors.primary,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+                onChanged: (v) => setState(() => _searchQuery = v),
+              ),
             ),
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              itemCount: filtered.length,
-              itemBuilder: (context, index) {
-                final cat = filtered[index];
-                return ListTile(
-                  title: Text(
-                    cat.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+            child: filtered.isEmpty
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.search_off_rounded,
+                        size: 48,
+                        color: AppColors.gray300,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Sonuç bulunamadı',
+                        style: TextStyle(
+                          color: AppColors.gray500,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      final cat = filtered[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.gray100),
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryLight,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.spa_outlined,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
+                          ),
+                          title: Text(
+                            cat.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: AppColors.black,
+                            ),
+                          ),
+                          subtitle: Text(
+                            cat.subCategory,
+                            style: TextStyle(
+                              color: AppColors.gray500,
+                              fontSize: 12,
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.chevron_right_rounded,
+                            color: AppColors.gray300,
+                          ),
+                          onTap: () => widget.onSelected(cat),
+                        ),
+                      );
+                    },
                   ),
-                  subtitle: Text(
-                    cat.subCategory,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                  ),
-                  trailing: const Icon(Icons.chevron_right, size: 18),
-                  onTap: () => widget.onSelected(cat),
-                );
-              },
-            ),
           ),
         ],
       ),

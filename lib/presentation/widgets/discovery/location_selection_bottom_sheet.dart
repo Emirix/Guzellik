@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../providers/discovery_provider.dart';
 import '../../providers/location_onboarding_provider.dart';
-import 'map_location_picker.dart';
 
 class LocationSelectionBottomSheet extends StatefulWidget {
   final bool isOnboarding;
@@ -75,29 +74,6 @@ class _LocationSelectionBottomSheetState
                 // Current Location Button
                 _buildCurrentLocationButton(context),
                 const SizedBox(height: 16),
-
-                // Divider with "veya" text
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: AppColors.gray300)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'veya',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.gray500,
-                        ),
-                      ),
-                    ),
-                    Expanded(child: Divider(color: AppColors.gray300)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Map Selection Button
-                _buildMapSelectionButton(context),
-                const SizedBox(height: 8),
               ],
             ),
           ),
@@ -179,7 +155,7 @@ class _LocationSelectionBottomSheetState
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Konum alınamadı. Lütfen haritadan seçin.',
+                              'Konum alınamadı. Lütfen tekrar deneyin.',
                               style: const TextStyle(color: AppColors.white),
                             ),
                           ),
@@ -219,73 +195,6 @@ class _LocationSelectionBottomSheetState
         elevation: 0,
         disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.7),
         disabledForegroundColor: AppColors.white,
-      ),
-    );
-  }
-
-  Widget _buildMapSelectionButton(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () {
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MapLocationPicker(
-              onLocationSelected: (city, district) {
-                if (widget.isOnboarding) {
-                  context
-                      .read<LocationOnboardingProvider>()
-                      .completeManualSelection(
-                        provinceName: city,
-                        districtName: district,
-                      );
-                } else {
-                  context.read<DiscoveryProvider>().updateManualLocation(
-                    city: city,
-                    district: district,
-                  );
-                }
-                Navigator.pop(context);
-
-                // Show snackbar for map selection
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        const Icon(
-                          Icons.check_circle,
-                          color: AppColors.white,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Konumunuz: $district, $city olarak güncellendi',
-                            style: const TextStyle(color: AppColors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                    backgroundColor: AppColors.success,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    margin: const EdgeInsets.all(16),
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
-      icon: const Icon(Icons.map_outlined, size: 20),
-      label: const Text('Haritadan Konum Seç'),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primary,
-        side: const BorderSide(color: AppColors.primary),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
