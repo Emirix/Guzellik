@@ -2,9 +2,6 @@ class VenueService {
   final String id;
   final String venueId;
   final String serviceCategoryId;
-  final String? customName;
-  final String? customDescription;
-  final String? customImageUrl;
   final double? price;
   final int? durationMinutes;
   final bool isActive;
@@ -21,9 +18,6 @@ class VenueService {
     required this.id,
     required this.venueId,
     required this.serviceCategoryId,
-    this.customName,
-    this.customDescription,
-    this.customImageUrl,
     this.price,
     this.durationMinutes,
     this.isActive = true,
@@ -40,9 +34,6 @@ class VenueService {
       id: json['id'] as String? ?? '',
       venueId: json['venue_id'] as String? ?? '',
       serviceCategoryId: json['service_category_id'] as String? ?? '',
-      customName: json['custom_name'] as String?,
-      customDescription: json['custom_description'] as String?,
-      customImageUrl: json['custom_image_url'] as String?,
       price: (json['price'] as num?)?.toDouble(),
       durationMinutes: (json['duration_minutes'] as num?)?.toInt(),
       isActive: json['is_active'] as bool? ?? true,
@@ -63,9 +54,6 @@ class VenueService {
       'id': id,
       'venue_id': venueId,
       'service_category_id': serviceCategoryId,
-      'custom_name': customName,
-      'custom_description': customDescription,
-      'custom_image_url': customImageUrl,
       'price': price,
       'duration_minutes': durationMinutes,
       'is_active': isActive,
@@ -75,7 +63,7 @@ class VenueService {
   }
 
   // Helper method to get effective display name
-  String get displayName => customName ?? serviceName ?? 'İsimsiz Hizmet';
+  String get displayName => serviceName ?? 'İsimsiz Hizmet';
 
   // Helper method to get effective price
   double get effectivePrice => price ?? 0.0;

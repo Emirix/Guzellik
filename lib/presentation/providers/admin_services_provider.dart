@@ -1,13 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../data/models/venue_service.dart';
 import '../../data/models/service_category.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../data/services/storage_service.dart';
 
 class AdminServicesProvider extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
-  final _storageService = StorageService();
 
   List<VenueService> _venueServices = [];
   List<ServiceCategory> _allCategories = [];
@@ -86,24 +83,9 @@ class AdminServicesProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> uploadServiceImage(String venueId, File imageFile) async {
-    try {
-      return await _storageService.uploadImage(
-        bucket: 'venue-services',
-        path: '$venueId/services',
-        imageFile: imageFile,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   Future<void> addService(
     String venueId,
     String categoryId, {
-    String? customName,
-    String? customDescription,
-    String? customImageUrl,
     double? price,
     int? durationMinutes,
   }) async {
@@ -118,9 +100,6 @@ class AdminServicesProvider extends ChangeNotifier {
       await _supabase.from('venue_services').insert({
         'venue_id': venueId,
         'service_category_id': categoryId,
-        'custom_name': customName,
-        'custom_description': customDescription,
-        'custom_image_url': customImageUrl,
         'price': price,
         'duration_minutes': durationMinutes,
         'sort_order': newSortOrder,
@@ -137,27 +116,12 @@ class AdminServicesProvider extends ChangeNotifier {
 
   Future<void> updateService(
     String serviceId, {
-    String? customName,
-    String? customDescription,
-    String? customImageUrl,
     double? price,
     int? durationMinutes,
     bool? isActive,
   }) async {
     try {
-      // If we are updating with a NEW custom image URL, we should delete the OLD one if it was different
-      if (customImageUrl != null && _venueServices.isNotEmpty) {
-        final current = _venueServices.firstWhere((s) => s.id == serviceId);
-        if (current.customImageUrl != null &&
-            current.customImageUrl != customImageUrl) {
-          _storageService.deleteFileByUrl(current.customImageUrl!);
-        }
-      }
-
       final updates = <String, dynamic>{};
-      updates['custom_name'] = customName;
-      updates['custom_description'] = customDescription;
-      updates['custom_image_url'] = customImageUrl;
       updates['price'] = price;
       updates['duration_minutes'] = durationMinutes;
       if (isActive != null) updates['is_active'] = isActive;
@@ -189,11 +153,6 @@ class AdminServicesProvider extends ChangeNotifier {
 
         // 1. Delete from DB
         await _supabase.from('venue_services').delete().eq('id', serviceId);
-
-        // 2. Delete from Storage if exists
-        if (service.customImageUrl != null) {
-          await _storageService.deleteFileByUrl(service.customImageUrl!);
-        }
 
         await fetchVenueServices(venueId);
         notifyListeners();

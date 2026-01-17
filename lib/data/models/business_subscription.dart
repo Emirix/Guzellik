@@ -61,6 +61,7 @@ class BusinessSubscription {
   bool hasFeature(String featureName) {
     if (!features.containsKey(featureName)) return false;
     final feature = features[featureName];
+    if (feature is bool) return feature;
     if (feature is Map) {
       return feature['enabled'] == true;
     }

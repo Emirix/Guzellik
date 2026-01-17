@@ -1,15 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../../../providers/admin_services_provider.dart';
-import '../../../providers/business_provider.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../data/models/venue_service.dart';
-import '../../../../data/models/service_category.dart';
-import '../../../../core/utils/image_utils.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:guzellik_app/presentation/providers/admin_services_provider.dart';
+import 'package:guzellik_app/presentation/providers/business_provider.dart';
+import 'package:guzellik_app/core/theme/app_colors.dart';
+import 'package:guzellik_app/data/models/venue_service.dart';
+import 'package:guzellik_app/data/models/service_category.dart';
 
 class ServiceEditScreen extends StatefulWidget {
   final VenueService? service;
@@ -24,14 +20,9 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
   final _formKey = GlobalKey<FormState>();
 
   ServiceCategory? _selectedCategory;
-  final _customNameController = TextEditingController();
-  final _customDescriptionController = TextEditingController();
   final _priceController = TextEditingController();
   final _durationController = TextEditingController();
 
-  File? _selectedImage;
-  String? _currentImageUrl;
-  bool _isActive = true;
   bool _isLoading = false;
 
   bool get isEditing => widget.service != null;
@@ -46,41 +37,15 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
 
   void _loadExistingData() {
     final service = widget.service!;
-    _customNameController.text = service.customName ?? '';
-    _customDescriptionController.text = service.customDescription ?? '';
     _priceController.text = service.price?.toString() ?? '';
     _durationController.text = service.durationMinutes?.toString() ?? '';
-    _currentImageUrl = service.customImageUrl;
-    _isActive = service.isActive;
   }
 
   @override
   void dispose() {
-    _customNameController.dispose();
-    _customDescriptionController.dispose();
     _priceController.dispose();
     _durationController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 70,
-    );
-
-    if (pickedFile != null) {
-      final compressed = await ImageUtils.compressImage(
-        File(pickedFile.path),
-        quality: 70,
-        maxWidth: 1000,
-        maxHeight: 1000,
-      );
-      setState(() {
-        _selectedImage = compressed;
-      });
-    }
   }
 
   @override
@@ -121,8 +86,7 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildImageSection(),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
 
                     // Section: Service Selection
                     _buildSectionTitle('Hizmet Seçimi'),
@@ -131,24 +95,10 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Section: Custom Details
-                    _buildSectionTitle('Özelleştirme (Opsiyonel)'),
-                    const SizedBox(height: 12),
-                    _buildCustomDetailsSection(),
-
-                    const SizedBox(height: 24),
-
                     // Section: Pricing & Duration
                     _buildSectionTitle('Fiyatlandırma & Süre (Opsiyonel)'),
                     const SizedBox(height: 12),
                     _buildPricingSection(),
-
-                    const SizedBox(height: 24),
-
-                    // Section: Visibility
-                    _buildSectionTitle('Görünürlük'),
-                    const SizedBox(height: 12),
-                    _buildVisibilitySection(),
 
                     const SizedBox(height: 40),
 
@@ -169,82 +119,6 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
         fontWeight: FontWeight.bold,
         color: Colors.grey[600],
         letterSpacing: 0.5,
-      ),
-    );
-  }
-
-  Widget _buildImageSection() {
-    return Center(
-      child: GestureDetector(
-        onTap: _pickImage,
-        child: Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey[200]!),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: _selectedImage != null
-                    ? Image.file(_selectedImage!, fit: BoxFit.cover)
-                    : _currentImageUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: _currentImageUrl!,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_photo_alternate_outlined,
-                            size: 50,
-                            color: AppColors.primary.withValues(alpha: 0.5),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Hizmet Fotoğrafı Ekle',
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
-            ),
-            Positioned(
-              bottom: 12,
-              right: 12,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.camera_alt,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -326,43 +200,6 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
     );
   }
 
-  Widget _buildCustomDetailsSection() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _buildTextField(
-            controller: _customNameController,
-            label: 'Özel İsim',
-            hint: isEditing
-                ? widget.service!.serviceName
-                : 'Örn: Ekspres Manikür',
-            icon: Icons.edit_note,
-          ),
-          const SizedBox(height: 20),
-          _buildTextField(
-            controller: _customDescriptionController,
-            label: 'Açıklama',
-            hint: 'Hizmet hakkında detaylı bilgi...',
-            icon: Icons.description_outlined,
-            maxLines: 3,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPricingSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -405,36 +242,6 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildVisibilitySection() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: SwitchListTile(
-        title: const Text(
-          'Hizmeti Aktifleştir',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-        ),
-        subtitle: Text(
-          _isActive ? 'Aktif' : 'Pasif',
-          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-        ),
-        value: _isActive,
-        activeThumbColor: AppColors.primary,
-        onChanged: (v) => setState(() => _isActive = v),
       ),
     );
   }
@@ -551,37 +358,19 @@ class _ServiceEditScreenState extends State<ServiceEditScreen> {
       final venueId = context.read<BusinessProvider>().currentVenue?.id;
       if (venueId == null) throw Exception('Venue ID bulunamadı');
 
-      String? imageUrl = _currentImageUrl;
-      if (_selectedImage != null) {
-        imageUrl = await provider.uploadServiceImage(venueId, _selectedImage!);
-      }
-
       final priceValue = double.tryParse(_priceController.text);
       final durationValue = int.tryParse(_durationController.text);
-      final customName = _customNameController.text.trim().isEmpty
-          ? null
-          : _customNameController.text.trim();
-      final customDesc = _customDescriptionController.text.trim().isEmpty
-          ? null
-          : _customDescriptionController.text.trim();
 
       if (isEditing) {
         await provider.updateService(
           widget.service!.id,
-          customName: customName,
-          customDescription: customDesc,
-          customImageUrl: imageUrl,
           price: priceValue,
           durationMinutes: durationValue,
-          isActive: _isActive,
         );
       } else {
         await provider.addService(
           venueId,
           _selectedCategory!.id,
-          customName: customName,
-          customDescription: customDesc,
-          customImageUrl: imageUrl,
           price: priceValue,
           durationMinutes: durationValue,
         );
