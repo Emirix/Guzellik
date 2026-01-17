@@ -85,7 +85,7 @@ class VenueRepository {
       return searchVenues(
         lat: lat,
         lng: lng,
-        filter: VenueFilter(minRating: 0.0),
+        filter: VenueFilter(isDiscover: true),
         limit: limit,
         offset: offset,
       );
@@ -101,7 +101,7 @@ class VenueRepository {
         .from('venues')
         .select('*, venue_categories(*)')
         .eq('is_active', true)
-        .gte('rating', 4.0)
+        .eq('is_discover', true)
         .order('rating', ascending: false)
         .order('name', ascending: true)
         .range(offset, offset + limit - 1);
@@ -381,6 +381,7 @@ class VenueRepository {
           'p_service_ids': (filter?.serviceIds.isNotEmpty ?? false)
               ? filter!.serviceIds
               : null,
+          'p_is_discover': filter?.isDiscover,
           'p_limit': limit,
           'p_offset': offset,
         },

@@ -52,6 +52,9 @@ class Venue {
   final String? provinceName;
   final String? districtName;
 
+  // Discovery Info
+  final bool isDiscover;
+
   Venue({
     required this.id,
     required this.name,
@@ -86,6 +89,7 @@ class Venue {
     this.districtId,
     this.provinceName,
     this.districtName,
+    this.isDiscover = false,
   });
 
   factory Venue.fromJson(Map<String, dynamic> json) {
@@ -187,6 +191,7 @@ class Venue {
       districtId: _toString(json['district_id']),
       provinceName: _toString(json['province_name']),
       districtName: _toString(json['district_name']),
+      isDiscover: _toBool(json['is_discover']),
     );
   }
 
@@ -265,6 +270,7 @@ class Venue {
       'district_id': districtId,
       'province_name': provinceName,
       'district_name': districtName,
+      'is_discover': isDiscover,
     };
   }
 
@@ -301,6 +307,7 @@ class Venue {
     String? districtId,
     String? provinceName,
     String? districtName,
+    bool? isDiscover,
   }) {
     return Venue(
       id: id ?? this.id,
@@ -335,6 +342,7 @@ class Venue {
       districtId: districtId ?? this.districtId,
       provinceName: provinceName ?? this.provinceName,
       districtName: districtName ?? this.districtName,
+      isDiscover: isDiscover ?? this.isDiscover,
     );
   }
 }

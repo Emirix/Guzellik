@@ -11,6 +11,7 @@ class VenueFilter {
   final bool onlyPreferred;
   final bool onlyHygienic;
   final List<String> serviceIds;
+  final bool? isDiscover;
   final VenueSortBy sortBy;
 
   // Location filters for elastic search
@@ -31,6 +32,7 @@ class VenueFilter {
     this.sortBy = VenueSortBy.recommended,
     this.provinceId,
     this.districtId,
+    this.isDiscover,
   });
 
   VenueFilter copyWith({
@@ -47,6 +49,7 @@ class VenueFilter {
     VenueSortBy? sortBy,
     int? provinceId,
     String? districtId,
+    bool? isDiscover,
   }) {
     return VenueFilter(
       categories: categories ?? this.categories,
@@ -62,6 +65,7 @@ class VenueFilter {
       sortBy: sortBy ?? this.sortBy,
       provinceId: provinceId ?? this.provinceId,
       districtId: districtId ?? this.districtId,
+      isDiscover: isDiscover ?? this.isDiscover,
     );
   }
 
@@ -77,5 +81,6 @@ class VenueFilter {
       onlyHygienic ||
       sortBy != VenueSortBy.recommended ||
       provinceId != null ||
-      districtId != null;
+      districtId != null ||
+      isDiscover != null;
 }
