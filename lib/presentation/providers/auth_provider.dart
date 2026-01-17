@@ -109,6 +109,60 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Sign up with phone number and password (without OTP)
+  Future<bool> signUpWithPhone({
+    required String phone,
+    required String password,
+    String? fullName,
+    int? provinceId,
+    String? districtId,
+  }) async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final response = await _authService.signUpWithPhone(
+        phone: phone,
+        password: password,
+        fullName: fullName,
+        provinceId: provinceId,
+        districtId: districtId,
+      );
+
+      _currentUser = response.user;
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  /// Sign in with phone number and password
+  Future<bool> signInWithPhone({
+    required String phone,
+    required String password,
+  }) async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final response = await _authService.signInWithPhone(
+        phone: phone,
+        password: password,
+      );
+
+      _currentUser = response.user;
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
   /// Sign out
   Future<void> signOut() async {
     _setLoading(true);

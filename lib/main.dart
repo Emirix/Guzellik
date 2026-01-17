@@ -35,6 +35,10 @@ import 'presentation/providers/admin_working_hours_provider.dart';
 import 'presentation/providers/admin_location_provider.dart';
 import 'presentation/providers/admin_cover_photo_provider.dart';
 import 'presentation/providers/credit_provider.dart';
+import 'presentation/providers/business_onboarding_provider.dart';
+import 'data/repositories/business_repository.dart';
+import 'data/repositories/venue_category_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -150,6 +154,12 @@ class GuzellikApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdminLocationProvider()),
         ChangeNotifierProvider(create: (_) => AdminCoverPhotoProvider()),
         ChangeNotifierProvider(create: (_) => CreditProvider()),
+        ChangeNotifierProvider(
+          create: (_) => BusinessOnboardingProvider(
+            BusinessRepository(),
+            VenueCategoryRepository(Supabase.instance.client),
+          ),
+        ),
       ],
       child: Consumer<AppStateProvider>(
         builder: (context, appState, _) {

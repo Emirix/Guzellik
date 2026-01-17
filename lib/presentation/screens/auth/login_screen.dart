@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/validators.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/business_provider.dart';
 import '../../widgets/business/business_mode_dialog.dart';
@@ -34,10 +35,23 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
-      final success = await authProvider.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
+      final emailOrPhone = _emailController.text.trim();
+      final bool success;
+
+      // Detect if input is phone number or email
+      if (Validators.isPhoneNumber(emailOrPhone)) {
+        // Phone login
+        success = await authProvider.signInWithPhone(
+          phone: emailOrPhone,
+          password: _passwordController.text,
+        );
+      } else {
+        // Email login
+        success = await authProvider.signIn(
+          email: emailOrPhone,
+          password: _passwordController.text,
+        );
+      }
 
       if (mounted) {
         if (success) {
@@ -245,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Padding(
                       padding: EdgeInsets.only(left: 4, bottom: 8),
                       child: Text(
-                        'E-posta',
+                        'E-posta veya Telefon',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -257,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        hintText: 'isim@ornek.com',
+                        hintText: 'isim@ornek.com veya 905XXXXXXXXX',
                         hintStyle: TextStyle(
                           color: const Color(0xFF955062).withValues(alpha: 0.5),
                           fontSize: 14,
@@ -295,10 +309,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'E-posta adresi gerekli';
+                          return 'E-posta veya telefon numarası gerekli';
                         }
-                        if (!value.contains('@')) {
-                          return 'Geçerli bir e-posta adresi girin';
+                        // Allow both email and phone formats
+                        final isPhone = Validators.isPhoneNumber(value);
+                        final isEmail = value.contains('@');
+                        if (!isPhone && !isEmail) {
+                          return 'Geçerli bir e-posta veya telefon numarası girin';
                         }
                         return null;
                       },
@@ -472,7 +489,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
                 // Social Login Divider
                 Row(
@@ -481,7 +498,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'VEYA ŞUNUNLA DEVAM ET',
+                        'VEYA',
                         style: TextStyle(
                           fontSize: 11,
                           color: const Color(0xFF955062).withValues(alpha: 0.8),
@@ -493,33 +510,81 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Expanded(child: Divider(color: Color(0xFFE6D1D6))),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
-                // Social Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildSocialButton(
-                      Icons.g_mobiledata,
-                      'Google',
-                      onTap: _handleGoogleLogin,
-                      isDisabled: false,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildSocialButton(
-                      Icons.apple,
-                      'Apple',
-                      onTap: () {},
-                      isDisabled: true,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildSocialButton(
-                      Icons.facebook,
-                      'Facebook',
-                      onTap: () {},
-                      isDisabled: true,
-                    ),
-                  ],
+                // Google Login Button (Prominent)
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, _) {
+                    return Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(28),
+                        border: Border.all(
+                          color: const Color(0xFFE6D1D6),
+                          width: 1.5,
+                        ),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: authProvider.isLoading
+                            ? null
+                            : _handleGoogleLogin,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: const Color(0xFF1B0E11),
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: authProvider.isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.primary,
+                                  ),
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/google_logo.png',
+                                    height: 24,
+                                    width: 24,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(
+                                        Icons.g_mobiledata,
+                                        size: 28,
+                                        color: Color(0xFF1B0E11),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(width: 12),
+                                  const Text(
+                                    'Google ile Giriş Yap',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 28),
 
@@ -551,38 +616,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialButton(
-    IconData icon,
-    String label, {
-    VoidCallback? onTap,
-    bool isDisabled = false,
-  }) {
-    return InkWell(
-      onTap: isDisabled ? null : onTap,
-      borderRadius: BorderRadius.circular(28),
-      child: Opacity(
-        opacity: isDisabled ? 0.5 : 1.0,
-        child: Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE6D1D6)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Icon(icon, size: 28, color: const Color(0xFF1B0E11)),
         ),
       ),
     );

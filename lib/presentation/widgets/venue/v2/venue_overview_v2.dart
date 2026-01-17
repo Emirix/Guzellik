@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../data/models/venue.dart';
 import '../../../../data/models/review.dart';
 import '../../../../data/models/specialist.dart';
+import '../../../../data/models/campaign.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'experts_section_v2.dart';
 import 'working_hours_card_v2.dart';
@@ -21,6 +22,7 @@ class VenueOverviewV2 extends StatelessWidget {
   final Venue venue;
   final List<Review> reviews;
   final List<Specialist> specialists;
+  final List<Campaign> campaigns;
   final List<VenueFeature> venueFeatures;
   final VoidCallback onSeeAll;
 
@@ -29,6 +31,7 @@ class VenueOverviewV2 extends StatelessWidget {
     required this.venue,
     required this.reviews,
     required this.specialists,
+    required this.campaigns,
     required this.venueFeatures,
     required this.onSeeAll,
   });
@@ -140,6 +143,107 @@ class VenueOverviewV2 extends StatelessWidget {
                               child: const Icon(
                                 Icons.image_not_supported,
                                 color: AppColors.gray400,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+
+        // Campaigns Section
+        if (campaigns.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Kampanyalar',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.gray900,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 120, // Compact height for overview
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: campaigns.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      final campaign = campaigns[index];
+                      return Container(
+                        width: 280,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [AppColors.primary, Color(0xFFE91E63)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              // Open campaign detail or scroll to services if it's a service discount
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          campaign.title,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          campaign.formattedDiscount,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.local_offer_outlined,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
+                                ],
                               ),
                             ),
                           ),

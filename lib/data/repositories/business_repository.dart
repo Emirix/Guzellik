@@ -147,4 +147,86 @@ class BusinessRepository {
       return false;
     }
   }
+
+  /// Check if user can convert to business account
+  /// Returns false if user already has a business account
+  Future<bool> canConvertToBusinessAccount(String userId) async {
+    try {
+      final response = await _supabase
+          .from('profiles')
+          .select('is_business_account')
+          .eq('id', userId)
+          .single();
+
+      return response['is_business_account'] == false;
+    } catch (e) {
+      print('Error checking conversion eligibility: $e');
+      return false;
+    }
+  }
+
+  /// Convert a regular user account to a business account
+  /// Creates a trial subscription valid for 1 year
+  /// Stores business name and type in profile for later venue creation
+  Future<void> convertToBusinessAccount({
+    required String userId,
+    required String businessName,
+    required String businessType,
+  }) async {
+    try {
+      // 1. Check if user can convert
+      final canConvert = await canConvertToBusinessAccount(userId);
+      if (!canConvert) {
+        throw Exception('Bu hesap zaten işletme hesabıdır');
+      }
+
+      // 2. Create the Venue first (needs to exist for some checks/relationships)
+      final venueResponse = await _supabase
+          .from('venues')
+          .insert({
+            'name': businessName,
+            'owner_id': userId,
+            'category_id': businessType,
+            'is_active': true,
+            'is_verified': false,
+            'created_at': DateTime.now().toIso8601String(),
+          })
+          .select('id')
+          .single();
+
+      final venueId = venueResponse['id'] as String;
+
+      // 3. Update profile with business account flag, business info, and venue link
+      await _supabase
+          .from('profiles')
+          .update({
+            'is_business_account': true,
+            'business_name': businessName,
+            'business_type': businessType,
+            'business_venue_id': venueId,
+          })
+          .eq('id', userId);
+
+      // 4. Create trial subscription
+      final expiresAt = DateTime.now().add(const Duration(days: 365));
+      await _supabase.from('business_subscriptions').insert({
+        'profile_id': userId,
+        'subscription_type': 'trial',
+        'status': 'active',
+        'started_at': DateTime.now().toIso8601String(),
+        'expires_at': expiresAt.toIso8601String(),
+        'features': {
+          'campaigns': true,
+          'analytics': true,
+          'team_management': true,
+          'priority_support': true,
+          'unlimited_campaigns': false,
+          'featured_listing': false,
+        },
+      });
+    } catch (e) {
+      print('Error converting to business account: $e');
+      rethrow;
+    }
+  }
 }

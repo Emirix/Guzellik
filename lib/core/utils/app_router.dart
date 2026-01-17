@@ -17,6 +17,8 @@ import '../../presentation/screens/location_onboarding_screen.dart';
 import '../../presentation/screens/business/subscription_screen.dart';
 import '../../presentation/screens/business/store_screen.dart';
 import '../../presentation/screens/business/admin_dashboard_screen.dart';
+import '../../presentation/screens/business/business_onboarding_screen.dart';
+import '../../presentation/screens/business/business_info_form_screen.dart';
 import '../../presentation/screens/business/admin/admin_services_screen.dart';
 import '../../presentation/screens/business/admin/admin_specialists_screen.dart';
 import '../../presentation/screens/business/admin/admin_gallery_screen.dart';
@@ -152,6 +154,26 @@ class AppRouter {
           final venueId = state.uri.queryParameters['venueId'];
           return CampaignsScreen(venueId: venueId);
         },
+      ),
+
+      // Business Onboarding Routes
+      GoRoute(
+        path: '/business-onboarding',
+        name: 'business-onboarding',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'İşletme Hesabı',
+          redirectPath: '/business-onboarding',
+          child: BusinessOnboardingScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/business-info-form',
+        name: 'business-info-form',
+        builder: (context, state) => const AuthGuard(
+          requiredFor: 'İşletme Bilgileri',
+          redirectPath: '/business-info-form',
+          child: BusinessInfoFormScreen(),
+        ),
       ),
 
       // Business Routes (Require Business Account)

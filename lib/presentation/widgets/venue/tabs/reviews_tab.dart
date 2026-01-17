@@ -10,6 +10,7 @@ import '../../review/rating_distribution_chart.dart';
 import '../../review/review_submission_bottom_sheet.dart';
 import '../../review/edit_review_bottom_sheet.dart';
 import '../components/review_card.dart';
+import '../../common/empty_state.dart';
 
 class ReviewsTab extends StatelessWidget {
   final String venueId;
@@ -23,37 +24,21 @@ class ReviewsTab extends StatelessWidget {
     return Consumer2<VenueDetailsProvider, ReviewSubmissionProvider>(
       builder: (context, provider, submissionProvider, child) {
         if (provider.isLoading && provider.reviews.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            ),
+          );
         }
 
         if (provider.error != null && provider.reviews.isEmpty) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Değerlendirmeler yüklenirken hata oluştu',
-                    style: AppTextStyles.bodyMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    provider.error!,
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.gray500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => provider.refreshReviews(),
-                    child: const Text('Tekrar Dene'),
-                  ),
-                ],
-              ),
+            child: EmptyState(
+              icon: Icons.error_outline_rounded,
+              title: 'Hata Oluştu',
+              message: 'Değerlendirmeler yüklenirken bir sorun oluştu.',
+              actionLabel: 'Tekrar Dene',
+              onAction: () => provider.refreshReviews(),
             ),
           );
         }
@@ -64,7 +49,7 @@ class ReviewsTab extends StatelessWidget {
         );
 
         return ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
           children: [
             // Rating Summary & Chart
             Container(
@@ -149,25 +134,12 @@ class ReviewsTab extends StatelessWidget {
             const SizedBox(height: 32),
 
             if (!hasReviews)
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 40),
-                    Icon(
-                      Icons.rate_review_outlined,
-                      size: 64,
-                      color: AppColors.gray300,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Henüz değerlendirme yok',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.gray500,
-                      ),
-                    ),
-                  ],
-                ),
+              EmptyState(
+                icon: Icons.rate_review_outlined,
+                title: 'Henüz değerlendirme yok',
+                message: 'Bu mekan için ilk değerlendirmeyi siz yapın!',
+                actionLabel: 'Değerlendirme Yap',
+                onAction: () => _handleReviewAction(context, provider),
               )
             else ...[
               Text('Tüm Değerlendirmeler', style: AppTextStyles.heading4),
@@ -218,7 +190,7 @@ class ReviewsTab extends StatelessWidget {
 
     if (currentUserId == null) {
       final currentPath = GoRouterState.of(context).uri.toString();
-      context.push('/login?redirect=${Uri.encodeComponent(currentPath)}');
+      await context.push('/login?redirect=${Uri.encodeComponent(currentPath)}');
       return;
     }
 
@@ -227,7 +199,7 @@ class ReviewsTab extends StatelessWidget {
 
     if (context.mounted) {
       if (submissionProvider.isEditing) {
-        showModalBottomSheet(
+        await showModalBottomSheet(
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
@@ -237,7 +209,7 @@ class ReviewsTab extends StatelessWidget {
           ),
         );
       } else {
-        showModalBottomSheet(
+        await showModalBottomSheet(
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,

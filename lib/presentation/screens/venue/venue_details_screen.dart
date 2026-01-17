@@ -323,6 +323,7 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
                         venue: venue,
                         reviews: provider.reviews,
                         specialists: provider.specialists,
+                        campaigns: provider.campaigns,
                         venueFeatures: provider.venueFeatures,
                         onSeeAll: () => _tabController.animateTo(2),
                       ),

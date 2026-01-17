@@ -151,7 +151,7 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            const Text('Bu kategoriye özel hazır fotoğraf bulunamadı.'),
+            const Text('Hazır fotoğraf bulunamadı.'),
           ],
         ),
       );
@@ -187,7 +187,9 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
                 boxShadow: [
                   if (isSelected)
                     BoxShadow(
-                      color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),

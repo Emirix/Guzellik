@@ -146,7 +146,7 @@ class _EditReviewBottomSheetState extends State<EditReviewBottomSheet> {
                                 widget.venueId,
                               );
                               if (success && mounted) {
-                                context
+                                await context
                                     .read<VenueDetailsProvider>()
                                     .refreshReviews();
                                 Navigator.pop(context);
@@ -222,7 +222,7 @@ class _EditReviewBottomSheetState extends State<EditReviewBottomSheet> {
               Navigator.pop(context); // Close dialog
               final success = await provider.deleteReview();
               if (success && mounted) {
-                context.read<VenueDetailsProvider>().refreshReviews();
+                await context.read<VenueDetailsProvider>().refreshReviews();
                 Navigator.pop(context); // Close bottom sheet
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

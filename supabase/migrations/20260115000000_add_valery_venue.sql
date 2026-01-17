@@ -61,9 +61,10 @@ BEGIN
         ),
         v_category_id,
         '{"monday": "09:30 - 19:00", "tuesday": "09:30 - 19:00", "wednesday": "09:30 - 19:00", "thursday": "09:30 - 19:00", "friday": "09:30 - 19:00", "saturday": "09:30 - 19:00", "sunday": "09:30 - 19:00"}'::jsonb,
-        jsonb_build_array(v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.36.jpeg')
+        jsonb_build_array('https://images.unsplash.com/photo-1560750588-73207b1ef5b8?q=80&w=1000&auto=format&fit=crop')
     )
     ON CONFLICT (id) DO UPDATE SET
+        hero_images = EXCLUDED.hero_images,
         working_hours = EXCLUDED.working_hours,
         social_links = EXCLUDED.social_links,
         description = EXCLUDED.description;
@@ -149,10 +150,10 @@ BEGIN
     -- 5. Gallery Photos
     INSERT INTO public.venue_photos (venue_id, url, title, category, sort_order)
     VALUES 
-    (v_venue_id, v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.36.jpeg', 'Galeri 1', 'interior', 1),
-    (v_venue_id, v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.37%20(1).jpeg', 'Galeri 2', 'interior', 2),
-    (v_venue_id, v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.37%20(2).jpeg', 'Galeri 3', 'interior', 3),
-    (v_venue_id, v_base_url || v_venue_id || '/WhatsApp%20Image%202026-01-15%20at%2013.00.37.jpeg', 'Galeri 4', 'interior', 4)
-    ON CONFLICT DO NOTHING;
+    (v_venue_id, 'https://images.unsplash.com/photo-1560750588-73207b1ef5b8?q=80&w=1000&auto=format&fit=crop', 'Galeri 1', 'interior', 1),
+    (v_venue_id, 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=1000&auto=format&fit=crop', 'Galeri 2', 'interior', 2),
+    (v_venue_id, 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=1000&auto=format&fit=crop', 'Galeri 3', 'interior', 3),
+    (v_venue_id, 'https://images.unsplash.com/photo-1512290923902-8a9f81dc206e?q=80&w=1000&auto=format&fit=crop', 'Galeri 4', 'interior', 4)
+    ON CONFLICT (venue_id, url) DO NOTHING;
 
 END $$;

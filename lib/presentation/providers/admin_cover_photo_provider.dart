@@ -29,8 +29,8 @@ class AdminCoverPhotoProvider extends ChangeNotifier {
   Future<void> loadCategoryPhotos() async {
     _setLoading(true);
     try {
-      final slug = _venue?.category?.slug ?? 'all';
-      _categoryPhotos = await _storageService.listCategoryPhotos(slug);
+      // Her zaman tüm hazır fotoğrafları getir
+      _categoryPhotos = await _storageService.listCategoryPhotos('all');
       _error = null;
     } catch (e) {
       _error = 'Fotoğraflar yüklenirken hata oluştu: $e';

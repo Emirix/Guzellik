@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/utils/validators.dart';
 import 'supabase_service.dart';
 
 /// Authentication service for user management
@@ -59,6 +60,56 @@ class AuthService {
         email: email,
         password: password,
         metadata: metadata.isNotEmpty ? metadata : null,
+      );
+    } catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  /// Sign up with phone number and password (without OTP)
+  /// Uses email mapping: phone number is converted to internal email format
+  Future<AuthResponse> signUpWithPhone({
+    required String phone,
+    required String password,
+    String? fullName,
+    int? provinceId,
+    String? districtId,
+  }) async {
+    try {
+      // Convert phone to internal email format
+      final internalEmail = Validators.phoneToEmail(phone);
+
+      final metadata = <String, dynamic>{
+        'phone': phone,
+        'is_phone_account': true,
+      };
+      if (fullName != null) metadata['full_name'] = fullName;
+      if (provinceId != null) metadata['province_id'] = provinceId;
+      if (districtId != null) metadata['district_id'] = districtId;
+
+      return await _supabaseService.signUpWithEmail(
+        email: internalEmail,
+        password: password,
+        metadata: metadata,
+      );
+    } catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  /// Sign in with phone number and password
+  /// Uses email mapping: phone number is converted to internal email format
+  Future<AuthResponse> signInWithPhone({
+    required String phone,
+    required String password,
+  }) async {
+    try {
+      // Convert phone to internal email format
+      final internalEmail = Validators.phoneToEmail(phone);
+
+      return await _supabaseService.signInWithEmail(
+        email: internalEmail,
+        password: password,
       );
     } catch (e) {
       throw _handleAuthError(e);

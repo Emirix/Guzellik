@@ -262,6 +262,120 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
 
+                          // Business Account Conversion Button (for non-business users)
+                          Consumer2<AuthProvider, BusinessProvider>(
+                            builder: (context, authProvider, businessProvider, _) {
+                              final userId = authProvider.currentUser?.id;
+
+                              return FutureBuilder<bool>(
+                                future: userId != null
+                                    ? businessProvider.checkBusinessAccount(
+                                        userId,
+                                      )
+                                    : Future.value(false),
+                                builder: (context, snapshot) {
+                                  final isBusinessAccount =
+                                      snapshot.data ?? false;
+
+                                  // Only show for non-business users
+                                  if (isBusinessAccount) {
+                                    return const SizedBox.shrink();
+                                  }
+
+                                  return Column(
+                                    children: [
+                                      // Business Account Prompt Card
+                                      InkWell(
+                                        onTap: () {
+                                          context.push('/business-onboarding');
+                                        },
+                                        borderRadius: BorderRadius.circular(16),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(20),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                AppColors.primary,
+                                                AppColors.primary.withValues(
+                                                  alpha: 0.8,
+                                                ),
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: AppColors.primary
+                                                    .withValues(alpha: 0.3),
+                                                blurRadius: 12,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                  12,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: const Icon(
+                                                  Icons.store,
+                                                  color: Colors.white,
+                                                  size: 28,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              const Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'İşletme Hesabına Geç',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      '1 yıl ücretsiz deneme ile başla',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+
                           // Business Mode Buttons (if business account)
                           Consumer2<AuthProvider, BusinessProvider>(
                             builder: (context, authProvider, businessProvider, _) {
@@ -356,7 +470,9 @@ class ProfileScreen extends StatelessWidget {
                                                             : 'Normal Modda',
                                                         style: TextStyle(
                                                           color: Colors.white
-                                                              .withValues(alpha: 0.9),
+                                                              .withValues(
+                                                                alpha: 0.9,
+                                                              ),
                                                           fontSize: 12,
                                                         ),
                                                       ),
@@ -547,7 +663,9 @@ class ProfileScreen extends StatelessWidget {
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.primary,
                                     side: BorderSide(
-                                      color: AppColors.primary.withValues(alpha: 0.2),
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.2,
+                                      ),
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../data/models/service.dart';
 import '../components/service_card.dart';
+import '../../common/empty_state.dart';
 
 class ServicesTab extends StatefulWidget {
   final String venueId;
@@ -30,7 +31,23 @@ class _ServicesTabState extends State<ServicesTab> {
     return Consumer<VenueDetailsProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading && provider.services.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            ),
+          );
+        }
+
+        if (provider.error != null && provider.services.isEmpty) {
+          return Center(
+            child: EmptyState(
+              icon: Icons.error_outline_rounded,
+              title: 'Hata Oluştu',
+              message: 'Hizmetler yüklenirken bir sorun oluştu.',
+              actionLabel: 'Tekrar Dene',
+              onAction: () => provider.loadVenueDetails(widget.venueId),
+            ),
+          );
         }
 
         // Apply filters and search
@@ -40,12 +57,36 @@ class _ServicesTabState extends State<ServicesTab> {
               (s.category?.toLowerCase() ?? '').contains(query);
         }).toList();
 
-        if (filteredServices.isEmpty && provider.services.isNotEmpty) {
-          return _buildNoResults();
+        if (provider.services.isEmpty) {
+          return Center(
+            child: EmptyState(
+              icon: Icons.spa_outlined,
+              title: 'Hizmet Bulunamadı',
+              message: 'Bu mekan için henüz eklenmiş bir hizmet bulunmuyor.',
+            ),
+          );
         }
 
-        if (provider.services.isEmpty) {
-          return _buildEmptyState();
+        if (filteredServices.isEmpty) {
+          return Column(
+            children: [
+              _buildSearchAndFilter(),
+              Expanded(
+                child: Center(
+                  child: EmptyState(
+                    icon: Icons.search_off_rounded,
+                    title: 'Sonuç Bulunamadı',
+                    message: 'Aramanızla eşleşen bir hizmet bulamadık.',
+                    actionLabel: 'Aramayı Temizle',
+                    onAction: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
+                  ),
+                ),
+              ),
+            ],
+          );
         }
 
         // Group by category
@@ -60,7 +101,7 @@ class _ServicesTabState extends State<ServicesTab> {
             _buildSearchAndFilter(),
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
                 itemCount: grouped.length,
                 itemBuilder: (context, index) {
                   String category = grouped.keys.elementAt(index);
@@ -70,8 +111,14 @@ class _ServicesTabState extends State<ServicesTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16, top: 20),
-                        child: Text(category, style: AppTextStyles.heading3),
+                        padding: const EdgeInsets.only(bottom: 16, top: 24),
+                        child: Text(
+                          category,
+                          style: AppTextStyles.heading4.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.gray900,
+                          ),
+                        ),
                       ),
                       ...services.map((s) => ServiceCard(service: s)),
                     ],
@@ -87,9 +134,9 @@ class _ServicesTabState extends State<ServicesTab> {
 
   Widget _buildSearchAndFilter() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Container(
-        height: 48,
+        height: 52,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -97,8 +144,8 @@ class _ServicesTabState extends State<ServicesTab> {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -106,43 +153,34 @@ class _ServicesTabState extends State<ServicesTab> {
           controller: _searchController,
           onChanged: (val) => setState(() => _searchQuery = val),
           textAlignVertical: TextAlignVertical.center,
+          style: AppTextStyles.bodyMedium,
           decoration: InputDecoration(
-            hintText: 'Hizmet ara...',
+            hintText: 'Hizmetlerde ara...',
             hintStyle: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.gray400,
             ),
-            prefixIcon: const Icon(Icons.search, color: AppColors.gray400),
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNoResults() {
-    return Column(
-      children: [
-        _buildSearchAndFilter(),
-        Expanded(
-          child: Center(
-            child: Text(
-              'Aramanızla eşleşen hizmet bulunamadı.',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.gray500,
-              ),
+            prefixIcon: const Icon(
+              Icons.search,
+              color: AppColors.primary,
+              size: 20,
             ),
+            suffixIcon: _searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.close,
+                      size: 18,
+                      color: AppColors.gray400,
+                    ),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
+                  )
+                : null,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Text(
-        'Bu mekan için henüz hizmet eklenmemiş.',
-        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.gray500),
       ),
     );
   }

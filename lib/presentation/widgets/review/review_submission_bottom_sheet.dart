@@ -139,7 +139,7 @@ class _ReviewSubmissionBottomSheetState
                           );
                           if (success && mounted) {
                             // Refresh venue details reviews
-                            context
+                            await context
                                 .read<VenueDetailsProvider>()
                                 .refreshReviews();
                             Navigator.pop(context);

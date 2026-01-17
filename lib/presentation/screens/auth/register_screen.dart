@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/validators.dart';
 import '../../../data/models/province.dart';
 import '../../../data/repositories/location_repository.dart';
 import '../../providers/auth_provider.dart';
@@ -20,10 +21,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isPhoneRegistration = false; // Toggle between phone and email
 
   List<Province> _provinces = [];
   int? _selectedProvinceId;
@@ -55,6 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -63,12 +67,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
-      final success = await authProvider.signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        fullName: _nameController.text.trim(),
-        provinceId: _selectedProvinceId,
-      );
+      final bool success;
+
+      if (_isPhoneRegistration) {
+        // Phone registration
+        success = await authProvider.signUpWithPhone(
+          phone: _phoneController.text.trim(),
+          password: _passwordController.text,
+          fullName: _nameController.text.trim(),
+          provinceId: _selectedProvinceId,
+        );
+      } else {
+        // Email registration
+        success = await authProvider.signUp(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          fullName: _nameController.text.trim(),
+          provinceId: _selectedProvinceId,
+        );
+      }
 
       if (mounted) {
         if (success) {
@@ -212,25 +229,121 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       },
                     ),
+                    const SizedBox(height: 20),
+
+                    // Phone/Email Toggle
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE6D1D6)),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () =>
+                                  setState(() => _isPhoneRegistration = false),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: !_isPhoneRegistration
+                                      ? AppColors.primary
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.email_outlined,
+                                      size: 18,
+                                      color: !_isPhoneRegistration
+                                          ? Colors.white
+                                          : const Color(0xFF955062),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'E-posta',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: !_isPhoneRegistration
+                                            ? Colors.white
+                                            : const Color(0xFF955062),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () =>
+                                  setState(() => _isPhoneRegistration = true),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _isPhoneRegistration
+                                      ? AppColors.primary
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.phone_outlined,
+                                      size: 18,
+                                      color: _isPhoneRegistration
+                                          ? Colors.white
+                                          : const Color(0xFF955062),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Telefon',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: _isPhoneRegistration
+                                            ? Colors.white
+                                            : const Color(0xFF955062),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 16),
 
-                    // Email Input
-                    _buildInputField(
-                      label: 'E-posta',
-                      controller: _emailController,
-                      icon: Icons.email_outlined,
-                      hint: 'isim@ornek.com',
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'E-posta adresi gerekli';
-                        }
-                        if (!value.contains('@')) {
-                          return 'Geçerli bir e-posta adresi girin';
-                        }
-                        return null;
-                      },
-                    ),
+                    // Email or Phone Input (conditional)
+                    if (!_isPhoneRegistration)
+                      _buildInputField(
+                        label: 'E-posta',
+                        controller: _emailController,
+                        icon: Icons.email_outlined,
+                        hint: 'isim@ornek.com',
+                        keyboardType: TextInputType.emailAddress,
+                        validator: Validators.validateEmail,
+                      )
+                    else
+                      _buildInputField(
+                        label: 'Telefon Numarası',
+                        controller: _phoneController,
+                        icon: Icons.phone_outlined,
+                        hint: '905XXXXXXXXX',
+                        keyboardType: TextInputType.phone,
+                        validator: Validators.validatePhoneNumber,
+                      ),
                     const SizedBox(height: 16),
 
                     // Province Selection
