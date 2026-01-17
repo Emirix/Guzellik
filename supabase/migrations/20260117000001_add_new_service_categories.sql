@@ -16,6 +16,7 @@ VALUES
 
 -- Tırnak Stüdyoları (Manikür İşlemleri)
 ('Tırnak Bakım', 'Manikür İşlemleri', 'Tırnak temizliği, şekillendirme ve bakım uygulaması.', 45, 'clean_hands', '24aaaa57-4874-48f2-912a-bc8d80d94590'),
+('Protez Tırnak', 'Protez Tırnak', 'Tırnak uzatma ve şekillendirme için uygulanan profesyonel protez tırnak işlemi.', 120, 'category', '24aaaa57-4874-48f2-912a-bc8d80d94590'),
 
 -- Güzellik Salonu (Makyaj Uygulamaları)
 ('Özel Gün Makyajı', 'Makyaj Uygulamaları', 'Düğün, nişan ve özel davetler için profesyonel makyaj uygulaması.', 60, 'face_retouching_natural', '83c4ea6e-9f0d-4eed-b60c-a4d2e0aa9602'),
