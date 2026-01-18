@@ -59,61 +59,63 @@ class _WelcomeOnboardingContentState extends State<WelcomeOnboardingContent>
 
           // Main content: Lottie and Logo preview
           Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Lottie Animation Placeholder
-                SizedBox(
-                  height: 250,
-                  child: Lottie.asset(
-                    'assets/animations/welcome.json',
-                    errorBuilder: (context, error, stackTrace) => Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ScaleTransition(
-                          scale: _animation,
-                          child: const Icon(
-                            Icons.auto_awesome_rounded,
-                            size: 100,
-                            color: AppColors.primary,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Lottie Animation Placeholder
+                  SizedBox(
+                    height: 250,
+                    child: Lottie.asset(
+                      'assets/animations/welcome.json',
+                      errorBuilder: (context, error, stackTrace) => Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ScaleTransition(
+                            scale: _animation,
+                            child: const Icon(
+                              Icons.auto_awesome_rounded,
+                              size: 100,
+                              color: AppColors.primary,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Güzellik Haritam',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                            letterSpacing: 2,
+                          const SizedBox(height: 20),
+                          Text(
+                            'Güzellik Haritam',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                              letterSpacing: 2,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 40),
+                  const SizedBox(height: 40),
 
-                // Pulsing glowing background for the icon
-                ScaleTransition(
-                  scale: _animation,
-                  child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.08),
-                          blurRadius: 40,
-                          spreadRadius: 10,
-                        ),
-                      ],
+                  // Pulsing glowing background for the icon
+                  ScaleTransition(
+                    scale: _animation,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.08),
+                            blurRadius: 40,
+                            spreadRadius: 10,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

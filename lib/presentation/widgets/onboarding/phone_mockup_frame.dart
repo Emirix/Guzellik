@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// A premium phone mockup frame to showcase UI elements in onboarding
+/// A premium phone frame mockup to showcase application previews.
+/// It features a rounded screen, a subtle notch, and decorative status bar icons.
 class PhoneMockupFrame extends StatelessWidget {
   final Widget child;
   final double? width;

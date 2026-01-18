@@ -18,7 +18,7 @@ class AdminGalleryProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   double get uploadProgress => _uploadProgress;
-  bool get canAddMore => _photos.length < 5;
+  bool get canAddMore => _photos.length < 10;
 
   Future<void> fetchPhotos(String venueId) async {
     _isLoading = true;
@@ -45,7 +45,7 @@ class AdminGalleryProvider extends ChangeNotifier {
 
   Future<void> uploadPhoto(String venueId, File imageFile) async {
     if (!canAddMore) {
-      throw Exception('Maksimum 5 fotoğraf yükleyebilirsiniz.');
+      throw Exception('Maksimum 10 fotoğraf yükleyebilirsiniz.');
     }
 
     _isLoading = true;

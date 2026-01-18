@@ -80,16 +80,17 @@ class _CampaignsOnboardingContentState extends State<CampaignsOnboardingContent>
                 rotation: -0.05,
               ),
             ),
-            const SizedBox(height: -30), // Overlap effect
-            // Mockup Campaign Card 2
             Transform.translate(
-              offset: Offset(0, -_animation.value),
-              child: _buildCampaignCard(
-                title: 'Ücretsiz Cilt Bakımı',
-                subtitle: '3 Randevu Alana 1 Hediye',
-                color: AppColors.gold,
-                icon: Icons.card_giftcard_rounded,
-                rotation: 0.05,
+              offset: const Offset(0, -30), // Overlap effect
+              child: Transform.translate(
+                offset: Offset(0, -_animation.value),
+                child: _buildCampaignCard(
+                  title: 'Ücretsiz Cilt Bakımı',
+                  subtitle: '3 Randevu Alana 1 Hediye',
+                  color: AppColors.gold,
+                  icon: Icons.card_giftcard_rounded,
+                  rotation: 0.05,
+                ),
               ),
             ),
             const SizedBox(height: 20),

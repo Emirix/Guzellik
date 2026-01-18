@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
@@ -90,6 +91,76 @@ class _ReviewSubmissionBottomSheetState
                 StarRatingSelector(
                   initialRating: provider.rating ?? 0,
                   onRatingChanged: (rating) => provider.setRating(rating),
+                ),
+                const SizedBox(height: 32),
+
+                // Photo Upload
+                Text('Fotoğraf Ekle (Maks. 2)', style: AppTextStyles.heading4),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 100,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      if (provider.selectedPhotos.length < 2)
+                        GestureDetector(
+                          onTap: provider.pickPhotos,
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            margin: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              color: AppColors.gray50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.gray200),
+                            ),
+                            child: const Icon(
+                              Icons.add_a_photo,
+                              color: AppColors.gray500,
+                            ),
+                          ),
+                        ),
+                      ...provider.selectedPhotos.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final photo = entry.value;
+                        return Stack(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              margin: const EdgeInsets.only(right: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                image: DecorationImage(
+                                  image: FileImage(File(photo.path)),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 16,
+                              child: GestureDetector(
+                                onTap: () => provider.removePhoto(index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black54,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 32),
 

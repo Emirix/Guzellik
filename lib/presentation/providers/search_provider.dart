@@ -8,14 +8,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/recent_search.dart';
 import '../../data/models/search_filter.dart';
 import '../../data/models/service.dart';
+import '../../data/models/popular_service.dart';
 import '../../data/models/venue.dart';
 import '../../data/models/venue_filter.dart';
 import '../../data/models/venue_category.dart';
 import '../../data/repositories/venue_repository.dart';
 
+import '../../core/services/voice_search_service.dart';
+
 /// Arama ekranı state yönetimi
 class SearchProvider extends ChangeNotifier {
   final VenueRepository _venueRepository;
+  final VoiceSearchService _voiceService = VoiceSearchService.instance;
+
+  // Sesli arama durumu
+  bool _isVoiceSearching = false;
+  String? _voiceSearchError;
+  bool _isVoiceAvailable = false;
 
   // Arama durumu
   String _searchQuery = '';
@@ -69,6 +78,44 @@ class SearchProvider extends ChangeNotifier {
     _loadPopularServices();
     _loadSuggestedVenues();
     _loadCategories();
+    _initVoiceSearch();
+  }
+
+  // Voice Getters
+  bool get isVoiceSearching => _isVoiceSearching;
+  String? get voiceSearchError => _voiceSearchError;
+  bool get isVoiceAvailable => _isVoiceAvailable;
+
+  Future<void> _initVoiceSearch() async {
+    _isVoiceAvailable = await _voiceService.initialize();
+    notifyListeners();
+  }
+
+  Future<void> startVoiceSearch() async {
+    _voiceSearchError = null;
+    _isVoiceSearching = true;
+    notifyListeners();
+
+    await _voiceService.startListening(
+      onResult: (text) {
+        setSearchQuery(text);
+      },
+      onError: (error) {
+        _voiceSearchError = error;
+        _isVoiceSearching = false;
+        notifyListeners();
+      },
+      onDone: () {
+        _isVoiceSearching = false;
+        notifyListeners();
+      },
+    );
+  }
+
+  Future<void> stopVoiceSearch() async {
+    await _voiceService.stopListening();
+    _isVoiceSearching = false;
+    notifyListeners();
   }
 
   // Getters
@@ -609,16 +656,7 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // TODO: Backend'den popüler hizmetleri çek
-      // Şimdilik hardcoded liste
-      _popularServices = [
-        PopularService(id: '1', name: 'Botoks'),
-        PopularService(id: '2', name: 'Hydrafacial'),
-        PopularService(id: '3', name: 'İpek Kirpik'),
-        PopularService(id: '4', name: 'Lazer Epilasyon'),
-        PopularService(id: '5', name: 'Microblading'),
-        PopularService(id: '6', name: 'Kalıcı Oje'),
-      ];
+      _popularServices = await _venueRepository.getPopularServices(limit: 7);
     } catch (e) {
       debugPrint('Error loading popular services: $e');
     } finally {
@@ -778,12 +816,4 @@ class SearchProvider extends ChangeNotifier {
     _debounceTimer?.cancel();
     super.dispose();
   }
-}
-
-/// Basit popüler hizmet modeli
-class PopularService {
-  final String id;
-  final String name;
-
-  const PopularService({required this.id, required this.name});
 }

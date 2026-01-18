@@ -12,6 +12,9 @@ import 'data/services/notification_service.dart';
 import 'data/services/location_service.dart';
 import 'data/services/location_preferences.dart';
 import 'data/repositories/venue_repository.dart';
+import 'data/repositories/review_repository.dart';
+import 'presentation/providers/review_provider.dart';
+import 'presentation/providers/business_review_provider.dart';
 import 'data/repositories/location_repository.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/app_state_provider.dart';
@@ -122,6 +125,7 @@ class GuzellikApp extends StatelessWidget {
         Provider(create: (_) => LocationService()),
         Provider(create: (_) => LocationPreferences()),
         Provider(create: (_) => LocationRepository()),
+        Provider(create: (_) => ReviewRepository.instance),
         Provider(create: (_) => OnboardingPreferences()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AppStateProvider()),
@@ -131,8 +135,10 @@ class GuzellikApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => CampaignProvider()),
         ChangeNotifierProvider(
-          create: (_) => ReviewSubmissionProvider(VenueRepository()),
+          create: (_) => ReviewSubmissionProvider(ReviewRepository.instance),
         ),
+        ChangeNotifierProvider(create: (_) => ReviewProvider()),
+        ChangeNotifierProvider(create: (_) => BusinessReviewProvider()),
         ChangeNotifierProvider(
           create: (_) => SearchProvider(venueRepository: VenueRepository()),
         ),

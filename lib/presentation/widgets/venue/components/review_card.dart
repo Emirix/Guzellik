@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/review_provider.dart';
 import '../../../../data/models/review.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -160,6 +162,91 @@ class ReviewCard extends StatelessWidget {
               ),
             ),
           ],
+          // Photos
+          if (review.photos.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 80,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: review.photos.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      review.photos[index],
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (ctx, _, __) =>
+                          Container(color: Colors.grey[200]),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+
+          // Business Reply
+          if (review.businessReply != null) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.gray50,
+                borderRadius: BorderRadius.circular(12),
+                border: const Border(
+                  left: BorderSide(color: AppColors.primary, width: 3),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'İşletme Yanıtı',
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(review.businessReply!, style: AppTextStyles.bodySmall),
+                ],
+              ),
+            ),
+          ],
+
+          // Helpful Button
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                'Bu yorum faydalı mı?',
+                style: AppTextStyles.caption.copyWith(color: AppColors.gray500),
+              ),
+              const SizedBox(width: 8),
+              InkWell(
+                onTap: () {
+                  context.read<ReviewProvider>().toggleHelpful(review.id);
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.thumb_up_alt_outlined,
+                      size: 16,
+                      color: AppColors.gray600,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      review.helpfulCount.toString(),
+                      style: AppTextStyles.caption,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

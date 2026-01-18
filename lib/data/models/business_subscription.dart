@@ -1,15 +1,32 @@
 import 'package:flutter/foundation.dart';
 
+/// Enum defining the available subscription tiers
+enum SubscriptionTier {
+  standard,
+  premium,
+  enterprise;
+
+  String get value => name;
+
+  static SubscriptionTier fromString(String? value) {
+    return SubscriptionTier.values.firstWhere(
+      (e) => e.name == value?.toLowerCase(),
+      orElse: () => SubscriptionTier.standard,
+    );
+  }
+}
+
 /// Business subscription model
 /// Represents a business account's subscription status and features
 class BusinessSubscription {
   final String id;
   final String venueId;
-  final String subscriptionType;
+  final SubscriptionTier tier;
   final String status;
   final DateTime startedAt;
   final DateTime? expiresAt;
   final Map<String, dynamic> features;
+  final int creditsBalance;
   final String? paymentMethod;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -17,11 +34,12 @@ class BusinessSubscription {
   BusinessSubscription({
     required this.id,
     required this.venueId,
-    required this.subscriptionType,
+    required this.tier,
     required this.status,
     required this.startedAt,
     this.expiresAt,
     required this.features,
+    this.creditsBalance = 0,
     this.paymentMethod,
     required this.createdAt,
     required this.updatedAt,
@@ -45,15 +63,13 @@ class BusinessSubscription {
 
   /// Get subscription display name
   String get displayName {
-    switch (subscriptionType) {
-      case 'standard':
+    switch (tier) {
+      case SubscriptionTier.standard:
         return 'Standart Üyelik';
-      case 'premium':
+      case SubscriptionTier.premium:
         return 'Premium Üyelik';
-      case 'enterprise':
+      case SubscriptionTier.enterprise:
         return 'Kurumsal Üyelik';
-      default:
-        return 'Üyelik';
     }
   }
 
@@ -87,7 +103,7 @@ class BusinessSubscription {
       venueId:
           json['venue_id']?.toString() ??
           (json['profile_id']?.toString() ?? ''),
-      subscriptionType: json['subscription_type']?.toString() ?? 'standard',
+      tier: SubscriptionTier.fromString(json['subscription_type']?.toString()),
       status: json['status']?.toString() ?? 'active',
       startedAt: DateTime.parse(
         json['started_at'] ?? DateTime.now().toIso8601String(),
@@ -96,6 +112,7 @@ class BusinessSubscription {
           ? DateTime.parse(json['expires_at'] as String)
           : null,
       features: json['features'] as Map<String, dynamic>? ?? {},
+      creditsBalance: json['credits_balance'] as int? ?? 0,
       paymentMethod: json['payment_method'] as String?,
       createdAt: DateTime.parse(
         json['created_at'] ?? DateTime.now().toIso8601String(),
@@ -111,11 +128,12 @@ class BusinessSubscription {
     return {
       'id': id,
       'venue_id': venueId,
-      'subscription_type': subscriptionType,
+      'subscription_type': tier.name,
       'status': status,
       'started_at': startedAt.toIso8601String(),
       'expires_at': expiresAt?.toIso8601String(),
       'features': features,
+      'credits_balance': creditsBalance,
       'payment_method': paymentMethod,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
@@ -126,11 +144,12 @@ class BusinessSubscription {
   BusinessSubscription copyWith({
     String? id,
     String? venueId,
-    String? subscriptionType,
+    SubscriptionTier? tier,
     String? status,
     DateTime? startedAt,
     DateTime? expiresAt,
     Map<String, dynamic>? features,
+    int? creditsBalance,
     String? paymentMethod,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -138,11 +157,12 @@ class BusinessSubscription {
     return BusinessSubscription(
       id: id ?? this.id,
       venueId: venueId ?? this.venueId,
-      subscriptionType: subscriptionType ?? this.subscriptionType,
+      tier: tier ?? this.tier,
       status: status ?? this.status,
       startedAt: startedAt ?? this.startedAt,
       expiresAt: expiresAt ?? this.expiresAt,
       features: features ?? this.features,
+      creditsBalance: creditsBalance ?? this.creditsBalance,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -156,11 +176,12 @@ class BusinessSubscription {
     return other is BusinessSubscription &&
         other.id == id &&
         other.venueId == venueId &&
-        other.subscriptionType == subscriptionType &&
+        other.tier == tier &&
         other.status == status &&
         other.startedAt == startedAt &&
         other.expiresAt == expiresAt &&
         mapEquals(other.features, features) &&
+        other.creditsBalance == creditsBalance &&
         other.paymentMethod == paymentMethod &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt;
@@ -171,11 +192,12 @@ class BusinessSubscription {
     return Object.hash(
       id,
       venueId,
-      subscriptionType,
+      tier,
       status,
       startedAt,
       expiresAt,
       features,
+      creditsBalance,
       paymentMethod,
       createdAt,
       updatedAt,
@@ -184,6 +206,6 @@ class BusinessSubscription {
 
   @override
   String toString() {
-    return 'BusinessSubscription(id: $id, type: $subscriptionType, status: $status, daysRemaining: $daysRemaining)';
+    return 'BusinessSubscription(id: $id, tier: ${tier.name}, status: $status, daysRemaining: $daysRemaining, creditsBalance: $creditsBalance)';
   }
 }

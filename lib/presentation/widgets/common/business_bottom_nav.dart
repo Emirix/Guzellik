@@ -18,7 +18,8 @@ class BusinessBottomNav extends StatelessWidget {
         return BottomAppBar(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           height: 65,
-          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+          color: Colors.white,
+          surfaceTintColor: Colors.transparent,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[

@@ -91,44 +91,53 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         top: false,
-        child: Consumer<SearchProvider>(
-          builder: (context, provider, _) {
-            return Column(
-              children: [
-                // Header with search input - ALWAYS show this
-                SearchHeader(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  onChanged: (value) {
-                    provider.setSearchQuery(value);
-                  },
-                  onClear: () {
-                    _searchController.clear();
-                    provider.clearSearch();
-                  },
-                ),
+        child: Column(
+          children: [
+            // Header with search input - ALWAYS show this
+            SearchHeader(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              onChanged: (value) {
+                context.read<SearchProvider>().setSearchQuery(value);
+              },
+              onClear: () {
+                _searchController.clear();
+                context.read<SearchProvider>().clearSearch();
+              },
+            ),
 
-                // Selected category banner
-                if (provider.isCategorySelected)
-                  _buildSelectedCategoryBanner(provider.selectedCategory!, () {
-                    provider.clearFilters();
-                  }),
+            Expanded(
+              child: Consumer<SearchProvider>(
+                builder: (context, provider, _) {
+                  return Column(
+                    children: [
+                      // Selected category banner
+                      if (provider.isCategorySelected)
+                        _buildSelectedCategoryBanner(
+                          provider.selectedCategory!,
+                          () {
+                            provider.clearFilters();
+                          },
+                        ),
 
-                // Filter chips row
-                const SearchFilterChips(),
+                      // Filter chips row
+                      const SearchFilterChips(),
 
-                // Ad Banner
-                const AdBannerWidget(),
+                      // Ad Banner
+                      const AdBannerWidget(),
 
-                // Content area
-                Expanded(
-                  child: provider.isCategorySelected
-                      ? _buildSearchContent(provider)
-                      : const SearchInitialView(),
-                ),
-              ],
-            );
-          },
+                      // Content area
+                      Expanded(
+                        child: provider.isCategorySelected
+                            ? _buildSearchContent(provider)
+                            : const SearchInitialView(),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

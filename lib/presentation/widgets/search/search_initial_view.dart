@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/icon_utils.dart';
 import '../../providers/search_provider.dart';
+import 'popular_searches_section.dart';
 
 /// Arama ekranının başlangıç görünümü
 /// Kullanıcıdan bir mekan kategorisi seçmesini ister
@@ -124,6 +125,14 @@ class SearchInitialView extends StatelessWidget {
                     ),
                   );
                 }, childCount: categories.length),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: PopularSearchesSection(
+                services: provider.popularServices,
+                isLoading: provider.isLoadingServices,
+                onServiceTap: (service) =>
+                    provider.selectPopularService(service),
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 32)),

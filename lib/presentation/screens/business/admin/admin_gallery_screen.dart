@@ -155,7 +155,7 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Galeri (${photos.length}/5)',
+                      'Galeri (${photos.length}/10)',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

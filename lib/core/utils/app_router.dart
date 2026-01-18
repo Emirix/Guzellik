@@ -17,6 +17,7 @@ import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../presentation/screens/location_onboarding_screen.dart';
 import '../../presentation/screens/business/subscription_screen.dart';
 import '../../presentation/screens/business/store_screen.dart';
+import '../../presentation/screens/business/transaction_history_screen.dart';
 import '../../presentation/screens/business/admin_dashboard_screen.dart';
 import '../../presentation/screens/business/business_onboarding_screen.dart';
 import '../../presentation/screens/business/business_info_form_screen.dart';
@@ -202,6 +203,17 @@ class AppRouter {
           redirectPath: '/business/store',
           child: StoreScreen(),
         ),
+        routes: [
+          GoRoute(
+            path: 'history',
+            name: 'business-store-history',
+            builder: (context, state) => const AuthGuard(
+              requiredFor: 'İşlem Geçmişi',
+              redirectPath: '/business/store/history',
+              child: TransactionHistoryScreen(),
+            ),
+          ),
+        ],
       ),
 
       // Admin Routes (Business Management)

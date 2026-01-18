@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../../providers/app_onboarding_provider.dart';
 import '../../../core/theme/app_colors.dart';
 
-/// Navigation buttons for onboarding screen
+/// Navigation button for the onboarding flow.
+/// Features a smooth transition between a forward arrow and a "Hadi Başlayalım!" CTA.
+/// Provides [HapticFeedback] on interactions.
 class OnboardingNavigation extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onComplete;

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../providers/business_provider.dart';
 import '../../providers/credit_provider.dart';
+import '../../providers/subscription_provider.dart';
 import '../../widgets/common/business_bottom_nav.dart';
 import '../../../data/models/credit_package.dart';
 
@@ -66,7 +67,7 @@ class _StoreScreenState extends State<StoreScreen> {
               color: isDark ? Colors.white : const Color(0xFF1B0E11),
             ),
             onPressed: () {
-              // TODO: Navigate to transaction history
+              context.push('/business/store/history');
             },
           ),
         ],
@@ -74,6 +75,9 @@ class _StoreScreenState extends State<StoreScreen> {
       bottomNavigationBar: const BusinessBottomNav(),
       body: Consumer2<CreditProvider, BusinessProvider>(
         builder: (context, creditProvider, businessProvider, _) {
+          final subProvider = context.watch<SubscriptionProvider>();
+          final subscription = subProvider.subscription;
+
           if (creditProvider.isLoading) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
@@ -94,7 +98,10 @@ class _StoreScreenState extends State<StoreScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Balance Card
-                  _buildBalanceCard(creditProvider.balance),
+                  _buildBalanceCard(
+                    creditProvider.balance,
+                    subscription?.displayName ?? 'STANDART',
+                  ),
 
                   // Showcase Section
                   const Padding(
@@ -165,7 +172,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
-  Widget _buildBalanceCard(int balance) {
+  Widget _buildBalanceCard(int balance, String tierName) {
     final formatter = NumberFormat('#,###', 'tr_TR');
 
     return Container(
@@ -209,9 +216,9 @@ class _StoreScreenState extends State<StoreScreen> {
               children: [
                 const Icon(Icons.stars, color: AppColors.gold, size: 16),
                 const SizedBox(width: 8),
-                const Text(
-                  'GOLD İŞLETME',
-                  style: TextStyle(
+                Text(
+                  '${tierName.toUpperCase()} İŞLETME',
+                  style: const TextStyle(
                     color: AppColors.gold,
                     fontSize: 10,
                     fontWeight: FontWeight.w900,

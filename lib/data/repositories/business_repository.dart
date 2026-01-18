@@ -87,12 +87,14 @@ class BusinessRepository {
           .from('venues_subscription')
           .insert({
             'venue_id': venueId,
-            'subscription_type': 'standard',
+            'subscription_type': SubscriptionTier.standard.name,
             'status': 'active',
             'features': {
-              'campaigns': {'enabled': true, 'max': 5},
-              'notifications': {'enabled': true, 'monthly_limit': 100},
-              'analytics': {'enabled': false},
+              'campaigns': {'enabled': true, 'monthly_limit': 3},
+              'notifications': {'enabled': true, 'daily_limit': 5},
+              'analytics': {'enabled': true, 'type': 'basic'},
+              'support': {'type': 'email'},
+              'featured_listing': {'enabled': false},
             },
           })
           .select()
@@ -207,21 +209,20 @@ class BusinessRepository {
           })
           .eq('id', userId);
 
-      // 4. Create trial subscription
+      // 4. Create standard subscription for the new venue
       final expiresAt = DateTime.now().add(const Duration(days: 365));
-      await _supabase.from('business_subscriptions').insert({
-        'profile_id': userId,
-        'subscription_type': 'trial',
+      await _supabase.from('venues_subscription').insert({
+        'venue_id': venueId,
+        'subscription_type': SubscriptionTier.standard.name,
         'status': 'active',
         'started_at': DateTime.now().toIso8601String(),
         'expires_at': expiresAt.toIso8601String(),
         'features': {
-          'campaigns': true,
-          'analytics': true,
-          'team_management': true,
-          'priority_support': true,
-          'unlimited_campaigns': false,
-          'featured_listing': false,
+          'campaigns': {'enabled': true, 'monthly_limit': 3},
+          'notifications': {'enabled': true, 'daily_limit': 5},
+          'analytics': {'enabled': true, 'type': 'basic'},
+          'support': {'type': 'email'},
+          'featured_listing': {'enabled': false},
         },
       });
     } catch (e) {

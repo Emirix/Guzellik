@@ -3,16 +3,46 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../widgets/common/business_bottom_nav.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/business_provider.dart';
+import '../../providers/subscription_provider.dart';
+import '../../../data/models/business_subscription.dart';
 import '../../../data/models/venue.dart';
 
-class AdminDashboardScreen extends StatelessWidget {
+class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
+
+  @override
+  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+}
+
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  Future<void> _loadData() async {
+    final businessProvider = context.read<BusinessProvider>();
+    final userId = context.read<AuthProvider>().currentUser?.id;
+
+    if (userId != null) {
+      await businessProvider.loadBusinessData(userId);
+      if (mounted) {
+        await context.read<SubscriptionProvider>().loadSubscription(userId);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final businessProvider = context.watch<BusinessProvider>();
+    final subscriptionProvider = context.watch<SubscriptionProvider>();
     final venue = businessProvider.businessVenue;
+    final subscription = subscriptionProvider.subscription;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFCFCFC),
@@ -25,7 +55,10 @@ class AdminDashboardScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.1), width: 1),
+              bottom: BorderSide(
+                color: Colors.grey.withValues(alpha: 0.1),
+                width: 1,
+              ),
             ),
           ),
         ),
@@ -63,9 +96,9 @@ class AdminDashboardScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildCoverAndProfile(context, venue),
+            _buildCoverAndProfile(context, venue, subscription),
             const SizedBox(height: 16),
-            _buildManagementMenu(context, venue),
+            _buildManagementMenu(context, venue, subscription),
             const SizedBox(height: 24),
             _buildSaveButton(context),
             const SizedBox(height: 100),
@@ -75,7 +108,11 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCoverAndProfile(BuildContext context, Venue? venue) {
+  Widget _buildCoverAndProfile(
+    BuildContext context,
+    Venue? venue,
+    BusinessSubscription? subscription,
+  ) {
     final coverUrl =
         venue?.imageUrl ??
         (venue?.heroImages.isNotEmpty == true ? venue!.heroImages.first : null);
@@ -97,7 +134,9 @@ class AdminDashboardScreen extends StatelessWidget {
                 : null,
           ),
           child: Container(
-            decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.2)),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.2),
+            ),
             child: Center(
               child: ElevatedButton.icon(
                 onPressed: () => context.push('/business/admin/cover-photo'),
@@ -176,25 +215,46 @@ class AdminDashboardScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Premium Badge
+                // Premium Badge or Subscription Status
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
+                    color:
+                        (subscription?.tier == SubscriptionTier.premium ||
+                            subscription?.tier == SubscriptionTier.enterprise)
+                        ? const Color(0xFFD4AF37).withValues(alpha: 0.15)
+                        : Colors.grey.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.stars, color: Color(0xFFD4AF37), size: 18),
-                      SizedBox(width: 6),
+                      Icon(
+                        subscription?.tier == SubscriptionTier.enterprise
+                            ? Icons.business
+                            : Icons.stars,
+                        color:
+                            (subscription?.tier == SubscriptionTier.premium ||
+                                subscription?.tier ==
+                                    SubscriptionTier.enterprise)
+                            ? const Color(0xFFD4AF37)
+                            : Colors.grey,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 6),
                       Text(
-                        'PREMİUM İŞLETME',
+                        subscription?.displayName.toUpperCase() ??
+                            'YÜKLENİYOR...',
                         style: TextStyle(
-                          color: Color(0xFFD4AF37),
+                          color:
+                              (subscription?.tier == SubscriptionTier.premium ||
+                                  subscription?.tier ==
+                                      SubscriptionTier.enterprise)
+                              ? const Color(0xFFD4AF37)
+                              : Colors.grey[600],
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.2,
@@ -203,6 +263,49 @@ class AdminDashboardScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (subscription != null) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Credits Info
+                      Icon(
+                        Icons.monetization_on_outlined,
+                        size: 14,
+                        color: Colors.grey[600],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${subscription.creditsBalance} Kredi',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[800],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // Expiry Info
+                      Icon(
+                        Icons.timer_outlined,
+                        size: 14,
+                        color: Colors.grey[600],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        subscription.daysRemaining > 0
+                            ? '${subscription.daysRemaining} Gün Kaldı'
+                            : 'Süresi Doldu',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: subscription.daysRemaining < 5
+                              ? Colors.red
+                              : Colors.grey[800],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -211,7 +314,11 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildManagementMenu(BuildContext context, Venue? venue) {
+  Widget _buildManagementMenu(
+    BuildContext context,
+    Venue? venue,
+    BusinessSubscription? subscription,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -226,6 +333,14 @@ class AdminDashboardScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+
+          _buildListItem(
+            context,
+            icon: Icons.workspace_premium,
+            title: 'Üyelik ve Mağaza',
+            subtitle: 'Paket Yükselt ve Kredi Satın Al',
+            onTap: () => context.push('/business/store'),
+          ),
 
           _buildListItem(
             context,

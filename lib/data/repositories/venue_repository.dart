@@ -7,6 +7,7 @@ import '../models/venue_photo.dart';
 import '../models/venue_category.dart';
 import '../models/specialist.dart';
 import '../models/campaign.dart';
+import '../models/popular_service.dart';
 import '../services/supabase_service.dart';
 import '../../core/services/cache_service.dart';
 
@@ -64,6 +65,39 @@ class VenueRepository {
     );
 
     return categories;
+  }
+
+  /// Popüler hizmetleri getirir (5 dk cache)
+  Future<List<PopularService>> getPopularServices({int limit = 7}) async {
+    try {
+      // Cache'den kontrol et
+      final cached = _cache.get<List<PopularService>>(
+        CacheService.popularServicesKey,
+      );
+      if (cached != null) return cached;
+
+      // RPC çağrısı yap
+      final List<dynamic> response = await _supabase.rpc(
+        'get_popular_services',
+        params: {'p_limit': limit},
+      );
+
+      final services = response
+          .map((json) => PopularService.fromJson(json))
+          .toList();
+
+      // Cache'e kaydet
+      _cache.set(
+        CacheService.popularServicesKey,
+        services,
+        ttlSeconds: CacheService.popularServicesTTL,
+      );
+
+      return services;
+    } catch (e) {
+      print('Error fetching popular services: $e');
+      return [];
+    }
   }
 
   Future<List<Venue>> getVenues() async {

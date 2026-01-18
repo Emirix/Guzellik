@@ -88,8 +88,9 @@ class ImageUtils {
 
       // Get the parts after /public/
       int publicIndex = pathSegments.indexOf('public');
-      if (publicIndex == -1 || publicIndex >= pathSegments.length - 1)
+      if (publicIndex == -1 || publicIndex >= pathSegments.length - 1) {
         return url;
+      }
 
       final bucket = pathSegments[publicIndex + 1];
       final restOfPath = pathSegments.skip(publicIndex + 2).join('/');

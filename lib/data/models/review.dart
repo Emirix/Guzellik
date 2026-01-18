@@ -1,5 +1,7 @@
 import '../../core/utils/image_utils.dart';
 
+enum ReviewStatus { pending, approved, rejected }
+
 class Review {
   final String id;
   final String venueId;
@@ -7,6 +9,11 @@ class Review {
   final double rating;
   final String? comment;
   final DateTime createdAt;
+  final ReviewStatus status;
+  final String? businessReply;
+  final DateTime? replyAt;
+  final int helpfulCount;
+  final List<String> photos;
 
   // Joined profile fields (optional, if using select(..., profiles(...)))
   final String? userFullName;
@@ -19,6 +26,11 @@ class Review {
     required this.rating,
     this.comment,
     required this.createdAt,
+    this.status = ReviewStatus.pending,
+    this.businessReply,
+    this.replyAt,
+    this.helpfulCount = 0,
+    this.photos = const [],
     this.userFullName,
     this.userAvatarUrl,
   });
@@ -35,6 +47,27 @@ class Review {
       avatar = ImageUtils.normalizeUrl(profile['avatar_url']);
     }
 
+    // Parse status
+    ReviewStatus parsedStatus = ReviewStatus.pending;
+    if (json['status'] != null) {
+      try {
+        parsedStatus = ReviewStatus.values.firstWhere(
+          (e) => e.name == json['status'],
+          orElse: () => ReviewStatus.pending,
+        );
+      } catch (_) {}
+    }
+
+    // Parse photos
+    List<String> parsedPhotos = [];
+    if (json['photos'] != null) {
+      if (json['photos'] is List) {
+        parsedPhotos = (json['photos'] as List)
+            .map((e) => ImageUtils.normalizeUrl(e.toString()) ?? e.toString())
+            .toList();
+      }
+    }
+
     return Review(
       id: json['id'] as String? ?? '',
       venueId: json['venue_id'] as String? ?? '',
@@ -44,8 +77,17 @@ class Review {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
-      userFullName: name,
-      userAvatarUrl: avatar,
+      status: parsedStatus,
+      businessReply: json['business_reply'] as String?,
+      replyAt: json['reply_at'] != null
+          ? DateTime.parse(json['reply_at'] as String)
+          : null,
+      helpfulCount: json['helpful_count'] as int? ?? 0,
+      photos: parsedPhotos,
+      userFullName: name ?? json['user_name'], // Fallback for RPC
+      userAvatarUrl:
+          avatar ??
+          ImageUtils.normalizeUrl(json['user_avatar']), // Fallback for RPC
     );
   }
 
@@ -57,6 +99,11 @@ class Review {
       'rating': rating,
       'comment': comment,
       'created_at': createdAt.toIso8601String(),
+      'status': status.name,
+      'business_reply': businessReply,
+      'reply_at': replyAt?.toIso8601String(),
+      'helpful_count': helpfulCount,
+      // 'photos': photos, // Typically not creating/updating photos via JSON directly here, but good to have if needed
     };
   }
 

@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../providers/app_state_provider.dart';
 import '../../providers/discovery_provider.dart';
 import '../../providers/search_provider.dart';
+import 'voice_search_dialog.dart';
 
 /// Arama başlığı widget'ı
 /// Geri butonu, arama input'u ve harita toggle'ı içerir
@@ -23,60 +24,60 @@ class SearchHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SearchProvider>(
-      builder: (context, searchProvider, _) {
-        // Build location text
-        String? locationText;
-        if (searchProvider.selectedProvince != null) {
-          locationText = searchProvider.selectedProvince!;
-          if (searchProvider.selectedDistrict != null) {
-            locationText = '${searchProvider.selectedDistrict}, $locationText';
-          }
-        }
-
-        return Container(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            MediaQuery.of(context).padding.top + 12,
-            16,
-            12,
-          ),
-          decoration: const BoxDecoration(color: AppColors.background),
-          child: Row(
-            children: [
-              // Back button (Rounded full from design)
-              GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                  context.read<AppStateProvider>().setBottomNavIndex(0);
-                },
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.gray100),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        16,
+        MediaQuery.of(context).padding.top + 12,
+        16,
+        12,
+      ),
+      decoration: const BoxDecoration(color: AppColors.background),
+      child: Row(
+        children: [
+          // Back button (Rounded full from design)
+          GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              context.read<AppStateProvider>().setBottomNavIndex(0);
+            },
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.gray100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: AppColors.gray900,
-                    size: 20,
-                  ),
-                ),
+                ],
               ),
-              const SizedBox(width: 8),
+              child: const Icon(
+                Icons.arrow_back,
+                color: AppColors.gray900,
+                size: 20,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
 
-              // Search input with location subtext (Rounded 2xl from design)
-              Expanded(
-                child: Container(
+          // Search input with location subtext (Rounded 2xl from design)
+          Expanded(
+            child: Selector<SearchProvider, String?>(
+              selector: (_, provider) {
+                if (provider.selectedProvince != null) {
+                  if (provider.selectedDistrict != null) {
+                    return '${provider.selectedDistrict}, ${provider.selectedProvince}';
+                  }
+                  return provider.selectedProvince;
+                }
+                return null;
+              },
+              builder: (context, locationText, _) {
+                return Container(
                   height: locationText != null ? 52 : 48,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -141,60 +142,101 @@ class SearchHeader extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (controller.text.isNotEmpty)
-                        GestureDetector(
-                          onTap: onClear,
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Icon(
-                              Icons.close,
-                              color: AppColors.gray400,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
+                      ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: controller,
+                        builder: (context, value, _) {
+                          if (value.text.isNotEmpty) {
+                            return GestureDetector(
+                              onTap: onClear,
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                child: Icon(
+                                  Icons.close,
+                                  color: AppColors.gray400,
+                                  size: 18,
+                                ),
+                              ),
+                            );
+                          }
 
-              const SizedBox(width: 8),
+                          return Selector<SearchProvider, bool>(
+                            selector: (_, p) => p.isVoiceAvailable,
+                            builder: (context, isVoiceAvailable, _) {
+                              if (!isVoiceAvailable) return const SizedBox();
 
-              // Map toggle button (Rounded 2xl from design)
-              GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                  context.read<DiscoveryProvider>().setViewMode(
-                    DiscoveryViewMode.map,
-                  );
-                  context.read<AppStateProvider>().setBottomNavIndex(0);
-                },
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.gray100),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                              return GestureDetector(
+                                onTap: () {
+                                  final provider = context
+                                      .read<SearchProvider>();
+                                  provider.startVoiceSearch();
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) =>
+                                        Consumer<SearchProvider>(
+                                          builder: (context, provider, _) =>
+                                              VoiceSearchDialog(
+                                                error:
+                                                    provider.voiceSearchError,
+                                                onStop: () {
+                                                  provider.stopVoiceSearch();
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                        ),
+                                  );
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  child: Icon(
+                                    Icons.mic,
+                                    color: AppColors.primary,
+                                    size: 20,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.map,
-                    color: AppColors.primary,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
-        );
-      },
+
+          const SizedBox(width: 8),
+
+          // Map toggle button (Rounded 2xl from design)
+          GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              context.read<DiscoveryProvider>().setViewMode(
+                DiscoveryViewMode.map,
+              );
+              context.read<AppStateProvider>().setBottomNavIndex(0);
+            },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.gray100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.map, color: AppColors.primary, size: 20),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

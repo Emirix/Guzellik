@@ -3,50 +3,52 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../providers/venue_details_provider.dart';
 import '../../../providers/review_submission_provider.dart';
+import '../../../providers/review_provider.dart';
 import '../../../../data/services/supabase_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../review/rating_distribution_chart.dart';
 import '../../review/review_submission_bottom_sheet.dart';
 import '../../review/edit_review_bottom_sheet.dart';
+import '../../review/review_filter_bar.dart';
 import '../components/review_card.dart';
 import '../../common/empty_state.dart';
 
-class ReviewsTab extends StatelessWidget {
+class ReviewsTab extends StatefulWidget {
   final String venueId;
 
   const ReviewsTab({super.key, required this.venueId});
+
+  @override
+  State<ReviewsTab> createState() => _ReviewsTabState();
+}
+
+class _ReviewsTabState extends State<ReviewsTab> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => context.read<ReviewProvider>().fetchReviews(widget.venueId),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final currentUserId = SupabaseService.instance.currentUser?.id;
 
     return Consumer2<VenueDetailsProvider, ReviewSubmissionProvider>(
-      builder: (context, provider, submissionProvider, child) {
-        if (provider.isLoading && provider.reviews.isEmpty) {
-          return Center(
+      builder: (context, venueProvider, submissionProvider, child) {
+        if (venueProvider.isLoading && venueProvider.reviews.isEmpty) {
+          return const Center(
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           );
         }
 
-        if (provider.error != null && provider.reviews.isEmpty) {
-          return Center(
-            child: EmptyState(
-              icon: Icons.error_outline_rounded,
-              title: 'Hata Oluştu',
-              message: 'Değerlendirmeler yüklenirken bir sorun oluştu.',
-              actionLabel: 'Tekrar Dene',
-              onAction: () => provider.refreshReviews(),
-            ),
-          );
-        }
-
-        final bool hasReviews = provider.reviews.isNotEmpty;
-        final bool userHasReview = provider.reviews.any(
-          (r) => r.userId == currentUserId,
-        );
+        // Global stats from venueProvider (assumed all reviews or summary)
+        // If venueProvider.reviews is empty but venue rating count > 0, we might strictly rely on venue object numbers.
+        // ratingCount comes from venue object.
 
         return ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
@@ -74,7 +76,8 @@ class ReviewsTab extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            provider.venue?.rating.toStringAsFixed(1) ?? '0.0',
+                            venueProvider.venue?.rating.toStringAsFixed(1) ??
+                                '0.0',
                             style: AppTextStyles.heading1.copyWith(
                               fontSize: 48,
                               fontWeight: FontWeight.w800,
@@ -83,7 +86,9 @@ class ReviewsTab extends StatelessWidget {
                           Row(
                             children: List.generate(5, (index) {
                               return Icon(
-                                index < (provider.venue?.rating ?? 0).round()
+                                index <
+                                        (venueProvider.venue?.rating ?? 0)
+                                            .round()
                                     ? Icons.star_rounded
                                     : Icons.star_outline_rounded,
                                 color: AppColors.gold,
@@ -93,7 +98,7 @@ class ReviewsTab extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${provider.venue?.ratingCount ?? 0} yorum',
+                            '${venueProvider.venue?.ratingCount ?? 0} yorum',
                             style: AppTextStyles.caption,
                           ),
                         ],
@@ -102,7 +107,8 @@ class ReviewsTab extends StatelessWidget {
                       // Distribution Chart
                       Expanded(
                         child: RatingDistributionChart(
-                          reviews: provider.reviews,
+                          reviews: venueProvider
+                              .reviews, // Use global list for chart
                         ),
                       ),
                     ],
@@ -110,7 +116,8 @@ class ReviewsTab extends StatelessWidget {
                   const SizedBox(height: 24),
                   // CTA Button
                   ElevatedButton(
-                    onPressed: () => _handleReviewAction(context, provider),
+                    onPressed: () =>
+                        _handleReviewAction(context, venueProvider),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.white,
@@ -121,9 +128,11 @@ class ReviewsTab extends StatelessWidget {
                       elevation: 0,
                     ),
                     child: Text(
-                      userHasReview
-                          ? 'Değerlendirmenizi Düzenleyin'
-                          : 'Değerlendirme Yap',
+                      // We need to check if user has review.
+                      // venueProvider.reviews might not have it if pagination/filtering.
+                      // ReviewSubmissionProvider.checkExistingReview checks DB.
+                      // For label, we can try to guess or just say "Değerlendir".
+                      'Değerlendirme Yap / Düzenle',
                       style: AppTextStyles.button,
                     ),
                   ),
@@ -133,53 +142,54 @@ class ReviewsTab extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            if (!hasReviews)
-              EmptyState(
-                icon: Icons.rate_review_outlined,
-                title: 'Henüz değerlendirme yok',
-                message: 'Bu mekan için ilk değerlendirmeyi siz yapın!',
-                actionLabel: 'Değerlendirme Yap',
-                onAction: () => _handleReviewAction(context, provider),
-              )
-            else ...[
-              Text('Tüm Değerlendirmeler', style: AppTextStyles.heading4),
-              const SizedBox(height: 16),
-              // Reviews List (Own review first)
-              ..._buildReviewList(context, provider, currentUserId),
-            ],
+            // Filters
+            ReviewFilterBar(venueId: widget.venueId),
+
+            const SizedBox(height: 16),
+
+            // Filtered List
+            Consumer<ReviewProvider>(
+              builder: (context, reviewProvider, _) {
+                if (reviewProvider.isLoading) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                if (reviewProvider.reviews.isEmpty) {
+                  return EmptyState(
+                    icon: Icons.rate_review_outlined,
+                    title: 'Yorum bulunamadı',
+                    message: 'Seçili kriterlere uygun yorum yok.',
+                    actionLabel: 'Filtreleri Temizle',
+                    onAction: () {
+                      reviewProvider.setFilterRating(null, widget.venueId);
+                      reviewProvider.setFilterHasPhotos(false, widget.venueId);
+                    },
+                  );
+                }
+
+                return Column(
+                  children: reviewProvider.reviews.map((review) {
+                    final isOwn = review.userId == currentUserId;
+                    return ReviewCard(
+                      review: review,
+                      isOwnReview: isOwn,
+                      onEdit: isOwn
+                          ? () => _handleReviewAction(context, venueProvider)
+                          : null,
+                    );
+                  }).toList(),
+                );
+              },
+            ),
           ],
         );
       },
     );
-  }
-
-  List<Widget> _buildReviewList(
-    BuildContext context,
-    VenueDetailsProvider provider,
-    String? currentUserId,
-  ) {
-    final List<Widget> list = [];
-
-    // Sort reviews to show own review first
-    final sortedReviews = List.of(provider.reviews);
-    sortedReviews.sort((a, b) {
-      if (a.userId == currentUserId) return -1;
-      if (b.userId == currentUserId) return 1;
-      return b.createdAt.compareTo(a.createdAt);
-    });
-
-    for (var review in sortedReviews) {
-      final isOwn = review.userId == currentUserId;
-      list.add(
-        ReviewCard(
-          review: review,
-          isOwnReview: isOwn,
-          onEdit: isOwn ? () => _handleReviewAction(context, provider) : null,
-        ),
-      );
-    }
-
-    return list;
   }
 
   void _handleReviewAction(
@@ -195,7 +205,7 @@ class ReviewsTab extends StatelessWidget {
     }
 
     final submissionProvider = context.read<ReviewSubmissionProvider>();
-    await submissionProvider.checkExistingReview(venueId);
+    await submissionProvider.checkExistingReview(widget.venueId);
 
     if (context.mounted) {
       if (submissionProvider.isEditing) {
@@ -204,7 +214,7 @@ class ReviewsTab extends StatelessWidget {
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           builder: (context) => EditReviewBottomSheet(
-            venueId: venueId,
+            venueId: widget.venueId,
             venueName: provider.venue?.name ?? '',
           ),
         );
@@ -214,10 +224,15 @@ class ReviewsTab extends StatelessWidget {
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           builder: (context) => ReviewSubmissionBottomSheet(
-            venueId: venueId,
+            venueId: widget.venueId,
             venueName: provider.venue?.name ?? '',
           ),
         );
+      }
+      // Refresh list after action
+      if (context.mounted) {
+        context.read<ReviewProvider>().fetchReviews(widget.venueId);
+        context.read<VenueDetailsProvider>().refreshReviews(); // Update stats
       }
     }
   }

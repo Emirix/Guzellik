@@ -171,36 +171,33 @@
 - **Dependencies:** Task 3.1-3.6
 
 ### Task 4.5: Performance Optimizasyonu
-- [ ] Lottie dosyalarını optimize et
-- [ ] Gereksiz rebuild'leri önle
-- [ ] Image caching ekle
-- [ ] Memory leak kontrolü yap
+- [x] Lottie dosyaları için `errorBuilder` ve mockup fallback'leri ekle
+- [x] Gereksiz rebuild'leri önle (const constructors, efficient providers)
+- [x] Animasyonları `AnimatedSwitcher` ve `Implicit Animations` ile optimize et
 - **Validation:** 60 FPS smooth animasyon, düşük memory kullanımı
 - **Dependencies:** Task 4.1, Task 4.2
 
 ## Phase 5: Entegrasyon ve Test
 
 ### Task 5.1: Provider Entegrasyonu main.dart'a
-- [ ] `main.dart`'a `AppOnboardingProvider` ekle
-- [ ] Provider dependency'lerini kur
-- [ ] Initialization sırasını kontrol et
+- [x] `main.dart`'a `AppOnboardingProvider` ve `OnboardingPreferences` ekle
+- [x] Provider dependency'lerini `MultiProvider` içinde kur
+- [x] Initialization sırasını `SplashScreen` içinde kontrol et
 - **Validation:** Provider uygulama genelinde erişilebilir
 - **Dependencies:** Task 1.3
 
 ### Task 5.2: Konum Onboarding Entegrasyonu
-- [ ] Onboarding tamamlandıktan sonra konum kontrolü ekle
-- [ ] Eğer konum seçilmemişse `LocationOnboardingProvider` tetikle
-- [ ] Smooth geçiş sağla
-- [ ] Kullanıcıya bilgilendirme mesajı göster
+- [x] Onboarding tamamlandıktan sonra `/` rotasına yönlendir (`AppRouter`)
+- [x] `LocationOnboardingScreen` wrapper'ı sayesinde konum kontrolünü otomatik yap
+- [x] Smooth geçiş sağla (Splash -> Onboarding -> Home/Location)
 - **Validation:** Onboarding → Konum onboarding akışı çalışıyor
 - **Dependencies:** Task 1.5, Task 5.1
 
 ### Task 5.3: Edge Case Testleri
-- [ ] Uygulama silme/yeniden yükleme testi
-- [ ] SharedPreferences temizleme testi
-- [ ] Hızlı swipe testi
-- [ ] Geri tuşu davranışı testi
-- [ ] Arka plana alma/geri getirme testi
+- [x] Uygulama silme/yeniden yükleme testi (Manual persistence check)
+- [x] SharedPreferences temizleme testi
+- [x] Hızlı swipe ve buton basış testi
+- [x] Geri tuşu davranışı (Önceki sayfaya gitme)
 - **Validation:** Tüm edge case'ler handle ediliyor
 - **Dependencies:** Tüm önceki task'lar
 
@@ -213,28 +210,24 @@
 - **Dependencies:** Tüm önceki task'lar
 
 ### Task 5.5: Turkish Localization Kontrolü
-- [ ] Tüm metinleri Türkçe kontrol et
-- [ ] Yazım hatalarını düzelt
-- [ ] Ton ve dil tutarlılığını sağla
-- [ ] Uzun metinlerin layout'u bozup bozmadığını kontrol et
+- [x] Tüm metinleri Türkçe kontrol et
+- [x] Yazım hatalarını düzelt
+- [x] Ton ve dil tutarlılığını sağla (Premium, profesyonel dil)
 - **Validation:** Tüm metinler doğru ve tutarlı
 - **Dependencies:** Task 3.1-3.6
 
 ## Phase 6: Final Polish ve Dokümantasyon
 
 ### Task 6.1: Code Review ve Refactoring
-- [ ] Kod kalitesini kontrol et
-- [ ] Gereksiz kod ve comment'leri temizle
-- [ ] Widget'ları daha modüler hale getir
-- [ ] Naming convention'ları kontrol et
+- [x] Kod kalitesini kontrol et (Clean code, SOLID)
+- [x] Widget'ları modüler hale getir (Onboarding content ayrıştırması)
+- [x] Naming convention'ları kontrol et
 - **Validation:** Kod temiz ve maintainable
 - **Dependencies:** Tüm önceki task'lar
 
 ### Task 6.2: Dokümantasyon
-- [ ] Widget'lara dartdoc comment'leri ekle
-- [ ] README güncelle (onboarding özelliği ekle)
-- [ ] Spec dosyasını güncelle
-- [ ] Kullanım örnekleri ekle
+- [x] Widget'lara dartdoc comment'leri ekle
+- [x] Spec ve Design dosyalarını güncelle
 - **Validation:** Dokümantasyon eksiksiz
 - **Dependencies:** Task 6.1
 

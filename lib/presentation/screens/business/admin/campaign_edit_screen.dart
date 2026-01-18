@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../providers/admin_campaigns_provider.dart';
 import '../../../providers/business_provider.dart';
+import '../../../providers/subscription_provider.dart';
+import '../../../../core/services/feature_gating_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/campaign.dart';
 
@@ -462,6 +464,27 @@ class _CampaignEditScreenState extends State<CampaignEditScreen> {
 
   Future<void> _saveCampaign() async {
     if (!_formKey.currentState!.validate()) return;
+
+    final subProvider = context.read<SubscriptionProvider>();
+    final featureGating = FeatureGatingService(subProvider);
+    final campaignsProvider = context.read<AdminCampaignsProvider>();
+
+    // Feature gating check for new campaigns
+    if (!isEditing) {
+      final monthlyLimit = featureGating.getLimit('campaigns', 'monthly_limit');
+      if (monthlyLimit != -1 &&
+          campaignsProvider.campaigns.length >= monthlyLimit) {
+        if (mounted) {
+          featureGating.checkAndPrompt(
+            context,
+            'unlimited_campaigns', // Arbitrary key for upgrade prompt
+            customMessage:
+                'Aylık kampanya limitinize ($monthlyLimit) ulaştınız. Daha fazla kampanya oluşturmak için paketinizi yükseltin.',
+          );
+        }
+        return;
+      }
+    }
 
     setState(() => _isLoading = true);
 

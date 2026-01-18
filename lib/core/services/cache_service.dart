@@ -16,10 +16,12 @@ class CacheService {
   static const int featuredVenuesTTL = 300; // 5 dakika
   static const int venueDetailsTTL = 120; // 2 dakika
   static const int servicesTTL = 600; // 10 dakika
+  static const int popularServicesTTL = 300; // 5 dakika
 
   /// Cache key'leri
   static const String categoriesKey = 'venue_categories';
   static const String featuredVenuesKey = 'featured_venues';
+  static const String popularServicesKey = 'popular_services';
   static String venueDetailKey(String id) => 'venue_$id';
   static String venueServicesKey(String venueId) => 'venue_services_$venueId';
 

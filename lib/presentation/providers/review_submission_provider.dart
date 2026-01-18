@@ -1,9 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../data/repositories/venue_repository.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
+import '../../data/repositories/review_repository.dart';
 import '../../data/models/review.dart';
 
 class ReviewSubmissionProvider extends ChangeNotifier {
-  final VenueRepository _repository;
+  final ReviewRepository _repository;
 
   ReviewSubmissionProvider(this._repository);
 
@@ -13,6 +17,9 @@ class ReviewSubmissionProvider extends ChangeNotifier {
   String? _errorMessage;
   Review? _existingReview;
 
+  final ImagePicker _picker = ImagePicker();
+  List<XFile> _selectedPhotos = [];
+
   double? get rating => _rating;
   String get comment => _comment;
   bool get isLoading => _isLoading;
@@ -20,6 +27,7 @@ class ReviewSubmissionProvider extends ChangeNotifier {
   int get characterCount => _comment.length;
   Review? get existingReview => _existingReview;
   bool get isEditing => _existingReview != null;
+  List<XFile> get selectedPhotos => _selectedPhotos;
 
   void setRating(double rating) {
     _rating = rating;
@@ -33,6 +41,33 @@ class ReviewSubmissionProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> pickPhotos() async {
+    if (_selectedPhotos.length >= 2) return;
+
+    try {
+      final List<XFile> images = await _picker.pickMultiImage(
+        limit: 2 - _selectedPhotos.length,
+        imageQuality: 80,
+      );
+
+      if (images.isNotEmpty) {
+        _selectedPhotos.addAll(images);
+        if (_selectedPhotos.length > 2) {
+          _selectedPhotos = _selectedPhotos.sublist(0, 2);
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      _errorMessage = 'Fotoğraf seçilirken hata oluştu.';
+      notifyListeners();
+    }
+  }
+
+  void removePhoto(int index) {
+    _selectedPhotos.removeAt(index);
+    notifyListeners();
+  }
+
   Future<void> checkExistingReview(String venueId) async {
     _isLoading = true;
     _errorMessage = null;
@@ -43,6 +78,7 @@ class ReviewSubmissionProvider extends ChangeNotifier {
       if (_existingReview != null) {
         _rating = _existingReview!.rating;
         _comment = _existingReview!.comment ?? '';
+        // Photos usually not editable or need fetching
       } else {
         reset();
       }
@@ -73,10 +109,20 @@ class ReviewSubmissionProvider extends ChangeNotifier {
           comment: _comment.isEmpty ? null : _comment,
         );
       } else {
+        // Upload photos
+        List<String> photoPaths = [];
+        if (_selectedPhotos.isNotEmpty) {
+          final userId = Supabase.instance.client.auth.currentUser?.id;
+          if (userId != null) {
+            photoPaths = await _uploadPhotos(userId);
+          }
+        }
+
         await _repository.submitReview(
           venueId: venueId,
           rating: _rating!,
           comment: _comment.isEmpty ? null : _comment,
+          photos: photoPaths,
         );
       }
       return true;
@@ -88,6 +134,27 @@ class ReviewSubmissionProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<List<String>> _uploadPhotos(String userId) async {
+    final List<String> paths = [];
+    final supabase = Supabase.instance.client;
+
+    for (var photo in _selectedPhotos) {
+      final ext = photo.path.split('.').last;
+      final name = '${const Uuid().v4()}.$ext';
+      final path = '$userId/$name';
+
+      await supabase.storage
+          .from('review-photos')
+          .upload(
+            path,
+            File(photo.path),
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+          );
+      paths.add(path); // This is the storage path (bucket-relative)
+    }
+    return paths;
   }
 
   Future<bool> deleteReview() async {
@@ -113,6 +180,7 @@ class ReviewSubmissionProvider extends ChangeNotifier {
   void reset() {
     _rating = null;
     _comment = '';
+    _selectedPhotos = [];
     _isLoading = false;
     _errorMessage = null;
     _existingReview = null;
