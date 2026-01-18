@@ -62,14 +62,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         builder: (context, provider, _) {
           return Stack(
             children: [
-              // Background pattern or subtle gradient (optional)
+              // Background subtle geometric pattern
               Positioned.fill(
                 child: Opacity(
-                  opacity: 0.03,
-                  child: Image.asset(
-                    'assets/images/pattern.png',
-                    repeat: ImageRepeat.repeat,
-                    errorBuilder: (context, error, stackTrace) => Container(),
+                  opacity: 0.02,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                    ),
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 10,
+                          ),
+                      itemBuilder: (context, index) => Icon(
+                        Icons.brightness_1,
+                        size: 2,
+                        color: AppColors.primary.withValues(alpha: 0.5),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -100,29 +112,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 40),
                             child: Column(
                               children: [
-                                // Title and Description placeholders
-                                Text(
-                                  _getPageTitle(index),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.black,
-                                    height: 1.2,
+                                // Title and Description with smooth switcher
+                                AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Text(
+                                    _getPageTitle(index),
+                                    key: ValueKey('title_$index'),
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.black,
+                                      height: 1.2,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 16),
-                                Text(
-                                  _getPageDescription(index),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.gray600,
-                                    height: 1.5,
+                                AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Text(
+                                    _getPageDescription(index),
+                                    key: ValueKey('desc_$index'),
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: AppColors.gray600,
+                                      height: 1.5,
+                                    ),
                                   ),
                                 ),
 
-                                const SizedBox(height: 40),
+                                const SizedBox(height: 30),
 
                                 // The Phone Mockup containing the specific feature preview
                                 Expanded(

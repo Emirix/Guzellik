@@ -3,8 +3,37 @@ import 'package:lottie/lottie.dart';
 import '../../../../core/theme/app_colors.dart';
 
 /// Content for the first onboarding screen: Welcome
-class WelcomeOnboardingContent extends StatelessWidget {
+class WelcomeOnboardingContent extends StatefulWidget {
   const WelcomeOnboardingContent({super.key});
+
+  @override
+  State<WelcomeOnboardingContent> createState() =>
+      _WelcomeOnboardingContentState();
+}
+
+class _WelcomeOnboardingContentState extends State<WelcomeOnboardingContent>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+    _animation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +70,13 @@ class WelcomeOnboardingContent extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) => Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.auto_awesome_rounded,
-                          size: 100,
-                          color: AppColors.primary,
+                        ScaleTransition(
+                          scale: _animation,
+                          child: const Icon(
+                            Icons.auto_awesome_rounded,
+                            size: 100,
+                            color: AppColors.primary,
+                          ),
                         ),
                         const SizedBox(height: 20),
                         Text(
@@ -63,19 +95,22 @@ class WelcomeOnboardingContent extends StatelessWidget {
 
                 const SizedBox(height: 40),
 
-                // Subtle glowing background for the icon
-                Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        blurRadius: 40,
-                        spreadRadius: 10,
-                      ),
-                    ],
+                // Pulsing glowing background for the icon
+                ScaleTransition(
+                  scale: _animation,
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.08),
+                          blurRadius: 40,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

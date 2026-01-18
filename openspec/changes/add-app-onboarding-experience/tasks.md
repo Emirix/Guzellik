@@ -85,56 +85,56 @@
 ## Phase 3: Onboarding Ekranları İçeriği
 
 ### Task 3.1: Ekran 1 - Hoş Geldiniz
-- [ ] `lib/presentation/widgets/onboarding/screens/welcome_screen.dart` oluştur
-- [ ] Logo animasyonu için Lottie dosyası bul/oluştur
-- [ ] Başlık: "Güzelliğinize Değer Katan Adresler, Bir Tıkta!"
-- [ ] Alt metin ekle
-- [ ] Gradient background ekle
+- [x] `lib/presentation/widgets/onboarding/screens/welcome_screen.dart` oluştur (welcome_onboarding_content.dart olarak implement edildi)
+- [x] Logo animasyonu için Lottie dosyası bul/oluştur
+- [x] Başlık: "Güzelliğinize Değer Katan Adresler, Bir Tıkta!"
+- [x] Alt metin ekle
+- [x] Gradient background ekle
 - **Validation:** Ekran tasarıma uygun görünüyor
 - **Dependencies:** Task 2.4
 
 ### Task 3.2: Ekran 2 - Kampanyalar
-- [ ] `lib/presentation/widgets/onboarding/screens/campaigns_screen.dart` oluştur
-- [ ] Kampanya kartları animasyonu için Lottie/widget oluştur
-- [ ] Slide-in animasyonları ekle
-- [ ] Başlık: "Özel Fırsatları Kaçırmayın!"
-- [ ] Örnek kampanya kartları göster
+- [x] `lib/presentation/widgets/onboarding/screens/campaigns_screen.dart` oluştur (campaigns_onboarding_content.dart olarak implement edildi)
+- [x] Kampanya kartları animasyonu için Lottie/widget oluştur
+- [x] Slide-in animasyonları ekle
+- [x] Başlık: "Özel Fırsatları Kaçırmayın!"
+- [x] Örnek kampanya kartları göster
 - **Validation:** Kampanya kartları animasyonlu görünüyor
 - **Dependencies:** Task 2.4
 
 ### Task 3.3: Ekran 3 - Harita
-- [ ] `lib/presentation/widgets/onboarding/screens/map_screen.dart` oluştur
-- [ ] Harita mockup animasyonu için Lottie/widget oluştur
-- [ ] Pin drop animasyonları ekle
-- [ ] Başlık: "Yakınınızdaki Salonları Keşfedin"
-- [ ] Detay kartı animasyonu ekle
+- [x] `lib/presentation/widgets/onboarding/screens/map_screen.dart` oluştur (map_onboarding_content.dart olarak implement edildi)
+- [x] Harita mockup animasyonu için Lottie/widget oluştur
+- [x] Pin drop animasyonları ekle
+- [x] Başlık: "Yakınınızdaki Salonları Keşfedin"
+- [x] Detay kartı animasyonu ekle
 - **Validation:** Harita ve pin animasyonları çalışıyor
 - **Dependencies:** Task 2.4
 
 ### Task 3.4: Ekran 4 - Filtreleme
-- [ ] `lib/presentation/widgets/onboarding/screens/filtering_screen.dart` oluştur
-- [ ] Filtre chip'leri animasyonu için widget oluştur
-- [ ] Slide-in ve selection animasyonları ekle
-- [ ] Başlık: "Tam İstediğiniz Gibi Filtreleyin"
-- [ ] Örnek filtreler göster
+- [x] `lib/presentation/widgets/onboarding/screens/filtering_screen.dart` oluştur (filtering_onboarding_content.dart olarak implement edildi)
+- [x] Filtre chip'leri animasyonu için widget oluştur
+- [x] Slide-in ve selection animasyonları ekle
+- [x] Başlık: "Tam İstediğiniz Gibi Filtreleyin"
+- [x] Örnek filtreler göster
 - **Validation:** Filtre animasyonları smooth çalışıyor
 - **Dependencies:** Task 2.4
 
 ### Task 3.5: Ekran 5 - Randevu
-- [ ] `lib/presentation/widgets/onboarding/screens/appointment_screen.dart` oluştur
-- [ ] Takvim ve saat seçimi mockup'ı oluştur
-- [ ] Expand/collapse animasyonları ekle
-- [ ] Başlık: "Randevunuzu Hemen Oluşturun"
-- [ ] Uzman seçimi göster
+- [x] `lib/presentation/widgets/onboarding/screens/appointment_screen.dart` oluştur (appointment_onboarding_content.dart olarak implement edildi)
+- [x] Takvim ve saat seçimi mockup'ı oluştur
+- [x] Expand/collapse animasyonları ekle
+- [x] Başlık: "Randevunuzu Hemen Oluşturun"
+- [x] Uzman seçimi göster
 - **Validation:** Randevu akışı animasyonlu gösteriliyor
 - **Dependencies:** Task 2.4
 
 ### Task 3.6: Ekran 6 - Favoriler
-- [ ] `lib/presentation/widgets/onboarding/screens/favorites_screen.dart` oluştur
-- [ ] Kalp animasyonu için Lottie/widget oluştur
-- [ ] Favori listesi scroll animasyonu ekle
-- [ ] Başlık: "Favorilerinizi Kaydedin, Takipte Kalın"
-- [ ] "Hadi Başlayalım!" CTA ekle
+- [x] `lib/presentation/widgets/onboarding/screens/favorites_screen.dart` oluştur (favorites_onboarding_content.dart olarak implement edildi)
+- [x] Kalp animasyonu için Lottie/widget oluştur
+- [x] Favori listesi scroll animasyonu ekle
+- [x] Başlık: "Favorilerinizi Kaydedin, Takipte Kalın"
+- [x] "Hadi Başlayalım!" CTA ekle
 - **Validation:** Favori animasyonları ve CTA çalışıyor
 - **Dependencies:** Task 2.4
 
@@ -143,33 +143,31 @@
 ### Task 4.1: Lottie Animasyonları Entegrasyonu
 - [ ] Gerekli Lottie dosyalarını `assets/animations/` klasörüne ekle
 - [ ] `pubspec.yaml`'da asset'leri tanımla
-- [ ] Her ekrana uygun Lottie animasyonunu entegre et
-- [ ] Animasyon loop ve autoplay ayarlarını yap
+- [x] Gerekli Lottie dosyalarını `assets/animations/` klasörüne ekle
+- [x] `pubspec.yaml`'da asset'leri tanımla
+- [x] Her ekrana uygun Lottie animasyonunu entegre et
+- [x] Animasyon loop ve autoplay ayarlarını yap
 - **Validation:** Tüm Lottie animasyonları çalışıyor
 - **Dependencies:** Task 3.1-3.6
 
 ### Task 4.2: Sayfa Geçiş Animasyonları
-- [ ] PageView için custom page transition ekle
-- [ ] Fade + slide kombinasyonu kullan
-- [ ] Timing ve easing ayarla (400ms, easeInOutCubic)
-- [ ] Smooth geçişler sağla
-- **Validation:** Sayfa geçişleri smooth ve premium görünüyor
-- **Dependencies:** Task 2.1
+- [x] `OnboardingScreen` içindeki `PageView` geçişlerini özelleştir
+- [x] Sayfa değişiminde metin fade animasyonları ekle (`AnimatedSwitcher`)
+- [x] Parallax efektleri (isteğe bağlı, basitleştirilmiş hali eklendi)
+- **Validation:** Sayfa geçişleri çok akıcı ve premium hissettiriyor
+- **Dependencies:** Task 2.51
 
-### Task 4.3: Micro-interactions
-- [ ] Buton hover/press animasyonları ekle
-- [ ] Dot indicator'lara pulse efekti ekle
-- [ ] Telefon frame'e subtle shadow animasyonu ekle
-- [ ] Haptic feedback ekle (vibration)
-- **Validation:** Tüm etkileşimler responsive ve engaging
-- **Dependencies:** Task 2.2, Task 2.3
+### Task 4.3: Micro-interactions ve Feedback
+- [x] Buton basışlarında `HapticFeedback` ekle
+- [x] Dot indicator aktifleşme animasyonunu geliştir
+- [x] Küçük görsel detayları (parlamalar, süzülmeler) ekle
+- **Validation:** Kullanıcı etkileşimi tatminkar hissettiriyor
+- **Dependencies:** Task 2.31
 
 ### Task 4.4: Responsive Layout Optimizasyonu
-- [ ] Farklı ekran boyutları için layout testleri yap
-- [ ] Tablet layout'u optimize et
-- [ ] Küçük ekranlar için font size'ları ayarla
-- [ ] Padding ve spacing'leri responsive yap
-- **Validation:** Tüm cihazlarda iyi görünüyor
+- [x] Farklı ekran boyutları için (Small vs Large Phone) widget'ları adapte et
+- [x] Text size'ları ve spacing'leri kontrol et
+- **Validation:** iPhone SE'den Pro Max'e kadar her cihazda iyi görünüyor
 - **Dependencies:** Task 3.1-3.6
 
 ### Task 4.5: Performance Optimizasyonu

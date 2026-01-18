@@ -1,20 +1,21 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 /// Popüler hizmet modeli
-/// En çok aranan ve kullanılan hizmetleri temsil eder
-class PopularService {
+/// En çok sunulan ve talep gören hizmetleri temsil eder
+class PopularService extends Equatable {
   final String id;
   final String name;
-  final IconData icon;
-  final int searchCount;
+  final String? icon;
+  final String? imageUrl;
   final int venueCount;
 
-  PopularService({
+  const PopularService({
     required this.id,
     required this.name,
-    required this.icon,
-    this.searchCount = 0,
-    this.venueCount = 0,
+    this.icon,
+    this.imageUrl,
+    required this.venueCount,
   });
 
   /// JSON'dan model oluştur
@@ -22,9 +23,9 @@ class PopularService {
     return PopularService(
       id: json['id'] as String,
       name: json['name'] as String,
-      icon: _getIconFromString(json['icon'] as String?),
-      searchCount: json['search_count'] as int? ?? 0,
-      venueCount: json['venue_count'] as int? ?? 0,
+      icon: json['icon'] as String?,
+      imageUrl: json['image_url'] as String?,
+      venueCount: (json['venue_count'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -33,72 +34,29 @@ class PopularService {
     return {
       'id': id,
       'name': name,
-      'icon': _getIconString(icon),
-      'search_count': searchCount,
+      'icon': icon,
+      'image_url': imageUrl,
       'venue_count': venueCount,
     };
-  }
-
-  /// Icon string'den IconData'ya dönüştür
-  static IconData _getIconFromString(String? iconName) {
-    if (iconName == null) return Icons.spa;
-
-    switch (iconName.toLowerCase()) {
-      case 'face':
-        return Icons.face;
-      case 'spa':
-        return Icons.spa;
-      case 'cut':
-      case 'scissors':
-        return Icons.cut;
-      case 'brush':
-        return Icons.brush;
-      case 'auto_awesome':
-        return Icons.auto_awesome;
-      case 'favorite':
-        return Icons.favorite;
-      case 'star':
-        return Icons.star;
-      default:
-        return Icons.spa;
-    }
-  }
-
-  /// IconData'dan string'e dönüştür
-  static String _getIconString(IconData icon) {
-    if (icon == Icons.face) return 'face';
-    if (icon == Icons.spa) return 'spa';
-    if (icon == Icons.cut) return 'cut';
-    if (icon == Icons.brush) return 'brush';
-    if (icon == Icons.auto_awesome) return 'auto_awesome';
-    if (icon == Icons.favorite) return 'favorite';
-    if (icon == Icons.star) return 'star';
-    return 'spa';
   }
 
   /// Kopyalama metodu
   PopularService copyWith({
     String? id,
     String? name,
-    IconData? icon,
-    int? searchCount,
+    String? icon,
+    String? imageUrl,
     int? venueCount,
   }) {
     return PopularService(
       id: id ?? this.id,
       name: name ?? this.name,
       icon: icon ?? this.icon,
-      searchCount: searchCount ?? this.searchCount,
+      imageUrl: imageUrl ?? this.imageUrl,
       venueCount: venueCount ?? this.venueCount,
     );
   }
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is PopularService && other.id == id;
-  }
-
-  @override
-  int get hashCode => id.hashCode;
+  List<Object?> get props => [id, name, icon, imageUrl, venueCount];
 }

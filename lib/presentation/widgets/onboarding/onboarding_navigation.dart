@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_onboarding_provider.dart';
 import '../../../core/theme/app_colors.dart';
@@ -22,17 +23,24 @@ class OnboardingNavigation extends StatelessWidget {
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: isLast ? 200 : 70,
+          width: isLast ? 220 : 70,
           height: 70,
           child: ElevatedButton(
-            onPressed: isLast ? onComplete : onNext,
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              if (isLast) {
+                onComplete();
+              } else {
+                onNext();
+              }
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
               elevation: 8,
               shadowColor: AppColors.primary.withValues(alpha: 0.4),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(isLast ? 35 : 35),
+                borderRadius: BorderRadius.circular(35),
               ),
               padding: EdgeInsets.zero,
             ),
