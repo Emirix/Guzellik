@@ -14,6 +14,32 @@ Bu durum:
 - İlk izlenimi zayıflatıyor
 - Churn rate'i artırıyor
 
+## Why
+
+İlk kullanım deneyimi, bir uygulamanın başarısı için kritik öneme sahiptir. Araştırmalar gösteriyor ki:
+
+- **%25 kullanıcı** bir uygulamayı sadece bir kez kullandıktan sonra siliyor
+- **İlk 3 dakika** kullanıcının uygulamaya devam edip etmeyeceğini belirliyor
+- **Onboarding olan uygulamalar** %50 daha yüksek retention rate'e sahip
+
+Güzellik Haritam için onboarding özellikle önemli çünkü:
+
+1. **Değer Önerisi Net Değil:** Kullanıcılar uygulamanın sadece bir harita olduğunu düşünebilir, kampanyalar ve randevu gibi premium özellikleri kaçırabilir
+
+2. **Rekabet Avantajı:** Rakip uygulamalar genelde onboarding'e sahip, biz olmadan eksik kalıyoruz ve profesyonel görünmüyoruz
+
+3. **Özellik Kullanımı:** Filtreleme, favoriler gibi özelliklerin kullanım oranı çok düşük - onboarding ile bu özellikleri tanıtarak kullanımı artırabiliriz
+
+4. **Brand Perception:** Premium, lüks bir onboarding deneyimi, Güzellik Haritam'ın brand identity'sini güçlendirir ve kullanıcıda güven oluşturur
+
+5. **Conversion Rate:** Kampanyaları hemen göstererek kullanıcıyı engage edip, ilk randevu oluşturma oranını artırabiliriz
+
+**Beklenen İyileştirmeler:**
+- Day 1 retention: %40 → %60 (+50%)
+- Özellik keşfi: %30 → %70 (+133%)
+- İlk randevu oluşturma: %15 → %35 (+133%)
+- App Store rating: 4.2 → 4.6 (daha iyi ilk izlenim)
+
 ## Solution
 
 6 ekranlı, animasyonlu, premium bir onboarding deneyimi oluşturulacak:
