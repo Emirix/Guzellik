@@ -355,7 +355,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                   child: RepaintBoundary(
                     child: isActive
                         ? const AdBannerWidget()
-                        : const SizedBox(height: 76),
+                        : const SizedBox.shrink(),
                   ),
                 ),
 

@@ -159,7 +159,7 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
                       // Ad Banner
                       (appState.selectedBottomNavIndex == 1 && _isRouteActive)
                           ? const AdBannerWidget()
-                          : const SizedBox(height: 76),
+                          : const SizedBox.shrink(),
 
                       // Content area
                       Expanded(
