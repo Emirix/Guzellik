@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/review_provider.dart';
-import '../../../../data/models/review.dart';
+import 'package:guzellik_app/data/models/review.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/models/review.dart';
+import 'package:guzellik_app/data/models/review.dart';
 import '../../data/repositories/review_repository.dart';
 
 class BusinessReviewProvider extends ChangeNotifier {

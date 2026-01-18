@@ -74,10 +74,11 @@ class StorageService {
   }
 
   /// Upload venue image
-  Future<String> uploadVenueImage(File imageFile, String venueId) async {
+  /// [path] can be venueId or venueId/subfolder (e.g., 'venue123/cover')
+  Future<String> uploadVenueImage(File imageFile, String path) async {
     return uploadImage(
       bucket: 'venue-images',
-      path: venueId,
+      path: path,
       imageFile: imageFile,
     );
   }

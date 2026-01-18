@@ -676,9 +676,9 @@ class DiscoveryProvider extends ChangeNotifier {
   }
 
   void toggleViewMode() {
-    // Toggle between map and list only (never go back to home)
+    // Toggle between map and home (user prefers home over legacy list view)
     if (_viewMode == DiscoveryViewMode.map) {
-      _viewMode = DiscoveryViewMode.list;
+      _viewMode = DiscoveryViewMode.home;
     } else {
       _viewMode = DiscoveryViewMode.map;
     }

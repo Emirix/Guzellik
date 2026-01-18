@@ -2,12 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
 import '../../data/repositories/review_repository.dart';
 import '../../data/models/review.dart';
+import '../../data/services/storage_service.dart';
 
 class ReviewSubmissionProvider extends ChangeNotifier {
   final ReviewRepository _repository;
+  final StorageService _storageService = StorageService();
 
   ReviewSubmissionProvider(this._repository);
 
@@ -127,8 +128,8 @@ class ReviewSubmissionProvider extends ChangeNotifier {
       }
       return true;
     } catch (e) {
-      _errorMessage =
-          'Değerlendirme gönderilirken bir hata oluştu. Lütfen tekrar deneyin.';
+      _errorMessage = 'Değerlendirme gönderilirken bir hata oluştu: $e';
+      print('Review submit error: $e');
       return false;
     } finally {
       _isLoading = false;
@@ -138,21 +139,19 @@ class ReviewSubmissionProvider extends ChangeNotifier {
 
   Future<List<String>> _uploadPhotos(String userId) async {
     final List<String> paths = [];
-    final supabase = Supabase.instance.client;
 
     for (var photo in _selectedPhotos) {
-      final ext = photo.path.split('.').last;
-      final name = '${const Uuid().v4()}.$ext';
-      final path = '$userId/$name';
-
-      await supabase.storage
-          .from('review-photos')
-          .upload(
-            path,
-            File(photo.path),
-            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-          );
-      paths.add(path); // This is the storage path (bucket-relative)
+      try {
+        final url = await _storageService.uploadImage(
+          bucket: 'review-photos',
+          path: userId,
+          imageFile: File(photo.path),
+        );
+        paths.add(url); // This is the full URL from FTP
+      } catch (e) {
+        print('Error uploading photo to FTP: $e');
+        // If one photo fails, we might still want to proceed with the review
+      }
     }
     return paths;
   }
