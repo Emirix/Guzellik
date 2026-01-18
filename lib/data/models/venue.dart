@@ -102,14 +102,21 @@ class Venue {
       final heroImagesJson = json['hero_images'];
       if (heroImagesJson is List) {
         heroImagesList = heroImagesJson
-            .map((e) => ImageUtils.normalizeUrl(e.toString())!)
+            .map((e) => ImageUtils.normalizeUrl(e.toString()))
+            .where((url) => url != null && url.isNotEmpty)
+            .cast<String>()
             .toList();
       }
     }
 
     // Fallback: if hero_images is empty but image_url exists, use it
     if (heroImagesList.isEmpty && json['image_url'] != null) {
-      heroImagesList = [ImageUtils.normalizeUrl(json['image_url'] as String)!];
+      final normalizedUrl = ImageUtils.normalizeUrl(
+        json['image_url'] as String,
+      );
+      if (normalizedUrl != null && normalizedUrl.isNotEmpty) {
+        heroImagesList = [normalizedUrl];
+      }
     }
 
     // Parse gallery photos if provided

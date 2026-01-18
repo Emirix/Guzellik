@@ -425,6 +425,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildNoResultsState() {
+    final provider = context.read<SearchProvider>();
+    final isCategorySelected = provider.isCategorySelected;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -445,9 +448,11 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Aradığını bulamadın mı?',
-              style: TextStyle(
+            Text(
+              isCategorySelected
+                  ? 'Bu kategoride mekan bulunamadı'
+                  : 'Aradığını bulamadın mı?',
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppColors.gray900,
@@ -455,11 +460,32 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Arama kriterlerini genişleterek veya harita üzerinden yakındaki diğer mekanları inceleyebilirsin.',
+              isCategorySelected
+                  ? 'Bu kategoride henüz kayıtlı mekan bulunmuyor. Başka bir kategori seçebilir veya harita üzerinden yakındaki mekanları inceleyebilirsin.'
+                  : 'Arama kriterlerini genişleterek veya harita üzerinden yakındaki diğer mekanları inceleyebilirsin.',
               style: TextStyle(fontSize: 14, color: AppColors.gray500),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
+            if (isCategorySelected)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    provider.clearFilters();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Başka Kategori Seç'),
+                ),
+              ),
+            if (isCategorySelected) const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -471,7 +497,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   context.read<AppStateProvider>().setBottomNavIndex(0);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gray900,
+                  backgroundColor: isCategorySelected
+                      ? AppColors.gray900
+                      : AppColors.gray900,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(

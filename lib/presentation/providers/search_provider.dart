@@ -245,6 +245,11 @@ class SearchProvider extends ChangeNotifier {
 
   /// Sadece kategoriye göre arama yapar
   Future<void> searchByCategory({bool showLoading = true}) async {
+    debugPrint('🔍 searchByCategory called with:');
+    debugPrint('  - categoryId: ${_filter.venueCategoryId}');
+    debugPrint('  - venueTypes: ${_filter.venueTypes}');
+    debugPrint('  - showLoading: $showLoading');
+
     if (showLoading) {
       _isLoading = true;
       _errorMessage = null;
@@ -274,6 +279,8 @@ class SearchProvider extends ChangeNotifier {
         limit: _pageSize,
         offset: _offset,
       );
+
+      debugPrint('✅ searchVenues returned ${results.length} results');
 
       // Map distances locally if needed
       if (_userLatitude != null && _userLongitude != null) {

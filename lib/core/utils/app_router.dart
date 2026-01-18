@@ -12,6 +12,7 @@ import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/auth/password_reset_screen.dart';
 import '../../presentation/screens/auth/complete_profile_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
+import '../../presentation/screens/onboarding_screen.dart';
 import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../presentation/screens/location_onboarding_screen.dart';
 import '../../presentation/screens/business/subscription_screen.dart';
@@ -46,6 +47,13 @@ class AppRouter {
         path: '/splash',
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+
+      // Onboarding Screen
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
 
       // Auth Routes

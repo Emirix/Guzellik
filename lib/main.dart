@@ -36,6 +36,8 @@ import 'presentation/providers/admin_location_provider.dart';
 import 'presentation/providers/admin_cover_photo_provider.dart';
 import 'presentation/providers/credit_provider.dart';
 import 'presentation/providers/business_onboarding_provider.dart';
+import 'presentation/providers/app_onboarding_provider.dart';
+import 'data/services/onboarding_preferences.dart';
 import 'data/repositories/business_repository.dart';
 import 'data/repositories/venue_category_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -120,6 +122,7 @@ class GuzellikApp extends StatelessWidget {
         Provider(create: (_) => LocationService()),
         Provider(create: (_) => LocationPreferences()),
         Provider(create: (_) => LocationRepository()),
+        Provider(create: (_) => OnboardingPreferences()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AppStateProvider()),
         ChangeNotifierProvider(create: (_) => DiscoveryProvider()),
@@ -159,6 +162,10 @@ class GuzellikApp extends StatelessWidget {
             BusinessRepository(),
             VenueCategoryRepository(Supabase.instance.client),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              AppOnboardingProvider(context.read<OnboardingPreferences>()),
         ),
       ],
       child: Consumer<AppStateProvider>(

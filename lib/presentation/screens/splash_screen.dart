@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../data/services/onboarding_preferences.dart';
 
 /// Splash screen shown on app launch
 class SplashScreen extends StatefulWidget {
@@ -43,9 +44,19 @@ class _SplashScreenState extends State<SplashScreen>
     // Wait for initialization (slightly longer than animation to feel smooth)
     await Future.delayed(const Duration(milliseconds: 2500));
 
-    // Navigate to home (or login if not authenticated)
+    // Check if user has seen onboarding
+    final onboardingPrefs = OnboardingPreferences();
+    final hasSeenOnboarding = await onboardingPrefs.hasSeenOnboarding();
+
+    // Navigate based on onboarding status
     if (mounted) {
-      context.go('/');
+      if (hasSeenOnboarding) {
+        // User has seen onboarding, go to home
+        context.go('/');
+      } else {
+        // First time user, show onboarding
+        context.go('/onboarding');
+      }
     }
   }
 
@@ -145,7 +156,9 @@ class _SplashScreenState extends State<SplashScreen>
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        border: Border.all(color: goldColor.withValues(alpha: 0.05)),
+                        border: Border.all(
+                          color: goldColor.withValues(alpha: 0.05),
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: goldColor.withValues(alpha: 0.1),
