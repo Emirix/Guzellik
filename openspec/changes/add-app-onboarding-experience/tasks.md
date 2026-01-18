@@ -3,41 +3,41 @@
 ## Phase 1: Temel Yapı ve Altyapı
 
 ### Task 1.1: Dependencies Ekleme
-- [ ] `pubspec.yaml`'a `lottie` paketi ekle (^3.0.0)
-- [ ] `pubspec.yaml`'a `shared_preferences` paketi ekle (^2.2.0)
-- [ ] `flutter pub get` çalıştır
+- [x] `pubspec.yaml`'a `lottie` paketi ekle (^3.0.0)
+- [x] `pubspec.yaml`'a `shared_preferences` paketi ekle (^2.2.0)
+- [x] `flutter pub get` çalıştır
 - **Validation:** Paketler başarıyla yüklendi ve import edilebiliyor
 - **Dependencies:** Yok
 
 ### Task 1.2: Onboarding Preferences Service Oluşturma
-- [ ] `lib/data/services/onboarding_preferences.dart` oluştur
-- [ ] `hasSeenOnboarding` getter/setter metodları ekle
-- [ ] `markOnboardingComplete()` metodu ekle
-- [ ] `resetOnboarding()` metodu ekle (debug için)
+- [x] `lib/data/services/onboarding_preferences.dart` oluştur
+- [x] `hasSeenOnboarding` getter/setter metodları ekle
+- [x] `markOnboardingComplete()` metodu ekle
+- [x] `resetOnboarding()` metodu ekle (debug için)
 - **Validation:** Service test edildi, SharedPreferences'a yazıyor/okuyor
 - **Dependencies:** Task 1.1
 
 ### Task 1.3: Onboarding Provider Oluşturma
-- [ ] `lib/presentation/providers/app_onboarding_provider.dart` oluştur
-- [ ] `ChangeNotifier` extend et
-- [ ] `currentPage` state'i ekle
-- [ ] `nextPage()`, `previousPage()`, `skipToEnd()` metodları ekle
-- [ ] `completeOnboarding()` metodu ekle (preferences'a kaydet)
+- [x] `lib/presentation/providers/app_onboarding_provider.dart` oluştur
+- [x] `ChangeNotifier` extend et
+- [x] `currentPage` state'i ekle
+- [x] `nextPage()`, `previousPage()`, `skipToEnd()` metodları ekle
+- [x] `completeOnboarding()` metodu ekle (preferences'a kaydet)
 - **Validation:** Provider state yönetimi çalışıyor
 - **Dependencies:** Task 1.2
 
 ### Task 1.4: Router Güncelleme
-- [ ] `lib/core/utils/app_router.dart`'a `/onboarding` route'u ekle
-- [ ] Splash screen'den onboarding'e yönlendirme logiği ekle
-- [ ] Onboarding tamamlandıktan sonra home'a yönlendirme ekle
+- [x] `lib/core/utils/app_router.dart`'a `/onboarding` route'u ekle
+- [x] Splash screen'den onboarding'e yönlendirme logiği ekle
+- [x] Onboarding tamamlandıktan sonra home'a yönlendirme ekle
 - **Validation:** Route'lar çalışıyor, navigasyon akışı doğru
 - **Dependencies:** Task 1.3
 
 ### Task 1.5: Splash Screen Güncelleme
-- [ ] `splash_screen.dart`'da onboarding kontrolü ekle
-- [ ] `OnboardingPreferences` ile kontrol et
-- [ ] Eğer görülmediyse `/onboarding`'e yönlendir
-- [ ] Eğer görüldüyse `/` (home)'a yönlendir
+- [x] `splash_screen.dart`'da onboarding kontrolü ekle
+- [x] `OnboardingPreferences` ile kontrol et
+- [x] Eğer görülmediyse `/onboarding`'e yönlendir
+- [x] Eğer görüldüyse `/` (home)'a yönlendir
 - **Validation:** İlk açılışta onboarding, sonraki açılışlarda home gösteriliyor
 - **Dependencies:** Task 1.2, Task 1.4
 
