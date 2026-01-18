@@ -5,6 +5,12 @@ import '../providers/app_onboarding_provider.dart';
 import '../widgets/onboarding/phone_mockup_frame.dart';
 import '../widgets/onboarding/page_indicators.dart';
 import '../widgets/onboarding/onboarding_navigation.dart';
+import '../widgets/onboarding/screens/welcome_onboarding_content.dart';
+import '../widgets/onboarding/screens/campaigns_onboarding_content.dart';
+import '../widgets/onboarding/screens/map_onboarding_content.dart';
+import '../widgets/onboarding/screens/filtering_onboarding_content.dart';
+import '../widgets/onboarding/screens/appointment_onboarding_content.dart';
+import '../widgets/onboarding/screens/favorites_onboarding_content.dart';
 import '../../core/theme/app_colors.dart';
 
 /// Premium onboarding screen with PhoneMockupFrame and sleek layouts
@@ -175,38 +181,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _getPagePreview(int index) {
-    // These will be replaced with rich Lottie animations or specialized Mockup components in Phase 3
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            _getPageIcon(index),
-            size: 100,
-            color: AppColors.primary.withValues(alpha: 0.1),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Preview ${index + 1}',
-            style: TextStyle(
-              color: AppColors.gray400,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  IconData _getPageIcon(int index) {
-    const icons = [
-      Icons.auto_awesome_rounded,
-      Icons.local_offer_rounded,
-      Icons.map_rounded,
-      Icons.tune_rounded,
-      Icons.event_available_rounded,
-      Icons.favorite_rounded,
-    ];
-    return icons[index];
+    switch (index) {
+      case 0:
+        return const WelcomeOnboardingContent();
+      case 1:
+        return const CampaignsOnboardingContent();
+      case 2:
+        return const MapOnboardingContent();
+      case 3:
+        return const FilteringOnboardingContent();
+      case 4:
+        return const AppointmentOnboardingContent();
+      case 5:
+        return const FavoritesOnboardingContent();
+      default:
+        return const WelcomeOnboardingContent();
+    }
   }
 }

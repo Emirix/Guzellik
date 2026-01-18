@@ -44,41 +44,41 @@
 ## Phase 2: Onboarding Screen ve Temel Widget'lar
 
 ### Task 2.1: Onboarding Screen Oluşturma
-- [ ] `lib/presentation/screens/onboarding_screen.dart` oluştur
-- [ ] `PageView.builder` ile sayfa yapısı kur
-- [ ] Provider entegrasyonu ekle
-- [ ] Scaffold ve temel layout oluştur
+- [x] `lib/presentation/screens/onboarding_screen.dart` oluştur
+- [x] `PageView.builder` ile sayfa yapısı kur
+- [x] Provider entegrasyonu ekle
+- [x] Scaffold ve temel layout oluştur
 - **Validation:** Boş onboarding screen görüntüleniyor
 - **Dependencies:** Task 1.3, Task 1.4
 
 ### Task 2.2: Sayfa Göstergeleri (Page Indicators) Widget'ı
-- [ ] `lib/presentation/widgets/onboarding/page_indicators.dart` oluştur
-- [ ] Dot indicator'ları oluştur
-- [ ] Active/inactive state'leri ekle
-- [ ] Animasyonlu geçişler ekle
+- [x] `lib/presentation/widgets/onboarding/page_indicators.dart` oluştur
+- [x] Dot indicator'ları oluştur
+- [x] Active/inactive state'leri ekle
+- [x] Animasyonlu geçişler ekle
 - **Validation:** Indicator'lar sayfa değişiminde güncelleniyor
 - **Dependencies:** Task 2.1
 
 ### Task 2.3: Navigasyon Butonları Widget'ı
-- [ ] `lib/presentation/widgets/onboarding/onboarding_navigation.dart` oluştur
-- [ ] "İleri" butonu oluştur
-- [ ] Son sayfada "Hadi Başlayalım!" butonu göster
-- [ ] Buton animasyonları ekle (scale, fade)
+- [x] `lib/presentation/widgets/onboarding/onboarding_navigation.dart` oluştur
+- [x] "İleri" butonu oluştur
+- [x] Son sayfada "Hadi Başlayalım!" butonu göster
+- [x] Buton animasyonları ekle (scale, fade)
 - **Validation:** Butonlar çalışıyor, son sayfada farklı buton gösteriliyor
 - **Dependencies:** Task 2.1
 
 ### Task 2.4: Telefon Mockup Frame Widget'ı
-- [ ] `lib/presentation/widgets/onboarding/phone_mockup_frame.dart` oluştur
-- [ ] Modern telefon frame tasarımı (rounded corners, notch)
-- [ ] Shadow ve depth efektleri ekle
-- [ ] Responsive boyutlandırma
+- [x] `lib/presentation/widgets/onboarding/phone_mockup_frame.dart` oluştur
+- [x] Modern telefon frame tasarımı (rounded corners, notch)
+- [x] Shadow ve depth efektleri ekle
+- [x] Responsive boyutlandırma
 - **Validation:** Telefon frame farklı ekran boyutlarında iyi görünüyor
 - **Dependencies:** Yok
 
 ### Task 2.5: Swipe Gesture Desteği
-- [ ] `PageView`'a swipe gesture ekle
-- [ ] Swipe animasyonlarını smooth yap
-- [ ] Sayfa değişiminde provider'ı güncelle
+- [x] `PageView`'a swipe gesture ekle
+- [x] Swipe animasyonlarını smooth yap
+- [x] Sayfa değişiminde provider'ı güncelle
 - **Validation:** Swipe ile sayfa geçişi çalışıyor
 - **Dependencies:** Task 2.1
 
