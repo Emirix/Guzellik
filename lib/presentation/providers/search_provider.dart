@@ -293,9 +293,13 @@ class SearchProvider extends ChangeNotifier {
       _hasSearched = true;
       _hasMore = results.length >= _pageSize;
       _offset = results.length;
-    } catch (e) {
+    } catch (e, stackTrace) {
       _errorMessage = 'Kategori araması sırasında bir hata oluştu';
       debugPrint('Category search error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      debugPrint(
+        'Filter details: categoryId=${_filter.venueCategoryId}, venueTypes=${_filter.venueTypes}',
+      );
     } finally {
       _isLoading = false;
       notifyListeners();
