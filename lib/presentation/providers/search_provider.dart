@@ -208,6 +208,7 @@ class SearchProvider extends ChangeNotifier {
   Future<void> search({bool showLoading = true}) async {
     if (_searchQuery.isEmpty) return;
 
+    _debounceTimer?.cancel();
     if (showLoading) {
       _isLoading = true;
       _errorMessage = null;

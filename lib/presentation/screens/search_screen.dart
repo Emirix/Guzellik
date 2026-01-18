@@ -130,6 +130,9 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
               onChanged: (value) {
                 context.read<SearchProvider>().setSearchQuery(value);
               },
+              onSubmitted: (value) {
+                context.read<SearchProvider>().search();
+              },
               onClear: () {
                 _searchController.clear();
                 context.read<SearchProvider>().clearSearch();
@@ -160,7 +163,10 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
 
                       // Content area
                       Expanded(
-                        child: provider.isCategorySelected
+                        child:
+                            (provider.isCategorySelected ||
+                                provider.searchQuery.isNotEmpty ||
+                                provider.hasSearched)
                             ? _buildSearchContent(provider)
                             : const SearchInitialView(),
                       ),

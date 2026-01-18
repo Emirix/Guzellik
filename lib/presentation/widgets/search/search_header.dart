@@ -12,6 +12,7 @@ class SearchHeader extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onSubmitted;
   final VoidCallback onClear;
 
   const SearchHeader({
@@ -19,6 +20,7 @@ class SearchHeader extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.onChanged,
+    this.onSubmitted,
     required this.onClear,
   });
 
@@ -109,6 +111,8 @@ class SearchHeader extends StatelessWidget {
                               controller: controller,
                               focusNode: focusNode,
                               onChanged: onChanged,
+                              onSubmitted: onSubmitted,
+                              textInputAction: TextInputAction.search,
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
