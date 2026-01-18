@@ -16,8 +16,12 @@ class AdService {
   RewardedAd? _rewardedAd;
   bool _isRewardedAdReady = false;
 
-  /// Web platform kontrolü - AdMob web'de çalışmaz
-  bool get isSupported => !kIsWeb;
+  /// Reklamların gösterilip gösterilmeyeceğini belirleyen global kontrol
+  /// Şimdilik tüm reklamları kaldırmak için false yapıldı
+  final bool _adsEnabled = false;
+
+  /// Web platform kontrolü ve reklam etkinliği kontrolü
+  bool get isSupported => !kIsWeb && _adsEnabled;
 
   /// Interstitial reklam hazır mı?
   bool get isInterstitialReady =>
