@@ -111,4 +111,36 @@ class Review {
     if (currentUserId == null) return false;
     return userId == currentUserId;
   }
+
+  Review copyWith({
+    String? id,
+    String? venueId,
+    String? userId,
+    double? rating,
+    String? comment,
+    DateTime? createdAt,
+    ReviewStatus? status,
+    String? businessReply,
+    DateTime? replyAt,
+    int? helpfulCount,
+    List<String>? photos,
+    String? userFullName,
+    String? userAvatarUrl,
+  }) {
+    return Review(
+      id: id ?? this.id,
+      venueId: venueId ?? this.venueId,
+      userId: userId ?? this.userId,
+      rating: rating ?? this.rating,
+      comment: comment ?? this.comment,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+      businessReply: businessReply ?? this.businessReply,
+      replyAt: replyAt ?? this.replyAt,
+      helpfulCount: helpfulCount ?? this.helpfulCount,
+      photos: photos ?? this.photos,
+      userFullName: userFullName ?? this.userFullName,
+      userAvatarUrl: userAvatarUrl ?? this.userAvatarUrl,
+    );
+  }
 }

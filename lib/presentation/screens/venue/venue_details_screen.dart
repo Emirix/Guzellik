@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/venue_details_provider.dart';
+import '../../../core/utils/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../widgets/venue/v2/venue_hero_v2.dart';
 import '../../widgets/venue/v2/venue_overview_v2.dart';
@@ -34,8 +35,9 @@ class VenueDetailsScreen extends StatefulWidget {
 }
 
 class _VenueDetailsScreenState extends State<VenueDetailsScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, RouteAware {
   late TabController _tabController;
+  bool _isRouteActive = true;
 
   @override
   void initState() {
@@ -51,7 +53,37 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is ModalRoute<void>) {
+      AppRouter.routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPushNext() {
+    // Route was pushed onto navigator and is now covering this route.
+    if (mounted) {
+      setState(() {
+        _isRouteActive = false;
+      });
+    }
+  }
+
+  @override
+  void didPopNext() {
+    // Covering route was popped off the navigator.
+    if (mounted) {
+      setState(() {
+        _isRouteActive = true;
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    AppRouter.routeObserver.unsubscribe(this);
     _tabController.dispose();
     super.dispose();
   }
@@ -223,7 +255,7 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const AdBannerWidget(),
+          _isRouteActive ? const AdBannerWidget() : const SizedBox(height: 0),
           if (widget.bottomNavigationBar != null)
             widget.bottomNavigationBar!
           else if (!widget.hideDefaultBottomBar)

@@ -45,15 +45,22 @@ class BusinessReviewProvider extends ChangeNotifier {
   Future<void> approveReview(String reviewId, String? replyText) async {
     try {
       await _repository.approveReview(reviewId: reviewId, replyText: replyText);
-      // Remove from pending
-      _pendingReviews.removeWhere((r) => r.id == reviewId);
 
-      // Ideally we fetch the updated one or construct it, but simpler to just refresh or move
-      // Since 'approved' list might be paginated, just removing from pending is key.
+      // Find the review to move it to approved list
+      final index = _pendingReviews.indexWhere((r) => r.id == reviewId);
+      if (index != -1) {
+        final review = _pendingReviews[index];
+        _pendingReviews.removeAt(index);
+
+        // Add to approved if it exists in local state
+        _approvedReviews.insert(0, review);
+      }
+
       notifyListeners();
     } catch (e) {
       print('Error approving: $e');
-      // Show error
+      _errorMessage = 'Yorum onaylanırken bir hata oluştu.';
+      notifyListeners();
     }
   }
 }

@@ -69,23 +69,17 @@ class ReviewProvider extends ChangeNotifier {
 
   /// Toggle helpful status of a review
   Future<void> toggleHelpful(String reviewId) async {
-    // Optimistic update logic could be added here
-    // For now, we just call the API
     try {
-      await _repository.toggleHelpful(reviewId);
+      final newCount = await _repository.toggleHelpful(reviewId);
 
-      // Update local state (increment/decrement)
+      // Update local state
       final index = _reviews.indexWhere((r) => r.id == reviewId);
       if (index != -1) {
-        // Since we don't know if we are adding or removing without tracking "isLiked",
-        // we might strictly need to re-fetch or return the new count from RPC.
-        // For simple UX, let's assume we can't easily optimistic update count without state.
-        // But we can guess if we tracked it. The current model doesn't track "isHelpful".
-        // Let's rely on re-fetching or ignores for now, or update model to include "isHelpful".
+        _reviews[index] = _reviews[index].copyWith(helpfulCount: newCount);
+        notifyListeners();
       }
     } catch (e) {
       print('Error toggling helpful: $e');
-      // Show snackbar?
     }
   }
 }

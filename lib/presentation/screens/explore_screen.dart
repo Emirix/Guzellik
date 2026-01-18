@@ -11,6 +11,7 @@ import '../widgets/discovery/category_icons.dart';
 import '../widgets/discovery/nearby_venues.dart';
 import '../widgets/discovery/campaign_slider.dart';
 import '../widgets/common/ad_banner_widget.dart';
+import '../../core/utils/app_router.dart';
 import '../../core/theme/app_colors.dart';
 
 class ExploreScreen extends StatefulWidget {
@@ -21,10 +22,11 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, RouteAware {
   @override
   bool get wantKeepAlive => true;
   final ScrollController _scrollController = ScrollController();
+  bool _isRouteActive = true;
 
   @override
   void initState() {
@@ -34,6 +36,35 @@ class _ExploreScreenState extends State<ExploreScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkLocationError();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is ModalRoute<void>) {
+      AppRouter.routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPushNext() {
+    // Route was pushed onto navigator and is now covering this route.
+    if (mounted) {
+      setState(() {
+        _isRouteActive = false;
+      });
+    }
+  }
+
+  @override
+  void didPopNext() {
+    // Covering route was popped off the navigator.
+    if (mounted) {
+      setState(() {
+        _isRouteActive = true;
+      });
+    }
   }
 
   void _onScroll() {
@@ -48,6 +79,7 @@ class _ExploreScreenState extends State<ExploreScreen>
 
   @override
   void dispose() {
+    AppRouter.routeObserver.unsubscribe(this);
     _scrollController.dispose();
     super.dispose();
   }
@@ -81,8 +113,8 @@ class _ExploreScreenState extends State<ExploreScreen>
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
 
-    return Consumer<DiscoveryProvider>(
-      builder: (context, provider, child) {
+    return Consumer2<DiscoveryProvider, AppStateProvider>(
+      builder: (context, provider, appState, child) {
         // Check for location errors when provider updates
         if (provider.hasLocationError) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -91,9 +123,12 @@ class _ExploreScreenState extends State<ExploreScreen>
           });
         }
 
+        final bool isActive =
+            appState.selectedBottomNavIndex == 0 && _isRouteActive;
+
         // Show home view
         if (provider.viewMode == DiscoveryViewMode.home) {
-          return _buildHomeView(context, provider);
+          return _buildHomeView(context, provider, isActive);
         }
 
         // Show map or list view
@@ -104,7 +139,10 @@ class _ExploreScreenState extends State<ExploreScreen>
               child: RepaintBoundary(
                 child: provider.viewMode == DiscoveryViewMode.map
                     // Wrap GoogleMap in another RepaintBoundary to isolate PlatformView redraws
-                    ? const RepaintBoundary(child: DiscoveryMapView())
+                    // Only render Map if active to prevent background GPU usage
+                    ? (isActive
+                          ? const RepaintBoundary(child: DiscoveryMapView())
+                          : const SizedBox.shrink())
                     : const VenueListView(),
               ),
             ),
@@ -259,7 +297,11 @@ class _ExploreScreenState extends State<ExploreScreen>
     return content;
   }
 
-  Widget _buildHomeView(BuildContext context, DiscoveryProvider provider) {
+  Widget _buildHomeView(
+    BuildContext context,
+    DiscoveryProvider provider,
+    bool isActive,
+  ) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -309,8 +351,12 @@ class _ExploreScreenState extends State<ExploreScreen>
                 ),
 
                 // Ad Banner - wrapped in RepaintBoundary
-                const SliverToBoxAdapter(
-                  child: RepaintBoundary(child: AdBannerWidget()),
+                SliverToBoxAdapter(
+                  child: RepaintBoundary(
+                    child: isActive
+                        ? const AdBannerWidget()
+                        : const SizedBox(height: 76),
+                  ),
                 ),
 
                 // Nearby Venues - wrapped in RepaintBoundary

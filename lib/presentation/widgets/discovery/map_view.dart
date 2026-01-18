@@ -168,6 +168,9 @@ class _DiscoveryMapViewState extends State<DiscoveryMapView>
                 compassEnabled: false,
                 tiltGesturesEnabled: true,
                 rotateGesturesEnabled: true,
+                onCameraMove: (position) {
+                  provider.saveMapCameraPosition(position);
+                },
               ),
             ),
 
@@ -248,6 +251,16 @@ class _DiscoveryMapViewState extends State<DiscoveryMapView>
   void _initializeCamera(DiscoveryProvider provider) {
     if (_cameraInitialized || _mapController == null) return;
 
+    // 1. Restore saved position if available
+    if (provider.mapCameraPosition != null) {
+      _mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(provider.mapCameraPosition!),
+      );
+      _cameraInitialized = true;
+      return;
+    }
+
+    // 2. Or set to current location/first venue
     LatLng? target;
     if (provider.currentPosition != null) {
       target = LatLng(

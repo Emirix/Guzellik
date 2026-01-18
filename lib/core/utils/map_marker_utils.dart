@@ -13,30 +13,31 @@ class MapMarkerUtils {
     final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
 
-    // Size for the marker
-    const double width = 120.0;
-    const double height = 150.0;
+    // Size for the marker (Even smaller for standard map feel)
+    const double width = 48.0;
+    const double height = 60.0;
 
-    final center = Offset(width / 2, width / 2);
+    // Center of the top circle part
+    final center = Offset(width / 2, width * 0.45);
     final double radius = width * 0.4;
 
-    // Pin Color (Google uses specific colors for categories, beauty/health is usually magenta/pink)
+    // Pin Color
     final Color pinColor = isActive
         ? const Color(0xFFC2185B)
         : AppColors.primary;
 
     // 1. Draw Shadow
     final Paint shadowPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.2)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+      ..color = Colors.black.withValues(alpha: 0.12)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5);
 
     final Path shadowPath = Path();
-    shadowPath.moveTo(width / 2, height - 10);
+    shadowPath.moveTo(width / 2, height - 4);
     shadowPath.conicTo(
-      width / 2 + 25,
-      height - 40,
+      width / 2 + (width * 0.18),
+      height - (height * 0.22),
       width / 2 + radius,
-      width / 2,
+      center.dy,
       1,
     );
     shadowPath.arcTo(
@@ -45,8 +46,14 @@ class MapMarkerUtils {
       -3.14159,
       false,
     );
-    shadowPath.conicTo(width / 2 - 25, height - 40, width / 2, height - 10, 1);
-    canvas.drawPath(shadowPath.shift(const Offset(0, 4)), shadowPaint);
+    shadowPath.conicTo(
+      width / 2 - (width * 0.18),
+      height - (height * 0.22),
+      width / 2,
+      height - 4,
+      1,
+    );
+    canvas.drawPath(shadowPath.shift(const Offset(0, 1.5)), shadowPaint);
 
     // 2. Draw Teardrop Pin Shape
     final Paint pinPaint = Paint()
@@ -54,37 +61,44 @@ class MapMarkerUtils {
       ..style = PaintingStyle.fill;
 
     final Path pinPath = Path();
-    pinPath.moveTo(width / 2, height - 10);
-    // Right side of the pin
+    pinPath.moveTo(width / 2, height - 4);
+    // Right side
     pinPath.conicTo(
-      width / 2 + 25,
-      height - 40,
+      width / 2 + (width * 0.18),
+      height - (height * 0.22),
       width / 2 + radius,
-      width / 2,
+      center.dy,
       1,
     );
-    // Top circle part
+    // Top circle
     pinPath.arcTo(
       Rect.fromCircle(center: center, radius: radius),
       0,
       -3.14159,
       false,
     );
-    // Left side of the pin
-    pinPath.conicTo(width / 2 - 25, height - 40, width / 2, height - 10, 1);
+    // Left side
+    pinPath.conicTo(
+      width / 2 - (width * 0.18),
+      height - (height * 0.22),
+      width / 2,
+      height - 4,
+      1,
+    );
     canvas.drawPath(pinPath, pinPaint);
 
-    // 3. Draw a small dot at the bottom tip (optional, Google sometimes has it)
-    final Paint tipPaint = Paint()..color = Colors.black.withValues(alpha: 0.1);
-    canvas.drawCircle(Offset(width / 2, height - 10), 4, tipPaint);
+    // 3. Draw a small dot at the bottom tip
+    final Paint tipPaint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.12);
+    canvas.drawCircle(Offset(width / 2, height - 4), 1.5, tipPaint);
 
-    // 4. Draw White Circle for Icon
+    // 4. Draw White Circle for Icon/Label
     final Paint circlePaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, radius * 0.7, circlePaint);
 
-    // 5. Draw Category Icon in the middle of the white circle
+    // 5. Draw Category Icon OR Label (Rating)
     if (categoryIcon != null) {
       final TextPainter iconPainter = TextPainter(
         textDirection: TextDirection.ltr,
@@ -93,10 +107,10 @@ class MapMarkerUtils {
       iconPainter.text = TextSpan(
         text: String.fromCharCode(categoryIcon.codePoint),
         style: TextStyle(
-          fontSize: radius * 0.9, // Size based on the circle
+          fontSize: radius * 1.0,
           fontFamily: categoryIcon.fontFamily,
           package: categoryIcon.fontPackage,
-          color: pinColor, // Icon color matches pin color
+          color: pinColor,
         ),
       );
 
@@ -106,6 +120,29 @@ class MapMarkerUtils {
         Offset(
           center.dx - iconPainter.width / 2,
           center.dy - iconPainter.height / 2,
+        ),
+      );
+    } else if (label.isNotEmpty) {
+      // Draw rating text if icon is null
+      final TextPainter textPainter = TextPainter(
+        textDirection: TextDirection.ltr,
+      );
+
+      textPainter.text = TextSpan(
+        text: label,
+        style: TextStyle(
+          fontSize: radius * 0.6,
+          fontWeight: FontWeight.bold,
+          color: pinColor,
+        ),
+      );
+
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        Offset(
+          center.dx - textPainter.width / 2,
+          center.dy - textPainter.height / 2,
         ),
       );
     }

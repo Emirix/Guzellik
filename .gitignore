@@ -50,6 +50,7 @@ ios/Runner/GoogleService-Info.plist
 *.jks
 *.keystore
 *.p12
+android/key.properties
 
 # Temporary and Debug files
 change_*.json

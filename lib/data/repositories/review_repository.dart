@@ -70,12 +70,13 @@ class ReviewRepository {
     }
   }
 
-  Future<void> toggleHelpful(String reviewId) async {
+  Future<int> toggleHelpful(String reviewId) async {
     try {
-      await _supabase.rpc(
+      final response = await _supabase.rpc(
         'toggle_review_helpful',
         params: {'p_review_id': reviewId},
       );
+      return response as int;
     } catch (e) {
       print('Error toggling helpful: $e');
       rethrow;

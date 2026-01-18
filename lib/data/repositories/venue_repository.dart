@@ -376,6 +376,7 @@ class VenueRepository {
         .from('reviews')
         .select('*, profiles(full_name, avatar_url)')
         .eq('venue_id', venueId)
+        .eq('status', 'approved') // Sadece onaylanmış yorumlar
         .order('created_at', ascending: false);
 
     return (response as List).map((json) => Review.fromJson(json)).toList();
@@ -528,6 +529,7 @@ class VenueRepository {
         'user_id': userId,
         'rating': rating,
         'comment': comment,
+        'status': 'pending', // Yeni yorumlar onay bekler
       });
     } catch (e) {
       print('Error submitting review: $e');
@@ -547,7 +549,11 @@ class VenueRepository {
 
       await _supabase
           .from('reviews')
-          .update({'rating': rating, 'comment': comment})
+          .update({
+            'rating': rating,
+            'comment': comment,
+            'status': 'pending', // Güncellenen yorumlar tekrar onay bekler
+          })
           .match({
             'id': reviewId,
             'user_id': userId, // Ensure user owns the review

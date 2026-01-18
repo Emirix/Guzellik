@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../data/models/venue.dart';
 import '../../data/models/venue_filter.dart';
@@ -52,10 +53,14 @@ class DiscoveryProvider extends ChangeNotifier {
   // Location error state
   String? _locationError;
 
+  // Map camera state
+  CameraPosition? _mapCameraPosition;
+
   DiscoveryViewMode get viewMode => _viewMode;
   List<Venue> get venues => _filteredVenues;
   List<Venue> get featuredVenues => _featuredVenues;
   String get searchQuery => _searchQuery;
+  CameraPosition? get mapCameraPosition => _mapCameraPosition;
   bool get isLoading => _isLoading;
   bool get isLoadingHome => _isLoadingHome;
   bool get isLoadingCategories => _isLoadingCategories;
@@ -80,6 +85,11 @@ class DiscoveryProvider extends ChangeNotifier {
   void clearLocationError() {
     _locationError = null;
     notifyListeners();
+  }
+
+  void saveMapCameraPosition(CameraPosition position) {
+    _mapCameraPosition = position;
+    // Don't notifyListeners here as this is high frequency
   }
 
   void toggleMapCarousel() {

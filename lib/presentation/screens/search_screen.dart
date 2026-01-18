@@ -12,6 +12,7 @@ import '../widgets/search/search_categories_section.dart';
 import '../widgets/search/suggested_venues_section.dart';
 import '../widgets/search/search_results_list.dart';
 import '../widgets/common/ad_banner_widget.dart';
+import '../../core/utils/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../widgets/search/search_initial_view.dart';
 import '../widgets/search/search_shimmer_loading.dart';
@@ -26,9 +27,10 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen> with RouteAware {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  bool _isRouteActive = true;
 
   @override
   void initState() {
@@ -43,6 +45,33 @@ class _SearchScreenState extends State<SearchScreen> {
       _syncLocation();
       context.read<DiscoveryProvider>().addListener(_syncLocation);
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is ModalRoute<void>) {
+      AppRouter.routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPushNext() {
+    if (mounted) {
+      setState(() {
+        _isRouteActive = false;
+      });
+    }
+  }
+
+  @override
+  void didPopNext() {
+    if (mounted) {
+      setState(() {
+        _isRouteActive = true;
+      });
+    }
   }
 
   void _syncLocation() {
@@ -75,6 +104,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    AppRouter.routeObserver.unsubscribe(this);
     context.read<SearchProvider>().removeListener(_onProviderChanged);
     // Use try-catch or check if provider is still available to be safe
     try {
@@ -107,8 +137,8 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
 
             Expanded(
-              child: Consumer<SearchProvider>(
-                builder: (context, provider, _) {
+              child: Consumer2<SearchProvider, AppStateProvider>(
+                builder: (context, provider, appState, _) {
                   return Column(
                     children: [
                       // Selected category banner
@@ -124,7 +154,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       const SearchFilterChips(),
 
                       // Ad Banner
-                      const AdBannerWidget(),
+                      (appState.selectedBottomNavIndex == 1 && _isRouteActive)
+                          ? const AdBannerWidget()
+                          : const SizedBox(height: 76),
 
                       // Content area
                       Expanded(

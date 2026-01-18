@@ -399,6 +399,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             subtitle: 'Kampanyalarınızı yönetin',
             onTap: () => context.push('/business/admin/campaigns'),
           ),
+          _buildListItem(
+            context,
+            icon: Icons.rate_review_outlined,
+            title: 'Yorum Yönetimi',
+            subtitle: 'Müşteri yorumlarını onayla ve yanıtla',
+            onTap: () => context.push('/business/admin/reviews'),
+          ),
 
           _buildListItem(
             context,

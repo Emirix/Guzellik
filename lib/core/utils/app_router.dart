@@ -30,6 +30,7 @@ import '../../presentation/screens/business/admin/admin_location_screen.dart';
 import '../../presentation/screens/business/admin/admin_faq_screen.dart';
 import '../../presentation/screens/business/admin/admin_cover_photo_screen.dart';
 import '../../presentation/screens/business/admin/admin_features_screen.dart';
+import '../../presentation/screens/business/business_reviews_screen.dart';
 import '../../presentation/screens/business/admin_basic_info_screen.dart';
 import '../../presentation/widgets/common/business_bottom_nav.dart';
 import '../../data/repositories/venue_features_repository.dart';
@@ -40,8 +41,12 @@ import '../widgets/auth_guard.dart';
 
 /// App router configuration using go_router
 class AppRouter {
+  static final RouteObserver<ModalRoute> routeObserver =
+      RouteObserver<ModalRoute>();
+
   static final GoRouter router = GoRouter(
     initialLocation: '/splash',
+    observers: [routeObserver],
     routes: [
       // Splash Screen
       GoRoute(
@@ -298,6 +303,19 @@ class AppRouter {
           redirectPath: '/business/admin/faq',
           child: AdminFaqScreen(),
         ),
+      ),
+      GoRoute(
+        path: '/business/admin/reviews',
+        name: 'admin-reviews',
+        builder: (context, state) {
+          final businessProvider = context.read<BusinessProvider>();
+          final venueId = businessProvider.businessVenue?.id ?? '';
+          return AuthGuard(
+            requiredFor: 'Yorum Yönetimi',
+            redirectPath: '/business/admin/reviews',
+            child: BusinessReviewsScreen(venueId: venueId),
+          );
+        },
       ),
       GoRoute(
         path: '/business/admin/cover-photo',
