@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../data/services/onboarding_preferences.dart';
 
 /// Splash screen shown on app launch
+/// Shows maskot image transitioning to Lottie animation with app branding
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -13,37 +13,93 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _progressAnimation;
+    with TickerProviderStateMixin {
+  late AnimationController _maskotController;
+  late AnimationController _lottieController;
+  late AnimationController _titleController;
+  late AnimationController _subtitleController;
+
+  late Animation<double> _maskotFadeOut;
+  late Animation<double> _lottieFadeIn;
+  late Animation<double> _titleFadeIn;
+  late Animation<double> _subtitleFadeIn;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _initializeAnimations();
+    _startAnimationSequence();
+  }
+
+  void _initializeAnimations() {
+    // Maskot fade-out animation (200ms)
+    _maskotController = AnimationController(
+      duration: const Duration(milliseconds: 200),
       vsync: this,
-      duration: const Duration(seconds: 2),
+    );
+    _maskotFadeOut = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _maskotController, curve: Curves.easeOut),
     );
 
-    _progressAnimation = Tween<double>(
-      begin: 0,
+    // Lottie fade-in animation (300ms)
+    _lottieController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _lottieFadeIn = Tween<double>(
+      begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    ).animate(CurvedAnimation(parent: _lottieController, curve: Curves.easeIn));
 
-    _controller.forward();
-    _initialize();
+    // Title fade-in animation (800ms)
+    _titleController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _titleFadeIn = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _titleController, curve: Curves.easeOut));
+
+    // Subtitle fade-in animation (800ms)
+    _subtitleController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _subtitleFadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _subtitleController, curve: Curves.easeOut),
+    );
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void _startAnimationSequence() async {
+    // Wait 600ms then fade out maskot
+    await Future.delayed(const Duration(milliseconds: 600));
+    if (!mounted) return;
+    _maskotController.forward();
+
+    // Wait for maskot fade-out to complete, then start Lottie
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (!mounted) return;
+    _lottieController.forward();
+
+    // Wait 500ms after Lottie starts, then show title
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (!mounted) return;
+    _titleController.forward();
+
+    // Wait 800ms after title starts, then show subtitle
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (!mounted) return;
+    _subtitleController.forward();
+
+    // Wait for subtitle animation to complete, then check navigation
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (!mounted) return;
+
+    _navigateToNextScreen();
   }
 
-  Future<void> _initialize() async {
-    // Wait for initialization (slightly longer than animation to feel smooth)
-    await Future.delayed(const Duration(milliseconds: 2500));
-
+  Future<void> _navigateToNextScreen() async {
     // Check if user has seen onboarding
     final onboardingPrefs = OnboardingPreferences();
     final hasSeenOnboarding = await onboardingPrefs.hasSeenOnboarding();
@@ -61,196 +117,117 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   @override
+  void dispose() {
+    _maskotController.dispose();
+    _lottieController.dispose();
+    _titleController.dispose();
+    _subtitleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    const Color goldColor = Color(0xFFDCAD2E);
-    const Color brandPink = Color(0xFFD88C8C);
-    const Color textColor = Color(0xFF2D2A26);
-
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment.center,
-                radius: 1.0,
-                colors: [
-                  Color(0xFFFFFFFF),
-                  Color(0xFFFDF5F2),
-                  Color(0xFFF7EBE1),
-                ],
-                stops: [0.0, 0.4, 1.0],
-              ),
-            ),
-          ),
-
-          // Top Left Floral Pattern
-          Positioned(
-            top: -40,
-            left: -40,
-            width: 180,
-            height: 180,
-            child: Opacity(
-              opacity: 0.15,
-              child: SvgPicture.string(
-                '''<svg fill="none" stroke="#dcad2e" stroke-width="0.5" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10,90 Q40,40 90,10 M30,80 Q50,50 80,30 M50,70 Q60,60 70,50"></path>
-                  <circle cx="90" cy="10" fill="#dcad2e" r="2"></circle>
-                  <circle cx="80" cy="30" fill="#dcad2e" r="1.5"></circle>
-                </svg>''',
-              ),
-            ),
-          ),
-
-          // Bottom Right Floral Pattern
-          Positioned(
-            bottom: -50,
-            right: -50,
-            width: 240,
-            height: 240,
-            child: Opacity(
-              opacity: 0.15,
-              child: Transform.rotate(
-                angle: 3.14159, // 180 degrees
-                child: SvgPicture.string(
-                  '''<svg fill="none" stroke="#dcad2e" stroke-width="0.3" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M50,90 C20,80 10,50 40,20 C60,40 90,50 50,90 Z"></path>
-                    <path d="M45,85 C15,75 5,45 35,15"></path>
-                    <path d="M55,85 C85,75 95,45 65,15"></path>
-                  </svg>''',
-                ),
-              ),
-            ),
-          ),
-
-          // Main Content
-          Center(
+      backgroundColor: const Color(0xFFFFF9FA), // background-light
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo Section
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Outer Glow
-                    Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: goldColor.withValues(alpha: 0.1),
-                            blurRadius: 100,
-                            spreadRadius: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Logo Container
-                    Container(
-                      width: 140,
-                      height: 140,
-                      padding: const EdgeInsets.all(25),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: goldColor.withValues(alpha: 0.05),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: goldColor.withValues(alpha: 0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/logo.svg',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 48),
-
-                // Brand Name
-                Text(
-                  'GÜZELLİK HARİTAM',
-                  style: GoogleFonts.epilogue(
-                    textStyle: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 4.0,
-                      color: textColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Tagline
-                Text(
-                  'Güzelliğin Modern Adresi'.toUpperCase(),
-                  style: GoogleFonts.epilogue(
-                    textStyle: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 3.5,
-                      color: brandPink.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Bottom Loading Section
-          Positioned(
-            bottom: 80,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: Column(
-                children: [
-                  // Elegant Loading Bar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SizedBox(
-                      height: 1.5,
-                      child: AnimatedBuilder(
-                        animation: _progressAnimation,
+                // Animation Container (Maskot + Lottie)
+                SizedBox(
+                  width: 240,
+                  height: 240,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Maskot Image (fades out)
+                      AnimatedBuilder(
+                        animation: _maskotFadeOut,
                         builder: (context, child) {
-                          return LinearProgressIndicator(
-                            value: _progressAnimation.value,
-                            backgroundColor: goldColor.withValues(alpha: 0.15),
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              goldColor,
+                          return Opacity(
+                            opacity: _maskotFadeOut.value,
+                            child: Image.asset(
+                              'assets/images/maskot.png',
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.contain,
                             ),
                           );
                         },
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'YÜKLENİYOR',
-                    style: GoogleFonts.epilogue(
-                      textStyle: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 2.0,
-                        color: goldColor.withValues(alpha: 0.6),
+                      // Lottie Animation (fades in)
+                      AnimatedBuilder(
+                        animation: _lottieFadeIn,
+                        builder: (context, child) {
+                          return Opacity(
+                            opacity: _lottieFadeIn.value,
+                            child: Lottie.asset(
+                              'assets/animations/splash.json',
+                              width: 240,
+                              height: 240,
+                              fit: BoxFit.contain,
+                              repeat: true,
+                            ),
+                          );
+                        },
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 32),
+
+                // App Title
+                AnimatedBuilder(
+                  animation: _titleFadeIn,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _titleFadeIn.value,
+                      child: Transform.translate(
+                        offset: Offset(0, 10 * (1 - _titleFadeIn.value)),
+                        child: const Text(
+                          'Güzellik Haritam',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF1B0D11),
+                            letterSpacing: -0.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // App Subtitle
+                AnimatedBuilder(
+                  animation: _subtitleFadeIn,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _subtitleFadeIn.value,
+                      child: Transform.translate(
+                        offset: Offset(0, 10 * (1 - _subtitleFadeIn.value)),
+                        child: const Text(
+                          'Güzelliğinize Değer Katan Mekanlar',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF6B7280),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
