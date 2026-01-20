@@ -110,53 +110,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Hero Banner Section with overlay
-            Stack(
-              children: [
-                // Banner Image
-                Container(
-                  height: 220,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: const DecorationImage(
-                      image: AssetImage('assets/images/register_banner.png'),
-                      fit: BoxFit.cover,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
+            // Mascot Section
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFFFF5F0), // Cream
+                    Color(0xFFFFE8E0), // Soft pink
+                  ],
                 ),
-                // Gradient Overlay
-                Container(
-                  height: 220,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        const Color(0xFFF8F6F6).withValues(alpha: 0.3),
-                        const Color(0xFFF8F6F6),
-                      ],
-                      stops: const [0.0, 0.6, 1.0],
-                    ),
-                  ),
-                ),
-                // Logo and Title Overlay
-                Positioned(
-                  bottom: 10,
-                  left: 0,
-                  right: 0,
-                  child: Column(
-                    children: [
-                      // Logo Container
-                      Container(
+              ),
+              child: Column(
+                children: [
+                  // Mascot Image
+                  Image.asset(
+                    'assets/images/mascot/mascot_full.png',
+                    width: 200,
+                    height: 200,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Fallback to SVG logo if mascot not found
+                      return Container(
                         width: 70,
                         height: 70,
                         padding: const EdgeInsets.all(10),
@@ -167,43 +143,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             color: const Color(0xFFE6D1D6),
                             width: 2,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.2),
-                              blurRadius: 16,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
                         ),
                         child: SvgPicture.asset(
                           'assets/logo-transparent.svg',
                           fit: BoxFit.contain,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      // Title
-                      const Text(
-                        'Kayıt Ol',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1B0E11),
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Güzellik dünyasına hoş geldiniz',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF955062),
-                        ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Aramıza Katıl',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFFD4A574), // Gold
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Güzellik dünyasını keşfet',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF955062),
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             // Form Section
