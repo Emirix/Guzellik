@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../data/services/onboarding_preferences.dart';
 
 /// Splash screen shown on app launch
-/// Shows maskot image transitioning to Lottie animation with app branding
+/// Shows Lottie animation with app branding
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -14,12 +14,10 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _maskotController;
   late AnimationController _lottieController;
   late AnimationController _titleController;
   late AnimationController _subtitleController;
 
-  late Animation<double> _maskotFadeOut;
   late Animation<double> _lottieFadeIn;
   late Animation<double> _titleFadeIn;
   late Animation<double> _subtitleFadeIn;
@@ -32,18 +30,9 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _initializeAnimations() {
-    // Maskot fade-out animation (200ms)
-    _maskotController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _maskotFadeOut = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _maskotController, curve: Curves.easeOut),
-    );
-
-    // Lottie fade-in animation (300ms)
+    // Lottie fade-in animation (500ms)
     _lottieController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     _lottieFadeIn = Tween<double>(
@@ -72,28 +61,21 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _startAnimationSequence() async {
-    // Wait 600ms then fade out maskot
-    await Future.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
-    _maskotController.forward();
-
-    // Wait for maskot fade-out to complete, then start Lottie
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (!mounted) return;
+    // Start Lottie immediately
     _lottieController.forward();
 
-    // Wait 500ms after Lottie starts, then show title
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Wait 300ms after Lottie starts, then show title
+    await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;
     _titleController.forward();
 
-    // Wait 800ms after title starts, then show subtitle
-    await Future.delayed(const Duration(milliseconds: 800));
+    // Wait 500ms after title starts, then show subtitle
+    await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted) return;
     _subtitleController.forward();
 
     // Wait for subtitle animation to complete, then check navigation
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 1000));
     if (!mounted) return;
 
     _navigateToNextScreen();
@@ -118,7 +100,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _maskotController.dispose();
     _lottieController.dispose();
     _titleController.dispose();
     _subtitleController.dispose();
@@ -128,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF9FA), // background-light
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -136,46 +117,21 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Animation Container (Maskot + Lottie)
-                SizedBox(
-                  width: 240,
-                  height: 240,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Maskot Image (fades out)
-                      AnimatedBuilder(
-                        animation: _maskotFadeOut,
-                        builder: (context, child) {
-                          return Opacity(
-                            opacity: _maskotFadeOut.value,
-                            child: Image.asset(
-                              'assets/images/maskot.png',
-                              width: 200,
-                              height: 200,
-                              fit: BoxFit.contain,
-                            ),
-                          );
-                        },
+                // Lottie Animation
+                AnimatedBuilder(
+                  animation: _lottieFadeIn,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _lottieFadeIn.value,
+                      child: Lottie.asset(
+                        'assets/animations/splash.json',
+                        width: 240,
+                        height: 240,
+                        fit: BoxFit.contain,
+                        repeat: true,
                       ),
-                      // Lottie Animation (fades in)
-                      AnimatedBuilder(
-                        animation: _lottieFadeIn,
-                        builder: (context, child) {
-                          return Opacity(
-                            opacity: _lottieFadeIn.value,
-                            child: Lottie.asset(
-                              'assets/animations/splash.json',
-                              width: 240,
-                              height: 240,
-                              fit: BoxFit.contain,
-                              repeat: true,
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 32),
 

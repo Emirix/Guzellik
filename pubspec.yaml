@@ -92,14 +92,12 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/logo.svg"
 
 flutter_native_splash:
-  color: "#fff9fa"
-  image: assets/images/maskot.png
+  color: "#FFFFFF"
   android: true
   ios: true
   web: false
   android_12:
-    color: "#fff9fa"
-    image: assets/images/maskot.png
+    color: "#FFFFFF"
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -109,6 +107,8 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/images/mascot/
+    - assets/images/mascot/notification/
     - assets/app_icons/
     - assets/logos/
     - assets/maps/

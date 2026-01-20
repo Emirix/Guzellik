@@ -200,49 +200,51 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 32),
 
-                // Logo / Branding Area
+                // Mascot / Branding Area
                 Center(
                   child: Column(
                     children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFE6D1D6),
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.2),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
+                      // Mascot Image
+                      Image.asset(
+                        'assets/images/mascot/mascot_full.png',
+                        width: 200,
+                        height: 200,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback to SVG logo if mascot not found
+                          return Container(
+                            width: 80,
+                            height: 80,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFFE6D1D6),
+                                width: 2,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/logo-transparent.svg',
-                          fit: BoxFit.contain,
-                        ),
+                            child: SvgPicture.asset(
+                              'assets/logo-transparent.svg',
+                              fit: BoxFit.contain,
+                            ),
+                          );
+                        },
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
                       const Text(
-                        'Giriş Yap',
+                        'Güzellik Haritam',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1B0E11),
+                          color: Color(0xFFD4A574), // Gold color
                           letterSpacing: -0.5,
                         ),
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        'Güzellik dünyasına tekrar hoş geldiniz',
+                        'Hoş Geldiniz',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFF955062),
                         ),
