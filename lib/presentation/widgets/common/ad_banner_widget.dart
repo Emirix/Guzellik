@@ -70,7 +70,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     return Container(
       width: double.infinity,
       height: 60,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       decoration: BoxDecoration(
         color: AppColors.gray50,
         borderRadius: BorderRadius.circular(8),

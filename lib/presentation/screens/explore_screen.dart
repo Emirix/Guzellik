@@ -324,7 +324,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                 const SliverToBoxAdapter(
                   child: RepaintBoundary(
                     child: Padding(
-                      padding: EdgeInsets.only(bottom: 24),
+                      padding: EdgeInsets.only(bottom: 16),
                       child: FeaturedVenues(),
                     ),
                   ),
@@ -334,8 +334,18 @@ class _ExploreScreenState extends State<ExploreScreen>
                 const SliverToBoxAdapter(
                   child: RepaintBoundary(
                     child: Padding(
-                      padding: EdgeInsets.only(bottom: 24),
+                      padding: EdgeInsets.only(bottom: 8),
                       child: CategoryIcons(),
+                    ),
+                  ),
+                ),
+
+                // Nearby Venues - wrapped in RepaintBoundary
+                const SliverToBoxAdapter(
+                  child: RepaintBoundary(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: NearbyVenues(),
                     ),
                   ),
                 ),
@@ -344,7 +354,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                 const SliverToBoxAdapter(
                   child: RepaintBoundary(
                     child: Padding(
-                      padding: EdgeInsets.only(bottom: 24),
+                      padding: EdgeInsets.only(bottom: 16),
                       child: CampaignSlider(),
                     ),
                   ),
@@ -356,16 +366,6 @@ class _ExploreScreenState extends State<ExploreScreen>
                     child: isActive
                         ? const AdBannerWidget()
                         : const SizedBox.shrink(),
-                  ),
-                ),
-
-                // Nearby Venues - wrapped in RepaintBoundary
-                const SliverToBoxAdapter(
-                  child: RepaintBoundary(
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 24),
-                      child: NearbyVenues(),
-                    ),
                   ),
                 ),
               ],
