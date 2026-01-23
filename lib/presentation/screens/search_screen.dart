@@ -15,7 +15,6 @@ import '../widgets/search/search_results_list.dart';
 import '../widgets/common/ad_banner_widget.dart';
 import '../../core/utils/app_router.dart';
 import '../../core/theme/app_colors.dart';
-import '../widgets/search/search_initial_view.dart';
 import '../widgets/search/search_shimmer_loading.dart';
 import '../../data/models/venue_category.dart';
 
@@ -126,90 +125,230 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            // App Logo Header
-            Container(
-              padding: EdgeInsets.fromLTRB(
-                16,
-                MediaQuery.of(context).padding.top + 12,
-                16,
-                8,
-              ),
-              color: AppColors.background,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/maskot.png', width: 40, height: 40),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Güzellik Haritam',
-                    style: GoogleFonts.outfit(
-                      color: AppColors.primary,
-                      fontSize: 23,
-                      fontWeight: FontWeight.w600,
+        child: Consumer2<SearchProvider, AppStateProvider>(
+          builder: (context, provider, appState, child) {
+            return Column(
+              children: [
+                // Logo Header - Hide when showing results to save space
+                if (!provider.isResultsMode)
+                  Container(
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      MediaQuery.of(context).padding.top + 12,
+                      16,
+                      8,
+                    ),
+                    color: AppColors.background,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/maskot.png', width: 40, height: 40),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Güzellik Haritam',
+                          style: GoogleFonts.outfit(
+                            color: AppColors.primary,
+                            fontSize: 23,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
+                // Compact Search Header - Only show when results mode is active
+                if (provider.isResultsMode)
+                  SearchHeader(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    onChanged: (value) {
+                      context.read<SearchProvider>().setSearchQuery(value);
+                    },
+                    onSubmitted: (value) {
+                      context.read<SearchProvider>().search();
+                    },
+                    onClear: () {
+                      _searchController.clear();
+                      context.read<SearchProvider>().clearSearch();
+                    },
+                  ),
+
+                // Selected category banner
+                if (provider.isCategorySelected && provider.isResultsMode)
+                  _buildSelectedCategoryBanner(provider.selectedCategory!, () {
+                    provider.clearFilters();
+                  }),
+
+                // Filter chips row and Ad Banner - hide when Hero is visible
+                if (provider.isResultsMode) ...[
+                  const SearchFilterChips(),
+                  if (appState.selectedBottomNavIndex == 1 && _isRouteActive)
+                    const AdBannerWidget(),
                 ],
+
+                // Content area
+                Expanded(child: _buildSearchContent(provider)),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchHero(SearchProvider provider) {
+    return Container(
+      width: double.infinity,
+      height: 160,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            // Arka Plan Resmi
+            Image.asset(
+              'assets/search_hero.jpg',
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+            ),
+            // Karartma Katmanı (Gradyan)
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.1),
+                    Colors.black.withValues(alpha: 0.6),
+                  ],
+                ),
               ),
             ),
-
-            // Header with search input - ALWAYS show this
-            SearchHeader(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              onChanged: (value) {
-                context.read<SearchProvider>().setSearchQuery(value);
-              },
-              onSubmitted: (value) {
-                context.read<SearchProvider>().search();
-              },
-              onClear: () {
-                _searchController.clear();
-                context.read<SearchProvider>().clearSearch();
-              },
-            ),
-
-            Expanded(
-              child: Consumer2<SearchProvider, AppStateProvider>(
-                builder: (context, provider, appState, _) {
-                  return Column(
-                    children: [
-                      // Selected category banner
-                      if (provider.isCategorySelected)
-                        _buildSelectedCategoryBanner(
-                          provider.selectedCategory!,
-                          () {
-                            provider.clearFilters();
-                          },
+            // İçerik
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Güzelliği bul',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          offset: const Offset(0, 2),
+                          blurRadius: 4,
                         ),
-
-                      // Filter chips row
-                      const SearchFilterChips(),
-
-                      // Ad Banner
-                      (appState.selectedBottomNavIndex == 1 && _isRouteActive)
-                          ? const AdBannerWidget()
-                          : const SizedBox.shrink(),
-
-                      // Content area
-                      Expanded(
-                        child:
-                            (provider.isCategorySelected ||
-                                provider.searchQuery.isNotEmpty ||
-                                provider.hasSearched)
-                            ? _buildSearchContent(provider)
-                            : const SearchInitialView(),
-                      ),
-                    ],
-                  );
-                },
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Hero içindeki Arama Çubuğu
+                  _buildHeroSearchInput(provider),
+                ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeroSearchInput(SearchProvider provider) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const SizedBox(width: 16),
+                const Icon(Icons.search, color: AppColors.primary, size: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    onChanged: (value) {
+                      provider.setSearchQuery(value);
+                    },
+                    onSubmitted: (value) {
+                      provider.search();
+                    },
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.gray900,
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'Hizmet veya mekan ara...',
+                      hintStyle: TextStyle(
+                        color: AppColors.gray400,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                      isDense: true,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            context.read<DiscoveryProvider>().setViewMode(
+              DiscoveryViewMode.map,
+            );
+            context.read<AppStateProvider>().setBottomNavIndex(0);
+          },
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.map_outlined,
+              color: AppColors.primary,
+              size: 24,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -403,49 +542,85 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
   }
 
   Widget _buildSearchContent(SearchProvider provider) {
-    // Loading state - use shimmer for better UX
-    if (provider.isLoading) {
-      return const SearchShimmerLoading();
-    }
+    // 1. Full Results Mode (After Submit or Category Select)
+    if (provider.isResultsMode) {
+      if (provider.isLoading) return const SearchShimmerLoading();
+      if (provider.errorMessage != null) {
+        return _buildErrorState(provider.errorMessage!);
+      }
+      if (provider.showNoResults) return _buildNoResultsState();
 
-    // Error state
-    if (provider.errorMessage != null) {
-      return _buildErrorState(provider.errorMessage!);
-    }
-
-    // Empty state (show recent searches + popular services)
-    // Not: Artık kategori seçili olduğu için bu "boş arama" durumudur
-    if (provider.showEmptyState) {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            SizedBox(height: 16),
-            SearchCategoriesSection(),
-            SizedBox(height: 24),
-            RecentSearchesSection(),
-            SizedBox(height: 24),
-            PopularServicesSection(),
-            SizedBox(height: 24),
-            SuggestedVenuesSection(),
-            SizedBox(height: 100),
-          ],
-        ),
+      return SearchResultsList(
+        results: provider.searchResults,
+        highlightedService: provider.searchQuery.isNotEmpty
+            ? provider.searchQuery
+            : null,
       );
     }
 
-    // No results state
-    if (provider.showNoResults) {
-      return _buildNoResultsState();
+    // 2. Typing Mode - Hero stays fixed at top, suggestions scroll below
+    if (provider.searchQuery.isNotEmpty) {
+      return Column(
+        children: [
+          _buildSearchHero(provider),
+          Expanded(child: _buildSuggestionsList(provider)),
+        ],
+      );
     }
 
-    // Results list
-    return SearchResultsList(
-      results: provider.searchResults,
-      highlightedService: provider.searchQuery.isNotEmpty
-          ? provider.searchQuery
-          : null,
+    // 3. Initial Mode - Everything scrolls together (Hero + Categories + Suggestions)
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [_buildSearchHero(provider), _buildInitialContent()],
+      ),
+    );
+  }
+
+  Widget _buildInitialContent() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          SizedBox(height: 16),
+          SearchCategoriesSection(),
+          SizedBox(height: 24),
+          PopularServicesSection(),
+          SizedBox(height: 24),
+          SuggestedVenuesSection(),
+          SizedBox(height: 100),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestionsList(SearchProvider provider) {
+    return Container(
+      color: Colors.white,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        itemCount: provider.suggestions.length,
+        separatorBuilder: (context, index) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final suggestion = provider.suggestions[index];
+          return ListTile(
+            leading: const Icon(Icons.search, color: AppColors.gray400),
+            title: Text(
+              suggestion.name,
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+            ),
+            subtitle: Text(
+              suggestion.category?.name ?? 'Mekan',
+              style: TextStyle(fontSize: 12, color: AppColors.gray500),
+            ),
+            onTap: () {
+              provider.setSearchQuery(suggestion.name);
+              provider.search();
+            },
+          );
+        },
+      ),
     );
   }
 

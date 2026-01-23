@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import '../providers/favorites_provider.dart';
-import '../widgets/common/custom_header.dart';
+import '../widgets/common/guzellik_haritam_header.dart';
 import '../widgets/common/ad_banner_widget.dart';
 import '../widgets/search/search_result_card.dart';
 
@@ -62,10 +63,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const CustomHeader(
-            title: 'Favorilerim',
-            subtitle: 'Kaydettiğiniz ve takip ettiğiniz mekanlar',
-          ),
+          const GuzellikHaritamHeader(),
           _buildTabBar(),
           const AdBannerWidget(),
           Expanded(child: _buildTabBarView()),

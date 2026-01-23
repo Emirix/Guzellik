@@ -31,8 +31,10 @@ class SearchProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isLoadingMore = false;
   List<Venue> _searchResults = [];
+  List<Venue> _suggestions = [];
   String? _errorMessage;
   bool _hasSearched = false;
+  bool _isResultsMode = false;
   int _offset = 0;
   bool _hasMore = true;
   static const int _pageSize = 20;
@@ -123,8 +125,10 @@ class SearchProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isLoadingMore => _isLoadingMore;
   List<Venue> get searchResults => _searchResults;
+  List<Venue> get suggestions => _suggestions;
   String? get errorMessage => _errorMessage;
   bool get hasSearched => _hasSearched;
+  bool get isResultsMode => _isResultsMode;
   bool get hasMore => _hasMore;
   SearchFilter get filter => _filter;
   List<RecentSearch> get recentSearches => _recentSearches;
@@ -183,32 +187,56 @@ class SearchProvider extends ChangeNotifier {
   /// Arama sorgusunu günceller (debounced)
   void setSearchQuery(String query) {
     _searchQuery = query;
+    _isResultsMode = false;
     notifyListeners();
 
     _debounceTimer?.cancel();
     if (query.isNotEmpty) {
       _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-        search();
+        fetchSuggestions();
       });
     } else {
+      _suggestions = [];
       // Kategori seçiliyse kategori aramasına geri dön
       if (isCategorySelected) {
         _hasSearched = true;
-        _searchResults = []; // Geçici olarak temizle
+        _searchResults = [];
+        _isResultsMode = true;
         searchByCategory();
       } else {
         _hasSearched = false;
         _searchResults = [];
+        _isResultsMode = false;
       }
       notifyListeners();
     }
   }
 
-  /// Arama yapar - Elastic Search kullanarak tam metin araması
-  Future<void> search({bool showLoading = true}) async {
+  /// Önerileri getirir (Autocomplete)
+  Future<void> fetchSuggestions() async {
     if (_searchQuery.isEmpty) return;
 
+    try {
+      _suggestions = await _venueRepository.elasticSearchVenues(
+        query: _searchQuery,
+        lat: _userLatitude,
+        lng: _userLongitude,
+        provinceId: _selectedProvinceId,
+        districtId: _selectedDistrictId,
+        limit: 5,
+      );
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Fetch suggestions error: $e');
+    }
+  }
+
+  /// Arama yapar - Elastic Search kullanarak tam metin araması
+  Future<void> search({bool showLoading = true}) async {
     _debounceTimer?.cancel();
+    _isResultsMode = true;
+    _suggestions = [];
+
     if (showLoading) {
       _isLoading = true;
       _errorMessage = null;
@@ -218,23 +246,49 @@ class SearchProvider extends ChangeNotifier {
     }
 
     try {
-      // Use elastic search for comprehensive full-text search
-      final results = await _venueRepository.elasticSearchVenues(
-        query: _searchQuery,
-        lat: _userLatitude,
-        lng: _userLongitude,
-        provinceId: _selectedProvinceId,
-        districtId: _selectedDistrictId,
-        maxDistanceKm: _filter.maxDistanceKm,
-        onlyVerified: _filter.onlyVerified,
-        onlyPreferred: _filter.onlyPreferred,
-        onlyHygienic: _filter.onlyHygienic,
-        minRating: _filter.minRating,
-        sortBy: _filter.sortBy.name,
-        serviceIds: _filter.serviceIds,
-        limit: _pageSize,
-        offset: _offset,
-      );
+      List<Venue> results = [];
+
+      if (_searchQuery.trim().isEmpty) {
+        // Boş arama yapıldığında öne çıkan mekanları veya konuma göre mekanları getir
+        final venueFilter = VenueFilter(
+          categoryId: _filter.venueCategoryId,
+          categories: _filter.venueTypes,
+          maxDistanceKm: _filter.maxDistanceKm,
+          minRating: _filter.minRating,
+          onlyVerified: _filter.onlyVerified,
+          onlyHygienic: _filter.onlyHygienic,
+          onlyPreferred: _filter.onlyPreferred,
+          sortBy: _mapSortOptionToVenueSortBy(_filter.sortBy),
+          serviceIds: _filter.serviceIds,
+        );
+
+        results = await _venueRepository.searchVenues(
+          query: null,
+          filter: venueFilter,
+          lat: _userLatitude,
+          lng: _userLongitude,
+          limit: _pageSize,
+          offset: _offset,
+        );
+      } else {
+        // Elastic search using the query
+        results = await _venueRepository.elasticSearchVenues(
+          query: _searchQuery,
+          lat: _userLatitude,
+          lng: _userLongitude,
+          provinceId: _selectedProvinceId,
+          districtId: _selectedDistrictId,
+          maxDistanceKm: _filter.maxDistanceKm,
+          onlyVerified: _filter.onlyVerified,
+          onlyPreferred: _filter.onlyPreferred,
+          onlyHygienic: _filter.onlyHygienic,
+          minRating: _filter.minRating,
+          sortBy: _filter.sortBy.name,
+          serviceIds: _filter.serviceIds,
+          limit: _pageSize,
+          offset: _offset,
+        );
+      }
 
       // Map distances locally if needed
       if (_userLatitude != null && _userLongitude != null) {
@@ -284,6 +338,7 @@ class SearchProvider extends ChangeNotifier {
     );
     _searchQuery = ''; // Arama sorgusunu temizle
     _hasSearched = true; // Sonuçları göstermek için
+    _isResultsMode = true; // Sonuç moduna geç
     _categoryServices = []; // Hizmetleri sıfırla
     _saveLastFilter();
     notifyListeners();
@@ -450,6 +505,8 @@ class SearchProvider extends ChangeNotifier {
     _searchQuery = '';
     _searchResults = [];
     _hasSearched = false;
+    _isResultsMode = false;
+    _selectedCategory = null;
     _errorMessage = null;
     _debounceTimer?.cancel();
     notifyListeners();

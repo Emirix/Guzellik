@@ -114,38 +114,23 @@ class VenueRepository {
     int limit = 20,
     int offset = 0,
   }) async {
-    if (lat != null && lng != null) {
-      // Konum varsa distance hesaplaması gerekir, cache kullanma
-      return searchVenues(
-        lat: lat,
-        lng: lng,
-        filter: VenueFilter(isDiscover: true),
-        limit: limit,
-        offset: offset,
-      );
-    }
-
     // Cache'den kontrol et (konum olmadan) - Sadece ilk sayfa için cache kullanalım
-    if (offset == 0) {
+    if (lat == null && lng == null && offset == 0) {
       final cached = _cache.get<List<Venue>>(CacheService.featuredVenuesKey);
       if (cached != null) return cached;
     }
 
-    final response = await _supabase
-        .from('venues')
-        .select('*, venue_categories(*)')
-        .eq('is_active', true)
-        .eq('is_discover', true)
-        .order('rating', ascending: false)
-        .order('name', ascending: true)
-        .range(offset, offset + limit - 1);
+    // searchVenues metodunu kullanarak servis isimlerini (features olarak) alalım
+    final venues = await searchVenues(
+      lat: lat,
+      lng: lng,
+      filter: VenueFilter(isDiscover: true),
+      limit: limit,
+      offset: offset,
+    );
 
-    final venues = (response as List)
-        .map((json) => Venue.fromJson(json))
-        .toList();
-
-    // Cache'e kaydet (sadece ilk sayfa)
-    if (offset == 0) {
+    // Cache'e kaydet (sadece konum yoksa ve ilk sayfaysa)
+    if (lat == null && lng == null && offset == 0) {
       _cache.set(
         CacheService.featuredVenuesKey,
         venues,

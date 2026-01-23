@@ -106,7 +106,10 @@ class SearchResultCard extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Colors.black.withValues(alpha: 0.4)],
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.4),
+                ],
               ),
             ),
           ),
@@ -353,64 +356,77 @@ class SearchResultCard extends StatelessWidget {
   }
 
   Widget _buildServiceTags() {
-    // Use features as service tags
-    final services = venue.features;
-    if (services.isEmpty) return const SizedBox.shrink();
+    // Collect all tags to display
+    final List<String> tags = [];
 
-    const maxVisibleTags = 5;
-    final visibleServices = services.take(maxVisibleTags).toList();
-    final hasMore = services.length > maxVisibleTags;
-    final moreCount = services.length - maxVisibleTags;
+    // 1. Add category name as the first tag if available
+    if (venue.category != null) {
+      tags.add(venue.category!.name);
+    }
+
+    // 2. Add services/features (limit to 5 total)
+    for (final feature in venue.features) {
+      if (tags.length >= 5) break;
+
+      // Transform slug to readable name if it looks like a slug
+      String displayName = feature;
+      if (feature.contains('-')) {
+        displayName = feature
+            .split('-')
+            .map(
+              (word) => word.isEmpty
+                  ? ''
+                  : '${word[0].toUpperCase()}${word.substring(1)}',
+            )
+            .join(' ');
+      }
+
+      // Avoid duplicates
+      if (!tags.any((t) => t.toLowerCase() == displayName.toLowerCase())) {
+        tags.add(displayName);
+      }
+    }
+
+    if (tags.isEmpty) return const SizedBox.shrink();
 
     return Wrap(
       spacing: 6,
       runSpacing: 6,
-      children: [
-        ...visibleServices.map((service) {
-          final isHighlighted =
-              highlightedService != null &&
-              service.toLowerCase().contains(highlightedService!.toLowerCase());
+      children: tags.map((tag) {
+        final isCategory =
+            venue.category != null && tag == venue.category!.name;
+        final isHighlighted =
+            highlightedService != null &&
+            tag.toLowerCase().contains(highlightedService!.toLowerCase());
 
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: isHighlighted
-                    ? AppColors.primary.withValues(alpha: 0.3)
-                    : AppColors.primary.withValues(alpha: 0.12),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              service,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isHighlighted ? FontWeight.w700 : FontWeight.w500,
-                color: AppColors.primary,
-              ),
-            ),
-          );
-        }),
-        if (hasMore)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: AppColors.gray50,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.gray200, width: 1),
-            ),
-            child: Text(
-              '+$moreCount',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: AppColors.gray700,
-              ),
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: isCategory
+                ? AppColors.primary.withValues(alpha: 0.1)
+                : AppColors.primary.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isHighlighted
+                  ? AppColors.primary.withValues(alpha: 0.3)
+                  : isCategory
+                  ? AppColors.primary.withValues(alpha: 0.2)
+                  : AppColors.primary.withValues(alpha: 0.12),
+              width: 1,
             ),
           ),
-      ],
+          child: Text(
+            tag,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: (isHighlighted || isCategory)
+                  ? FontWeight.w700
+                  : FontWeight.w500,
+              color: AppColors.primary,
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 

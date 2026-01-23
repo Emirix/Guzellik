@@ -11,6 +11,7 @@ import '../widgets/discovery/featured_venues.dart';
 import '../widgets/discovery/category_icons.dart';
 import '../widgets/discovery/nearby_venues.dart';
 import '../widgets/discovery/campaign_slider.dart';
+import '../widgets/common/guzellik_haritam_header.dart';
 import '../widgets/common/ad_banner_widget.dart';
 import '../../core/utils/app_router.dart';
 import '../../core/theme/app_colors.dart';
@@ -212,25 +213,8 @@ class _ExploreScreenState extends State<ExploreScreen>
   ) {
     final isMapView = provider.viewMode == DiscoveryViewMode.map;
 
-    final content = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset('assets/maskot.png', width: 40, height: 40),
-        const SizedBox(width: 12),
-        Text(
-          'Güzellik Haritam',
-          style: GoogleFonts.outfit(
-            color: AppColors.primary,
-            fontSize: 23,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-
     if (isMapView) {
       return Container(
-        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
@@ -242,11 +226,19 @@ class _ExploreScreenState extends State<ExploreScreen>
             ),
           ],
         ),
-        child: content,
+        child: const GuzellikHaritamHeader(
+          showBottomBorder: false,
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.all(12),
+        ),
       );
     }
 
-    return content;
+    return const GuzellikHaritamHeader(
+      showBottomBorder: false,
+      backgroundColor: Colors.transparent,
+      padding: EdgeInsets.zero,
+    );
   }
 
   Widget _buildHomeView(
