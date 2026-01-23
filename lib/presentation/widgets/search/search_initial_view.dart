@@ -2,13 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/icon_utils.dart';
+import '../../providers/app_state_provider.dart';
+import '../../providers/discovery_provider.dart';
 import '../../providers/search_provider.dart';
 import 'popular_searches_section.dart';
+import 'search_hero.dart';
 
 /// Arama ekranının başlangıç görünümü
 /// Kullanıcıdan bir mekan kategorisi seçmesini ister
 class SearchInitialView extends StatelessWidget {
-  const SearchInitialView({super.key});
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback onClear;
+
+  const SearchInitialView({
+    super.key,
+    required this.controller,
+    required this.focusNode,
+    required this.onChanged,
+    this.onSubmitted,
+    required this.onClear,
+  });
 
   static Color _getCategoryColor(int index) {
     const colors = [
@@ -36,9 +52,30 @@ class SearchInitialView extends StatelessWidget {
 
         return CustomScrollView(
           slivers: [
+            // Hero Section
+            SliverToBoxAdapter(
+              child: SearchHero(
+                controller: controller,
+                focusNode: focusNode,
+                onChanged: onChanged,
+                onSubmitted: onSubmitted,
+                onClear: onClear,
+                onBack: () {
+                  FocusScope.of(context).unfocus();
+                  context.read<AppStateProvider>().setBottomNavIndex(0);
+                },
+                onMapTap: () {
+                  FocusScope.of(context).unfocus();
+                  context.read<DiscoveryProvider>().setViewMode(
+                    DiscoveryViewMode.map,
+                  );
+                  context.read<AppStateProvider>().setBottomNavIndex(0);
+                },
+              ),
+            ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

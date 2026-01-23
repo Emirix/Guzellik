@@ -5,6 +5,7 @@ import '../providers/search_provider.dart';
 import '../providers/app_state_provider.dart';
 import '../providers/discovery_provider.dart';
 import '../widgets/search/search_header.dart';
+import '../widgets/search/search_hero.dart';
 import '../widgets/search/search_filter_chips.dart';
 import '../widgets/search/recent_searches_section.dart';
 import '../widgets/search/popular_services_section.dart';
@@ -123,27 +124,52 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
         top: false,
         child: Column(
           children: [
-            // Header with search input - ALWAYS show this
-            SearchHeader(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              onChanged: (value) {
-                context.read<SearchProvider>().setSearchQuery(value);
-              },
-              onSubmitted: (value) {
-                context.read<SearchProvider>().search();
-              },
-              onClear: () {
-                _searchController.clear();
-                context.read<SearchProvider>().clearSearch();
-              },
-            ),
+            // Header or Hero logic
+            Consumer2<SearchProvider, AppStateProvider>(
+              builder: (context, provider, appState, _) {
+                final bool isInitial =
+                    !provider.isCategorySelected &&
+                    provider.searchQuery.isEmpty &&
+                    !provider.hasSearched;
 
-            Expanded(
-              child: Consumer2<SearchProvider, AppStateProvider>(
-                builder: (context, provider, appState, _) {
-                  return Column(
+                if (isInitial) {
+                  return Expanded(
+                    child: SearchInitialView(
+                      controller: _searchController,
+                      focusNode: _searchFocusNode,
+                      onChanged: (value) {
+                        provider.setSearchQuery(value);
+                      },
+                      onSubmitted: (value) {
+                        provider.search();
+                      },
+                      onClear: () {
+                        _searchController.clear();
+                        provider.clearSearch();
+                      },
+                    ),
+                  );
+                }
+
+                return Expanded(
+                  child: Column(
                     children: [
+                      // Header with search input
+                      SearchHeader(
+                        controller: _searchController,
+                        focusNode: _searchFocusNode,
+                        onChanged: (value) {
+                          provider.setSearchQuery(value);
+                        },
+                        onSubmitted: (value) {
+                          provider.search();
+                        },
+                        onClear: () {
+                          _searchController.clear();
+                          provider.clearSearch();
+                        },
+                      ),
+
                       // Selected category banner
                       if (provider.isCategorySelected)
                         _buildSelectedCategoryBanner(
@@ -162,18 +188,11 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
                           : const SizedBox.shrink(),
 
                       // Content area
-                      Expanded(
-                        child:
-                            (provider.isCategorySelected ||
-                                provider.searchQuery.isNotEmpty ||
-                                provider.hasSearched)
-                            ? _buildSearchContent(provider)
-                            : const SearchInitialView(),
-                      ),
+                      Expanded(child: _buildSearchContent(provider)),
                     ],
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ],
         ),
