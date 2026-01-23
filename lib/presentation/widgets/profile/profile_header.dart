@@ -118,44 +118,6 @@ class ProfileHeader extends StatelessWidget {
 
           // Email
           Text(email, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
-          const SizedBox(height: 12),
-
-          // Membership Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFF8E7), Color(0xFFFFF0D4)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: const Color(0xFFC5A059).withValues(alpha: 0.3),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFC5A059).withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.stars, size: 16, color: Color(0xFFC5A059)),
-                const SizedBox(width: 6),
-                Text(
-                  membershipLevel.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF8B6914),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

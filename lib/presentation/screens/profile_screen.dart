@@ -140,19 +140,11 @@ class ProfileScreen extends StatelessWidget {
                           name: metadata?['full_name'] ?? 'Kullanıcı',
                           email: user?.email ?? '',
                           avatarUrl: metadata?['avatar_url'],
-                          membershipLevel: 'Gold Üye',
                           onEditPressed: () {
                             // TODO: Navigate to edit avatar
                           },
                         );
                       },
-                    ),
-
-                    // Stats Section
-                    const ProfileStats(
-                      appointments: 24, // Represents rewards/reviews now
-                      favorites: 5,
-                      points: 150,
                     ),
 
                     // Menu List
@@ -183,7 +175,7 @@ class ProfileScreen extends StatelessWidget {
                                   title: 'İncelemelerim',
                                   isPrimary: true,
                                   onTap: () {
-                                    // TODO: Navigate to reviews
+                                    context.push('/my-reviews');
                                   },
                                 ),
                                 ProfileMenuItem(
@@ -198,18 +190,9 @@ class ProfileScreen extends StatelessWidget {
                                   icon: Icons.people_alt,
                                   title: 'Takip Ettiklerim',
                                   isPrimary: true,
-                                  onTap: () {
-                                    context.push('/favorites?tab=following');
-                                  },
-                                ),
-                                ProfileMenuItem(
-                                  icon: Icons.account_balance_wallet,
-                                  title: 'Cüzdanım',
-                                  subtitle: 'Son işlem: Dün',
-                                  isPrimary: true,
                                   showDivider: false,
                                   onTap: () {
-                                    // TODO: Navigate to wallet
+                                    context.push('/favorites?tab=following');
                                   },
                                 ),
                               ],

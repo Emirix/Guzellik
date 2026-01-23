@@ -226,4 +226,23 @@ class ReviewRepository {
       rethrow;
     }
   }
+
+  Future<List<Review>> getUserReviews({int limit = 50, int offset = 0}) async {
+    try {
+      final userId = _supabase.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
+
+      final response = await _supabase
+          .from('reviews')
+          .select('*, venues!inner(id, name, address, image_url)')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
+
+      return (response as List).map((json) => Review.fromJson(json)).toList();
+    } catch (e) {
+      print('Error fetching user reviews: $e');
+      rethrow;
+    }
+  }
 }

@@ -32,10 +32,12 @@ import '../../presentation/screens/business/admin/admin_cover_photo_screen.dart'
 import '../../presentation/screens/business/admin/admin_features_screen.dart';
 import '../../presentation/screens/business/business_reviews_screen.dart';
 import '../../presentation/screens/business/admin_basic_info_screen.dart';
+import '../../presentation/screens/user_reviews_screen.dart';
 import '../../presentation/widgets/common/business_bottom_nav.dart';
 import '../../data/repositories/venue_features_repository.dart';
 import '../../presentation/providers/admin_features_provider.dart';
 import '../../presentation/providers/business_provider.dart';
+import '../../presentation/providers/user_reviews_provider.dart';
 import '../../data/models/venue.dart';
 import '../widgets/auth_guard.dart';
 
@@ -132,6 +134,18 @@ class AppRouter {
           requiredFor: 'Profilim',
           redirectPath: '/profile',
           child: ProfileScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/my-reviews',
+        name: 'my-reviews',
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (_) => UserReviewsProvider(),
+          child: const AuthGuard(
+            requiredFor: 'İncelemelerim',
+            redirectPath: '/my-reviews',
+            child: UserReviewsScreen(),
+          ),
         ),
       ),
       // Venue Details (Public)

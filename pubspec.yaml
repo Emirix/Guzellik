@@ -88,9 +88,9 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/logo.svg"
+  image_path: "assets/maskot.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/logo.svg"
+  adaptive_icon_foreground: "assets/maskot.png"
 
 flutter_native_splash:
   color: "#FFFFFF"
@@ -114,6 +114,7 @@ flutter:
     - assets/logos/
     - assets/maps/
     - assets/animations/
+    - assets/maskot.png
 
   # Fonts
   # fonts:

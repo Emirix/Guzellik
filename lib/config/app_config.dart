@@ -29,9 +29,9 @@ class AppConfig {
       'assets/images/placeholder_service.png';
 
   // Contact & Social
-  static const String supportEmail = 'destek@guzellikplatformu.com';
-  static const String supportPhone = '+90 XXX XXX XX XX';
-  static const String websiteUrl = 'https://guzellikplatformu.com';
+  static const String supportEmail = 'destek@guzellikharitam.com';
+  static const String supportPhone = '+90 544 381 6590';
+  static const String websiteUrl = 'https://guzellikharitam.com';
   static const String instagramUrl = 'https://instagram.com/guzellikplatformu';
 
   // Legal
@@ -49,8 +49,8 @@ class AppConfig {
 
   // Map Configuration
   static const double defaultMapZoom = 14.0;
-  static const double defaultLatitude = 41.0082; // Istanbul
-  static const double defaultLongitude = 28.9784; // Istanbul
+  static const double defaultLatitude = 38.4237; // Izmir
+  static const double defaultLongitude = 27.1428; // Izmir
 
   // Pagination
   static const int defaultPageSize = 20;
@@ -66,8 +66,7 @@ class AppConfig {
   static const int maxReviewLength = 1000;
 
   // In-App Purchases
-  static const String premiumSubscriptionId =
-      'isletme_aboneligi1'; // TODO: Replace with real ID from Play Console
+  static const String premiumSubscriptionId = 'isletme_aboneligi1';
   static const Set<String> subscriptionIds = {premiumSubscriptionId};
 
   // Private constructor to prevent instantiation

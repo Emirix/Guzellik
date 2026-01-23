@@ -19,6 +19,10 @@ class Review {
   final String? userFullName;
   final String? userAvatarUrl;
 
+  // Joined venue fields
+  final String? venueName;
+  final String? venuePhotoUrl;
+
   Review({
     required this.id,
     required this.venueId,
@@ -33,6 +37,8 @@ class Review {
     this.photos = const [],
     this.userFullName,
     this.userAvatarUrl,
+    this.venueName,
+    this.venuePhotoUrl,
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
@@ -45,6 +51,16 @@ class Review {
       final profile = json['profiles'];
       name = profile['full_name'];
       avatar = ImageUtils.normalizeUrl(profile['avatar_url']);
+    }
+
+    // Parse venue data
+    String? vName;
+    String? vPhotoUrl;
+
+    if (json['venues'] != null && json['venues'] is Map) {
+      final venue = json['venues'];
+      vName = venue['name'] as String?;
+      vPhotoUrl = ImageUtils.normalizeUrl(venue['image_url']);
     }
 
     // Parse status
@@ -84,10 +100,10 @@ class Review {
           : null,
       helpfulCount: json['helpful_count'] as int? ?? 0,
       photos: parsedPhotos,
-      userFullName: name ?? json['user_name'], // Fallback for RPC
-      userAvatarUrl:
-          avatar ??
-          ImageUtils.normalizeUrl(json['user_avatar']), // Fallback for RPC
+      userFullName: name ?? json['user_name'],
+      userAvatarUrl: avatar ?? ImageUtils.normalizeUrl(json['user_avatar']),
+      venueName: vName,
+      venuePhotoUrl: vPhotoUrl,
     );
   }
 
@@ -126,6 +142,8 @@ class Review {
     List<String>? photos,
     String? userFullName,
     String? userAvatarUrl,
+    String? venueName,
+    String? venuePhotoUrl,
   }) {
     return Review(
       id: id ?? this.id,
@@ -141,6 +159,8 @@ class Review {
       photos: photos ?? this.photos,
       userFullName: userFullName ?? this.userFullName,
       userAvatarUrl: userAvatarUrl ?? this.userAvatarUrl,
+      venueName: venueName ?? this.venueName,
+      venuePhotoUrl: venuePhotoUrl ?? this.venuePhotoUrl,
     );
   }
 }

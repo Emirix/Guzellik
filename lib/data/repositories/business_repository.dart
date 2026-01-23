@@ -87,14 +87,16 @@ class BusinessRepository {
           .from('venues_subscription')
           .insert({
             'venue_id': venueId,
-            'subscription_type': SubscriptionTier.standard.name,
+            'subscription_type': SubscriptionTier.premium.name,
             'status': 'active',
             'features': {
-              'campaigns': {'enabled': true, 'monthly_limit': 3},
-              'notifications': {'enabled': true, 'daily_limit': 5},
-              'analytics': {'enabled': true, 'type': 'basic'},
-              'support': {'type': 'email'},
-              'featured_listing': {'enabled': false},
+              'campaigns': {'enabled': true, 'monthly_limit': -1},
+              'notifications': {'enabled': true, 'daily_limit': -1},
+              'analytics': {'enabled': true, 'type': 'enterprise'},
+              'support': {'type': 'dedicated'},
+              'featured_listing': {'enabled': true},
+              'api_access': {'enabled': true},
+              'multi_location': {'enabled': true},
             },
           })
           .select()
@@ -209,20 +211,22 @@ class BusinessRepository {
           })
           .eq('id', userId);
 
-      // 4. Create standard subscription for the new venue
+      // 4. Create premium subscription for the new venue
       final expiresAt = DateTime.now().add(const Duration(days: 365));
       await _supabase.from('venues_subscription').insert({
         'venue_id': venueId,
-        'subscription_type': SubscriptionTier.standard.name,
+        'subscription_type': SubscriptionTier.premium.name,
         'status': 'active',
         'started_at': DateTime.now().toIso8601String(),
         'expires_at': expiresAt.toIso8601String(),
         'features': {
-          'campaigns': {'enabled': true, 'monthly_limit': 3},
-          'notifications': {'enabled': true, 'daily_limit': 5},
-          'analytics': {'enabled': true, 'type': 'basic'},
-          'support': {'type': 'email'},
-          'featured_listing': {'enabled': false},
+          'campaigns': {'enabled': true, 'monthly_limit': -1},
+          'notifications': {'enabled': true, 'daily_limit': -1},
+          'analytics': {'enabled': true, 'type': 'enterprise'},
+          'support': {'type': 'dedicated'},
+          'featured_listing': {'enabled': true},
+          'api_access': {'enabled': true},
+          'multi_location': {'enabled': true},
         },
       });
     } catch (e) {

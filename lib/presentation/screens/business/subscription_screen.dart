@@ -293,17 +293,37 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       {
         'icon': Icons.people_outline_rounded,
         'title': 'Uzman Ekip',
-        'desc': 'Ekip üyelerinizi yönetin',
+        'desc': 'Ekip üyelerinizi sınırsız yönetin',
+      },
+      {
+        'icon': Icons.campaign_outlined,
+        'title': 'Sınırsız Kampanya',
+        'desc': 'Aylık kampanya limiti yok',
+      },
+      {
+        'icon': Icons.notifications_active_outlined,
+        'title': 'Sınırsız Bildirim',
+        'desc': 'Günlük bildirim limiti yok',
       },
       {
         'icon': Icons.analytics_outlined,
-        'title': 'Analitik',
-        'desc': 'Detaylı raporlar ve istatistikler',
+        'title': 'Gelişmiş Analitik',
+        'desc': 'Kurumsal seviye raporlar',
       },
       {
         'icon': Icons.support_agent_rounded,
-        'title': 'Öncelikli Destek',
+        'title': 'Özel Destek',
         'desc': '7/24 hızlı yardım',
+      },
+      {
+        'icon': Icons.star_outlined,
+        'title': 'Öne Çıkan Listing',
+        'desc': 'Özel vitrin görünürlüğü',
+      },
+      {
+        'icon': Icons.api_outlined,
+        'title': 'API Erişimi',
+        'desc': 'Tüm API özellikleri açık',
       },
     ];
 

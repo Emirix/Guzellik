@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/discovery_provider.dart';
 import '../providers/app_state_provider.dart';
 import '../widgets/discovery/map_view.dart';
@@ -212,65 +213,16 @@ class _ExploreScreenState extends State<ExploreScreen>
     final isMapView = provider.viewMode == DiscoveryViewMode.map;
 
     final content = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(
-          child: Row(
-            children: [
-              const Icon(
-                Icons.location_on_rounded,
-                color: AppColors.primary,
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  provider.currentLocationName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: AppColors.gray900,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            context.read<AppStateProvider>().setBottomNavIndex(3);
-          },
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.gray100),
-            ),
-            child: Stack(
-              children: [
-                const Icon(
-                  Icons.notifications_outlined,
-                  color: AppColors.gray700,
-                  size: 22,
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.white, width: 1.5),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        Image.asset('assets/maskot.png', width: 40, height: 40),
+        const SizedBox(width: 12),
+        Text(
+          'Güzellik Haritam',
+          style: GoogleFonts.outfit(
+            color: AppColors.primary,
+            fontSize: 23,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -340,22 +292,22 @@ class _ExploreScreenState extends State<ExploreScreen>
                   ),
                 ),
 
-                // Nearby Venues - wrapped in RepaintBoundary
-                const SliverToBoxAdapter(
-                  child: RepaintBoundary(
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 24),
-                      child: NearbyVenues(),
-                    ),
-                  ),
-                ),
-
                 // Campaign Slider - wrapped in RepaintBoundary
                 const SliverToBoxAdapter(
                   child: RepaintBoundary(
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 16),
                       child: CampaignSlider(),
+                    ),
+                  ),
+                ),
+
+                // Nearby Venues - wrapped in RepaintBoundary
+                const SliverToBoxAdapter(
+                  child: RepaintBoundary(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: NearbyVenues(),
                     ),
                   ),
                 ),

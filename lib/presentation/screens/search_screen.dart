@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/search_provider.dart';
 import '../providers/app_state_provider.dart';
 import '../providers/discovery_provider.dart';
@@ -31,25 +32,33 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   bool _isRouteActive = true;
+  DiscoveryProvider? _discoveryProvider;
+  late SearchProvider _searchProvider;
 
   @override
   void initState() {
     super.initState();
     // Sync controller with provider
-    final provider = context.read<SearchProvider>();
-    _searchController.text = provider.searchQuery;
-    provider.addListener(_onProviderChanged);
+    _searchProvider = context.read<SearchProvider>();
+    _searchController.text = _searchProvider.searchQuery;
+    _searchProvider.addListener(_onProviderChanged);
 
     // Sync location from DiscoveryProvider and listen for changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _syncLocation();
-      context.read<DiscoveryProvider>().addListener(_syncLocation);
     });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final discoveryProvider = context.read<DiscoveryProvider>();
+    if (_discoveryProvider != discoveryProvider) {
+      _discoveryProvider?.removeListener(_syncLocation);
+      _discoveryProvider = discoveryProvider;
+      _discoveryProvider?.addListener(_syncLocation);
+    }
+    _searchProvider = context.read<SearchProvider>();
     final route = ModalRoute.of(context);
     if (route is ModalRoute<void>) {
       AppRouter.routeObserver.subscribe(this, route);
@@ -105,11 +114,8 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
   @override
   void dispose() {
     AppRouter.routeObserver.unsubscribe(this);
-    context.read<SearchProvider>().removeListener(_onProviderChanged);
-    // Use try-catch or check if provider is still available to be safe
-    try {
-      context.read<DiscoveryProvider>().removeListener(_syncLocation);
-    } catch (_) {}
+    _searchProvider.removeListener(_onProviderChanged);
+    _discoveryProvider?.removeListener(_syncLocation);
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -123,6 +129,32 @@ class _SearchScreenState extends State<SearchScreen> with RouteAware {
         top: false,
         child: Column(
           children: [
+            // App Logo Header
+            Container(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                MediaQuery.of(context).padding.top + 12,
+                16,
+                8,
+              ),
+              color: AppColors.background,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/maskot.png', width: 40, height: 40),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Güzellik Haritam',
+                    style: GoogleFonts.outfit(
+                      color: AppColors.primary,
+                      fontSize: 23,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Header with search input - ALWAYS show this
             SearchHeader(
               controller: _searchController,

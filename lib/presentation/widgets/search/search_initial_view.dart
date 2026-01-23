@@ -59,13 +59,13 @@ class SearchInitialView extends StatelessWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.1,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 2.2,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final category = categories[index];
@@ -74,50 +74,53 @@ class SearchInitialView extends StatelessWidget {
 
                   return TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: 1.0),
-                    duration: Duration(milliseconds: 300 + (index * 100)),
+                    duration: Duration(milliseconds: 300 + (index * 50)),
                     curve: Curves.easeOut,
                     builder: (context, value, child) {
                       return Transform.translate(
-                        offset: Offset(0, 20 * (1 - value)),
+                        offset: Offset(0, 10 * (1 - value)),
                         child: Opacity(opacity: value, child: child),
                       );
                     },
                     child: GestureDetector(
                       onTap: () => provider.selectCategory(category),
                       child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: AppColors.gray100),
                           boxShadow: [
                             BoxShadow(
-                              color: color.withValues(alpha: 0.06),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                              color: color.withValues(alpha: 0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        child: Row(
                           children: [
                             Container(
-                              width: 56,
-                              height: 56,
+                              width: 36,
+                              height: 36,
                               decoration: BoxDecoration(
                                 color: color.withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Icon(icon, color: color, size: 28),
+                              child: Icon(icon, color: color, size: 18),
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              category.name,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.gray900,
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                category.name,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.gray900,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),

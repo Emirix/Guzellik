@@ -231,8 +231,10 @@ class VenueHeroV2 extends StatelessWidget {
                     ),
                     const Spacer(),
                     // Rating
-                    _buildRatingRow(),
-                    const SizedBox(height: 8),
+                    if (venue.ratingCount > 0) ...[
+                      _buildRatingRow(),
+                      const SizedBox(height: 8),
+                    ],
                     // Name with word coloring
                     _buildVenueName(),
                     const SizedBox(height: 12),

@@ -222,39 +222,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        (subscription?.tier == SubscriptionTier.premium ||
-                            subscription?.tier == SubscriptionTier.enterprise)
-                        ? const Color(0xFFD4AF37).withValues(alpha: 0.15)
-                        : Colors.grey.withValues(alpha: 0.1),
+                    color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        subscription?.tier == SubscriptionTier.enterprise
-                            ? Icons.business
-                            : Icons.stars,
-                        color:
-                            (subscription?.tier == SubscriptionTier.premium ||
-                                subscription?.tier ==
-                                    SubscriptionTier.enterprise)
-                            ? const Color(0xFFD4AF37)
-                            : Colors.grey,
+                      const Icon(
+                        Icons.stars,
+                        color: Color(0xFFD4AF37),
                         size: 18,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         subscription?.displayName.toUpperCase() ??
                             'YÜKLENİYOR...',
-                        style: TextStyle(
-                          color:
-                              (subscription?.tier == SubscriptionTier.premium ||
-                                  subscription?.tier ==
-                                      SubscriptionTier.enterprise)
-                              ? const Color(0xFFD4AF37)
-                              : Colors.grey[600],
+                        style: const TextStyle(
+                          color: Color(0xFFD4AF37),
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.2,

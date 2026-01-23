@@ -27,45 +27,10 @@ class SearchHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        MediaQuery.of(context).padding.top + 12,
-        16,
-        12,
-      ),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       decoration: const BoxDecoration(color: AppColors.background),
       child: Row(
         children: [
-          // Back button (Rounded full from design)
-          GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-              context.read<AppStateProvider>().setBottomNavIndex(0);
-            },
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.gray100),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.arrow_back,
-                color: AppColors.gray900,
-                size: 20,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-
           // Search input with location subtext (Rounded 2xl from design)
           Expanded(
             child: Selector<SearchProvider, String?>(
@@ -80,7 +45,7 @@ class SearchHeader extends StatelessWidget {
               },
               builder: (context, locationText, _) {
                 return Container(
-                  height: locationText != null ? 52 : 48,
+                  height: locationText != null ? 60 : 56,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),

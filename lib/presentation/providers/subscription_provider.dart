@@ -72,9 +72,8 @@ class SubscriptionProvider with ChangeNotifier {
     final venueId = _currentPurchaseVenueId;
 
     if (venueId != null) {
-      final type = purchase.productID.contains('premium')
-          ? 'premium'
-          : 'standard';
+      // Always use premium for all subscriptions
+      const type = 'premium';
 
       // Calculate expiry date (30 days from now for monthly)
       final expiryDate = DateTime.now().add(const Duration(days: 30));

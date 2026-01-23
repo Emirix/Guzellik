@@ -2,16 +2,14 @@ import 'package:flutter/foundation.dart';
 
 /// Enum defining the available subscription tiers
 enum SubscriptionTier {
-  standard,
-  premium,
-  enterprise;
+  premium;
 
   String get value => name;
 
   static SubscriptionTier fromString(String? value) {
     return SubscriptionTier.values.firstWhere(
       (e) => e.name == value?.toLowerCase(),
-      orElse: () => SubscriptionTier.standard,
+      orElse: () => SubscriptionTier.premium,
     );
   }
 }
@@ -64,36 +62,27 @@ class BusinessSubscription {
   /// Get subscription display name
   String get displayName {
     switch (tier) {
-      case SubscriptionTier.standard:
-        return 'Standart Üyelik';
       case SubscriptionTier.premium:
         return 'Premium Üyelik';
-      case SubscriptionTier.enterprise:
-        return 'Kurumsal Üyelik';
     }
   }
 
   /// Check if a specific feature is enabled
+  /// All features are enabled in premium unlimited subscription
   bool hasFeature(String featureName) {
-    if (!features.containsKey(featureName)) return false;
+    if (!features.containsKey(featureName)) return true;
     final feature = features[featureName];
-    if (feature is bool) return feature;
+    if (feature is bool) return true;
     if (feature is Map) {
-      return feature['enabled'] == true;
+      return true;
     }
-    return false;
+    return true;
   }
 
   /// Get feature limit (returns -1 for unlimited)
+  /// Premium unlimited subscription has no limits
   int getFeatureLimit(String featureName, String limitKey) {
-    if (!features.containsKey(featureName)) return 0;
-    final feature = features[featureName];
-    if (feature is Map && feature.containsKey(limitKey)) {
-      final limit = feature[limitKey];
-      if (limit is int) return limit;
-      if (limit is String) return int.tryParse(limit) ?? 0;
-    }
-    return 0;
+    return -1;
   }
 
   /// Create from JSON
