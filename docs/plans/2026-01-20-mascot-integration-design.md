@@ -4,7 +4,7 @@
 **Durum:** Onaylandı  
 **Hedef:** Güzellik Haritam uygulaması için maskot karakterinin marka kimliği odaklı entegrasyonu
 
----
+--- 
 
 ## 📋 Genel Bakış
 

@@ -94,4 +94,29 @@ class SubscriptionRepository {
       return false;
     }
   }
+
+  /// Create or update subscription for a venue
+  Future<bool> createSubscription({
+    required String venueId,
+    required String type,
+    required DateTime expiresAt,
+    String status = 'active',
+    Map<String, dynamic> features = const {},
+  }) async {
+    try {
+      await _supabase.from('venues_subscription').upsert({
+        'venue_id': venueId,
+        'subscription_type': type,
+        'status': status,
+        'started_at': DateTime.now().toIso8601String(),
+        'expires_at': expiresAt.toIso8601String(),
+        'features': features,
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'venue_id');
+      return true;
+    } catch (e) {
+      print('Error creating subscription: $e');
+      return false;
+    }
+  }
 }

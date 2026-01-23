@@ -28,7 +28,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final authProvider = context.read<AuthProvider>();
     final userId = authProvider.currentUser?.id;
     if (userId != null) {
-      await context.read<SubscriptionProvider>().loadSubscription(userId);
+      final provider = context.read<SubscriptionProvider>();
+      await provider.loadSubscription(userId);
+      await provider.loadAvailableProducts();
     }
   }
 
@@ -91,6 +93,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
                         // Features Section
                         _buildFeaturesSection(subscription),
+                        const SizedBox(height: 24),
+
+                        // Purchase Section
+                        if (subscription == null || !subscription.isActive)
+                          _buildPurchaseSection(subscriptionProvider),
                         const SizedBox(height: 24),
 
                         // Action Buttons
@@ -390,6 +397,122 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             }).toList(),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildPurchaseSection(SubscriptionProvider provider) {
+    if (provider.availableProducts.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 16),
+          child: Text(
+            'PLANINI SEÇ',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF9CA3AF),
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        ...provider.availableProducts.map((product) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: product.id.contains('premium')
+                    ? AppColors.primary
+                    : Colors.transparent,
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1B0E11),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        product.description,
+                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      product.price,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        final venueId = context
+                            .read<BusinessProvider>()
+                            .businessVenue
+                            ?.id;
+                        if (venueId != null) {
+                          provider.buySubscription(product, venueId);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Seç',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }),
       ],
     );
   }

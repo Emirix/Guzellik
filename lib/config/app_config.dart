@@ -65,6 +65,11 @@ class AppConfig {
   static const int maxBioLength = 500;
   static const int maxReviewLength = 1000;
 
+  // In-App Purchases
+  static const String premiumSubscriptionId =
+      'isletme_aboneligi1'; // TODO: Replace with real ID from Play Console
+  static const Set<String> subscriptionIds = {premiumSubscriptionId};
+
   // Private constructor to prevent instantiation
   AppConfig._();
 }

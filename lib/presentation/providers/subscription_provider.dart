@@ -1,21 +1,95 @@
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../data/models/business_subscription.dart';
 import '../../data/repositories/subscription_repository.dart';
+import '../../data/services/purchase_service.dart';
+import '../../config/app_config.dart';
 
 /// Provider for subscription management
 class SubscriptionProvider with ChangeNotifier {
   final SubscriptionRepository _repository = SubscriptionRepository();
+  final PurchaseService _purchaseService = PurchaseService.instance;
 
   BusinessSubscription? _subscription;
   bool _isLoading = false;
   String? _errorMessage;
+  List<ProductDetails> _availableProducts = [];
+
+  SubscriptionProvider() {
+    _initializePurchases();
+  }
 
   // Getters
   BusinessSubscription? get subscription => _subscription;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  List<ProductDetails> get availableProducts => _availableProducts;
   bool get hasActiveSubscription =>
       _subscription != null && _subscription!.isActive;
+
+  /// Initialize purchase stream
+  void _initializePurchases() {
+    _purchaseService.purchaseStream.listen((purchase) {
+      if (purchase.status == PurchaseStatus.purchased ||
+          purchase.status == PurchaseStatus.restored) {
+        _handleSuccessfulPurchase(purchase);
+      } else if (purchase.status == PurchaseStatus.error) {
+        _setError('Ödeme sırasında hata oluştu: ${purchase.error?.message}');
+      }
+    });
+  }
+
+  /// Load available products from store
+  Future<void> loadAvailableProducts() async {
+    try {
+      await _purchaseService.initialize();
+      _availableProducts = await _purchaseService.getProducts(
+        AppConfig.subscriptionIds,
+      );
+      notifyListeners();
+    } catch (e) {
+      print('Error loading products: $e');
+    }
+  }
+
+  /// Purchase a subscription
+  Future<void> buySubscription(ProductDetails product, String venueId) async {
+    _setLoading(true);
+    _currentPurchaseVenueId = venueId;
+    try {
+      await _purchaseService.buySubscription(product);
+    } catch (e) {
+      _setError('Satın alma işlemi başlatılamadı: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  String? _currentPurchaseVenueId;
+
+  /// Handle successful purchase and update Supabase
+  Future<void> _handleSuccessfulPurchase(PurchaseDetails purchase) async {
+    final venueId = _currentPurchaseVenueId;
+
+    if (venueId != null) {
+      final type = purchase.productID.contains('premium')
+          ? 'premium'
+          : 'standard';
+
+      // Calculate expiry date (30 days from now for monthly)
+      final expiryDate = DateTime.now().add(const Duration(days: 30));
+
+      await _repository.createSubscription(
+        venueId: venueId,
+        type: type,
+        expiresAt: expiryDate,
+      );
+
+      await loadSubscription(venueId); // Refresh
+    }
+
+    await _purchaseService.completePurchase(purchase);
+  }
 
   /// Load subscription data
   Future<void> loadSubscription(String profileId) async {
