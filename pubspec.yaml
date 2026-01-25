@@ -2,7 +2,7 @@ name: guzellik_app
 description: "Güzellik Hizmetleri Platformu - Beauty Services Aggregator for Turkey"
 publish_to: 'none'
 
-version: 1.0.0+4
+version: 1.0.0+6
 
 environment:
   sdk: ^3.10.4
