@@ -170,7 +170,9 @@ class AppRouter {
               businessProvider.businessVenue?.id == venueId;
 
           if (isOwnVenue) {
-            context.read<AppStateProvider>().setBottomNavIndex(0);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.read<AppStateProvider>().setBottomNavIndex(0);
+            });
           }
 
           return VenueDetailsScreen(
@@ -217,7 +219,9 @@ class AppRouter {
         path: '/business/subscription',
         name: 'business-subscription',
         builder: (context, state) {
-          context.read<AppStateProvider>().setBottomNavIndex(2);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<AppStateProvider>().setBottomNavIndex(2);
+          });
           return const AuthGuard(
             requiredFor: 'Abonelik',
             redirectPath: '/business/subscription',
@@ -229,7 +233,9 @@ class AppRouter {
         path: '/business/store',
         name: 'business-store',
         builder: (context, state) {
-          context.read<AppStateProvider>().setBottomNavIndex(3);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<AppStateProvider>().setBottomNavIndex(3);
+          });
           return const AuthGuard(
             requiredFor: 'Mağaza',
             redirectPath: '/business/store',
@@ -336,7 +342,9 @@ class AppRouter {
         path: '/business/admin/customers',
         name: 'admin-customers',
         builder: (context, state) {
-          context.read<AppStateProvider>().setBottomNavIndex(1);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<AppStateProvider>().setBottomNavIndex(1);
+          });
           return const AuthGuard(
             requiredFor: 'Müşteri Yönetimi',
             redirectPath: '/business/admin/customers',

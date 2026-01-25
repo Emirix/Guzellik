@@ -23,7 +23,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CustomerProvider>().fetchCustomers();
       context.read<AppStateProvider>().setBottomNavIndex(1);
     });
