@@ -33,9 +33,9 @@ class BusinessBottomNav extends StatelessWidget {
               ),
               _buildNavItem(
                 context,
-                icon: Icons.dashboard_customize_outlined,
-                activeIcon: Icons.dashboard_customize,
-                label: 'Yönetim',
+                icon: Icons.people_outline,
+                activeIcon: Icons.people,
+                label: 'Müşteriler',
                 isSelected: selectedIndex == 1,
                 onTap: () => _handleTap(context, appState, 1),
               ),
@@ -118,8 +118,8 @@ class BusinessBottomNav extends StatelessWidget {
         }
         break;
       case 1:
-        // Admin/Management
-        context.go('/business/admin');
+        // Customers
+        context.go('/business/admin/customers');
         break;
       case 2:
         // Subscription

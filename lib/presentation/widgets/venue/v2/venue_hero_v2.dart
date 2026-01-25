@@ -5,7 +5,9 @@ import '../../../../core/theme/app_colors.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import '../../../providers/venue_details_provider.dart';
+import '../../../providers/business_provider.dart';
 import '../venue_hero_carousel.dart';
 import '../photo_gallery_viewer.dart';
 import 'venue_quick_actions_v2.dart';
@@ -407,10 +409,36 @@ class VenueHeroV2 extends StatelessWidget {
   }
 
   Widget _buildMainActionButtons(BuildContext context) {
-    return Consumer<VenueDetailsProvider>(
-      builder: (context, provider, _) {
+    return Consumer2<VenueDetailsProvider, BusinessProvider>(
+      builder: (context, provider, businessProvider, _) {
         final isFollowing = provider.isFollowing;
         final isFollowLoading = provider.isFollowLoading;
+
+        // Check if viewing own profile in business mode
+        final isOwnProfile =
+            businessProvider.isBusinessMode &&
+            businessProvider.businessVenue?.id == venue.id;
+
+        if (isOwnProfile) {
+          return SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => context.go('/business/admin'),
+              icon: const Icon(Icons.edit, size: 20),
+              label: const Text('Profilimi Düzenle'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 4,
+                shadowColor: AppColors.primary.withValues(alpha: 0.3),
+              ),
+            ),
+          );
+        }
 
         return Row(
           children: [

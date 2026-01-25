@@ -18,7 +18,6 @@ class GuzellikHaritamHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: padding ?? const EdgeInsets.fromLTRB(16, 0, 16, 12),
       decoration: BoxDecoration(
         color: backgroundColor ?? Colors.white,
         border: showBottomBorder
@@ -29,20 +28,23 @@ class GuzellikHaritamHeader extends StatelessWidget {
       ),
       child: SafeArea(
         bottom: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/maskot.png', width: 40, height: 40),
-            const SizedBox(width: 12),
-            Text(
-              'Güzellik Haritam',
-              style: GoogleFonts.outfit(
-                color: AppColors.primary,
-                fontSize: 23,
-                fontWeight: FontWeight.w600,
+        child: Padding(
+          padding: padding ?? const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/maskot.png', width: 40, height: 40),
+              const SizedBox(width: 12),
+              Text(
+                'Güzellik Haritam',
+                style: GoogleFonts.outfit(
+                  color: AppColors.primary,
+                  fontSize: 23,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

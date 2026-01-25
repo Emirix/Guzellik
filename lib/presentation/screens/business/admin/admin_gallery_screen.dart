@@ -22,6 +22,7 @@ class AdminGalleryScreen extends StatefulWidget {
 
 class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
   final ImagePicker _picker = ImagePicker();
+  String? _deletingPhotoId; // Track which photo is being deleted
 
   @override
   void initState() {
@@ -342,6 +343,7 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
                       return _PhotoCard(
                         photo: photo,
                         categoryName: categoryName,
+                        isDeleting: _deletingPhotoId == photo.id,
                         onDelete: () => _deletePhoto(photo.id),
                         onSetHero: () => _setHero(photo.id),
                       );
@@ -477,6 +479,10 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
     );
 
     if (confirm == true) {
+      setState(() {
+        _deletingPhotoId = photoId;
+      });
+
       try {
         await context.read<AdminGalleryProvider>().deletePhoto(photoId);
 
@@ -492,6 +498,12 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _deletingPhotoId = null;
+          });
         }
       }
     }
@@ -569,12 +581,14 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
 class _PhotoCard extends StatelessWidget {
   final VenuePhoto photo;
   final String? categoryName;
+  final bool isDeleting;
   final VoidCallback onDelete;
   final VoidCallback onSetHero;
 
   const _PhotoCard({
     required this.photo,
     this.categoryName,
+    this.isDeleting = false,
     required this.onDelete,
     required this.onSetHero,
   });
@@ -597,7 +611,37 @@ class _PhotoCard extends StatelessWidget {
             height: double.infinity,
           ),
         ),
-        if (photo.isHeroImage || displayLabel != null)
+        // Deleting Overlay
+        if (isDeleting)
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Siliniyor...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        if (!isDeleting && (photo.isHeroImage || displayLabel != null))
           Positioned(
             top: 10,
             left: 10,
@@ -654,25 +698,26 @@ class _PhotoCard extends StatelessWidget {
               ],
             ),
           ),
-        Positioned(
-          bottom: 10,
-          right: 10,
-          child: GestureDetector(
-            onTap: onDelete,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.5),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.delete_outline,
-                color: Colors.white,
-                size: 20,
+        if (!isDeleting)
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: GestureDetector(
+              onTap: onDelete,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_outline,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }

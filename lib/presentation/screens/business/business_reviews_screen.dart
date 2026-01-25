@@ -7,6 +7,8 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../widgets/business/review_approval_dialog.dart';
 import '../../widgets/business/review_empty_state.dart';
 import '../../widgets/business/business_review_card.dart';
+import '../../widgets/common/guzellik_haritam_header.dart';
+import '../../widgets/common/business_bottom_nav.dart';
 
 class BusinessReviewsScreen extends StatefulWidget {
   final String venueId;
@@ -39,44 +41,50 @@ class _BusinessReviewsScreenState extends State<BusinessReviewsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Yorum Yönetimi'),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppColors.primary,
-          indicatorColor: AppColors.primary,
-          tabs: const [
-            Tab(text: 'Bekleyenler'),
-            Tab(text: 'Onaylananlar'),
-          ],
-        ),
-      ),
-      body: Consumer<BusinessReviewProvider>(
-        builder: (context, provider, _) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (provider.errorMessage != null) {
-            return Center(child: Text(provider.errorMessage!));
-          }
-
-          return TabBarView(
+      backgroundColor: Colors.white,
+      bottomNavigationBar: const BusinessBottomNav(),
+      body: Column(
+        children: [
+          const GuzellikHaritamHeader(backgroundColor: Colors.white),
+          TabBar(
             controller: _tabController,
-            children: [
-              _buildReviewList(
-                context,
-                provider.pendingReviews,
-                isPending: true,
-              ),
-              _buildReviewList(
-                context,
-                provider.approvedReviews,
-                isPending: false,
-              ),
+            labelColor: AppColors.primary,
+            indicatorColor: AppColors.primary,
+            tabs: const [
+              Tab(text: 'Bekleyenler'),
+              Tab(text: 'Onaylananlar'),
             ],
-          );
-        },
+          ),
+          Expanded(
+            child: Consumer<BusinessReviewProvider>(
+              builder: (context, provider, _) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (provider.errorMessage != null) {
+                  return Center(child: Text(provider.errorMessage!));
+                }
+
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildReviewList(
+                      context,
+                      provider.pendingReviews,
+                      isPending: true,
+                    ),
+                    _buildReviewList(
+                      context,
+                      provider.approvedReviews,
+                      isPending: false,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

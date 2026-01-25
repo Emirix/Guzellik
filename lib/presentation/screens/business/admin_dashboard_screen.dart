@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../widgets/common/business_bottom_nav.dart';
+import '../../widgets/common/guzellik_haritam_header.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/business_provider.dart';
 import '../../providers/subscription_provider.dart';
@@ -46,64 +47,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFCFCFC),
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.white.withValues(alpha: 0.8),
-        elevation: 0,
-        centerTitle: true,
-        scrolledUnderElevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey.withValues(alpha: 0.1),
-                width: 1,
+      bottomNavigationBar: const BusinessBottomNav(),
+      body: Column(
+        children: [
+          const GuzellikHaritamHeader(backgroundColor: Color(0xFFFCFCFC)),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildCoverAndProfile(context, venue, subscription),
+                  const SizedBox(height: 16),
+                  _buildManagementMenu(context, venue, subscription),
+                  const SizedBox(height: 24),
+                  _buildSaveButton(context),
+                  const SizedBox(height: 100),
+                ],
               ),
             ),
           ),
-        ),
-        title: const Text(
-          'İşletme Profili',
-          style: TextStyle(
-            color: Color(0xFF1B0E11),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Color(0xFF1B0E11),
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.check_circle_outline,
-              color: AppColors.primary,
-            ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Profil güncellendi')),
-              );
-            },
-          ),
         ],
-      ),
-      bottomNavigationBar: const BusinessBottomNav(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildCoverAndProfile(context, venue, subscription),
-            const SizedBox(height: 16),
-            _buildManagementMenu(context, venue, subscription),
-            const SizedBox(height: 24),
-            _buildSaveButton(context),
-            const SizedBox(height: 100),
-          ],
-        ),
       ),
     );
   }
@@ -378,7 +340,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
           _buildListItem(
             context,
+            icon: Icons.person_search,
+            title: 'Müşterilerim',
+            subtitle: 'Müşteri listenizi ve bilgileri yönetin',
+            onTap: () => context.push('/business/admin/customers'),
+          ),
+
+          _buildListItem(
+            context,
             icon: Icons.compare_arrows_sharp,
+
             title: 'Kampanyalar',
             subtitle: 'Kampanyalarınızı yönetin',
             onTap: () => context.push('/business/admin/campaigns'),

@@ -28,14 +28,18 @@ import '../../presentation/screens/business/admin/admin_campaigns_screen.dart';
 import '../../presentation/screens/business/admin/admin_working_hours_screen.dart';
 import '../../presentation/screens/business/admin/admin_location_screen.dart';
 import '../../presentation/screens/business/admin/admin_faq_screen.dart';
+import '../../presentation/screens/business/admin/admin_customers_screen.dart';
 import '../../presentation/screens/business/admin/admin_cover_photo_screen.dart';
+
 import '../../presentation/screens/business/admin/admin_features_screen.dart';
 import '../../presentation/screens/business/business_reviews_screen.dart';
 import '../../presentation/screens/business/admin_basic_info_screen.dart';
 import '../../presentation/screens/user_reviews_screen.dart';
 import '../../presentation/widgets/common/business_bottom_nav.dart';
 import '../../data/repositories/venue_features_repository.dart';
+import '../../presentation/providers/app_state_provider.dart';
 import '../../presentation/providers/admin_features_provider.dart';
+
 import '../../presentation/providers/business_provider.dart';
 import '../../presentation/providers/user_reviews_provider.dart';
 import '../../data/models/venue.dart';
@@ -165,6 +169,10 @@ class AppRouter {
               businessProvider.isBusinessMode &&
               businessProvider.businessVenue?.id == venueId;
 
+          if (isOwnVenue) {
+            context.read<AppStateProvider>().setBottomNavIndex(0);
+          }
+
           return VenueDetailsScreen(
             venueId: venueId,
             initialVenue: venue,
@@ -208,20 +216,26 @@ class AppRouter {
       GoRoute(
         path: '/business/subscription',
         name: 'business-subscription',
-        builder: (context, state) => const AuthGuard(
-          requiredFor: 'Abonelik',
-          redirectPath: '/business/subscription',
-          child: SubscriptionScreen(),
-        ),
+        builder: (context, state) {
+          context.read<AppStateProvider>().setBottomNavIndex(2);
+          return const AuthGuard(
+            requiredFor: 'Abonelik',
+            redirectPath: '/business/subscription',
+            child: SubscriptionScreen(),
+          );
+        },
       ),
       GoRoute(
         path: '/business/store',
         name: 'business-store',
-        builder: (context, state) => const AuthGuard(
-          requiredFor: 'Mağaza',
-          redirectPath: '/business/store',
-          child: StoreScreen(),
-        ),
+        builder: (context, state) {
+          context.read<AppStateProvider>().setBottomNavIndex(3);
+          return const AuthGuard(
+            requiredFor: 'Mağaza',
+            redirectPath: '/business/store',
+            child: StoreScreen(),
+          );
+        },
         routes: [
           GoRoute(
             path: 'history',
@@ -319,7 +333,21 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '/business/admin/customers',
+        name: 'admin-customers',
+        builder: (context, state) {
+          context.read<AppStateProvider>().setBottomNavIndex(1);
+          return const AuthGuard(
+            requiredFor: 'Müşteri Yönetimi',
+            redirectPath: '/business/admin/customers',
+            child: AdminCustomersScreen(),
+          );
+        },
+      ),
+
+      GoRoute(
         path: '/business/admin/reviews',
+
         name: 'admin-reviews',
         builder: (context, state) {
           final businessProvider = context.read<BusinessProvider>();
@@ -340,7 +368,7 @@ class AppRouter {
           return AuthGuard(
             requiredFor: 'Kapak Fotoğrafı',
             redirectPath: '/business/admin/cover-photo',
-            child: AdminCoverPhotoScreen(venue: venue!),
+            child: AdminCoverPhotoScreen(venue: venue),
           );
         },
       ),

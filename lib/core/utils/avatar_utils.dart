@@ -72,6 +72,17 @@ class AvatarUtils {
     return AppColors.avatarNeutralIcon;
   }
 
+  /// Returns initials from a full name (e.g., "John Doe" -> "JD")
+  static String getInitials(String name) {
+    if (name.isEmpty) return "";
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0][0].toUpperCase();
+  }
+
   // Private constructor to prevent instantiation
+
   AvatarUtils._();
 }

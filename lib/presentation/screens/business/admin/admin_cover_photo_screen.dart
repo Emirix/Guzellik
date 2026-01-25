@@ -5,11 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../data/models/venue.dart';
 import '../../../providers/admin_cover_photo_provider.dart';
+import '../../../providers/business_provider.dart';
 
 class AdminCoverPhotoScreen extends StatefulWidget {
-  final Venue venue;
+  final Venue? venue;
 
-  const AdminCoverPhotoScreen({super.key, required this.venue});
+  const AdminCoverPhotoScreen({super.key, this.venue});
 
   @override
   State<AdminCoverPhotoScreen> createState() => _AdminCoverPhotoScreenState();
@@ -20,7 +21,11 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AdminCoverPhotoProvider>().init(widget.venue);
+      final venue =
+          widget.venue ?? context.read<BusinessProvider>().businessVenue;
+      if (venue != null) {
+        context.read<AdminCoverPhotoProvider>().init(venue);
+      }
     });
   }
 
@@ -50,6 +55,10 @@ class _AdminCoverPhotoScreenState extends State<AdminCoverPhotoScreen> {
       ),
       body: Consumer<AdminCoverPhotoProvider>(
         builder: (context, provider, child) {
+          if (provider.venue == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           if (provider.isLoading && provider.categoryPhotos.isEmpty) {
             // PERF: Loading indicator'ı RepaintBoundary ile izole et
             return const Center(

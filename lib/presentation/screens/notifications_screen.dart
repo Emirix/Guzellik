@@ -5,8 +5,8 @@ import '../../core/theme/app_text_styles.dart';
 import '../../data/models/notification_model.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/notifications/notification_card.dart';
-import '../widgets/notifications/notification_filter_tabs.dart';
 import '../widgets/common/ad_banner_widget.dart';
+import '../widgets/common/guzellik_haritam_header.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -17,19 +17,17 @@ class NotificationsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context, provider),
-            const NotificationFilterTabs(),
-            const AdBannerWidget(),
-            Expanded(
-              child: provider.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _buildNotificationList(context, provider),
-            ),
-          ],
-        ),
+      body: Column(
+        children: [
+          const GuzellikHaritamHeader(backgroundColor: AppColors.background),
+          const AdBannerWidget(),
+          const AdBannerWidget(),
+          Expanded(
+            child: provider.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _buildNotificationList(context, provider),
+          ),
+        ],
       ),
     );
   }

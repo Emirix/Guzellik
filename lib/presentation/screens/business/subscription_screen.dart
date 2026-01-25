@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/enums/business_mode.dart';
 import '../../../config/admin_config.dart';
+import '../../providers/app_state_provider.dart';
 import '../../providers/business_provider.dart';
+
 import '../../providers/subscription_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/business_bottom_nav.dart';
@@ -21,7 +23,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSubscription();
+    Future.microtask(() {
+      _loadSubscription();
+      context.read<AppStateProvider>().setBottomNavIndex(2);
+    });
   }
 
   Future<void> _loadSubscription() async {

@@ -155,12 +155,6 @@ class _ExploreScreenState extends State<ExploreScreen>
               left: 0,
               right: 0,
               child: Container(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  MediaQuery.of(context).padding.top + 24,
-                  16,
-                  16,
-                ),
                 decoration: BoxDecoration(
                   gradient: provider.viewMode == DiscoveryViewMode.map
                       ? LinearGradient(
@@ -177,8 +171,14 @@ class _ExploreScreenState extends State<ExploreScreen>
                       ? AppColors.background
                       : null,
                 ),
-                child: Column(
-                  children: [_buildLocationHeader(context, provider)],
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: Column(
+                      children: [_buildLocationHeader(context, provider)],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -229,7 +229,6 @@ class _ExploreScreenState extends State<ExploreScreen>
         child: const GuzellikHaritamHeader(
           showBottomBorder: false,
           backgroundColor: Colors.transparent,
-          padding: EdgeInsets.all(12),
         ),
       );
     }
@@ -237,7 +236,6 @@ class _ExploreScreenState extends State<ExploreScreen>
     return const GuzellikHaritamHeader(
       showBottomBorder: false,
       backgroundColor: Colors.transparent,
-      padding: EdgeInsets.zero,
     );
   }
 
@@ -256,12 +254,7 @@ class _ExploreScreenState extends State<ExploreScreen>
               slivers: [
                 // Header with location
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    child: Column(
-                      children: [_buildLocationHeader(context, provider)],
-                    ),
-                  ),
+                  child: _buildLocationHeader(context, provider),
                 ),
 
                 // Featured Venues - wrapped in RepaintBoundary

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/venue_details_provider.dart';
+import '../../providers/business_provider.dart';
 import '../../../core/utils/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../widgets/venue/v2/venue_hero_v2.dart';
@@ -259,10 +260,17 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
           if (widget.bottomNavigationBar != null)
             widget.bottomNavigationBar!
           else if (!widget.hideDefaultBottomBar)
-            Consumer<VenueDetailsProvider>(
-              builder: (context, provider, _) {
+            Consumer2<VenueDetailsProvider, BusinessProvider>(
+              builder: (context, provider, businessProvider, _) {
                 final venue = provider.venue;
                 if (venue == null) return const SizedBox.shrink();
+
+                // Hide booking bar if viewing own profile in business mode
+                final isOwnProfile =
+                    businessProvider.isBusinessMode &&
+                    businessProvider.businessVenue?.id == venue.id;
+                if (isOwnProfile) return const SizedBox.shrink();
+
                 return BookingBottomBar(
                   onBookingTap: () => _showContactOptions(context, venue),
                   rating: venue.rating,

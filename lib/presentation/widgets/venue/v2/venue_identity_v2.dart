@@ -10,6 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 import '../../../providers/venue_details_provider.dart';
+import '../../../providers/business_provider.dart';
 import '../../dialogs/follow_info_bottom_sheet.dart';
 import '../../dialogs/unfollow_confirmation_dialog.dart';
 
@@ -201,10 +202,15 @@ class _VenueIdentityV2State extends State<VenueIdentityV2> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<VenueDetailsProvider>(
-      builder: (context, provider, _) {
+    return Consumer2<VenueDetailsProvider, BusinessProvider>(
+      builder: (context, provider, businessProvider, _) {
         final isFollowing = provider.isFollowing;
         final isLoading = provider.isLoading || provider.isFollowLoading;
+
+        // Check if viewing own profile in business mode
+        final isOwnProfile =
+            businessProvider.isBusinessMode &&
+            businessProvider.businessVenue?.id == widget.venue.id;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,8 +232,10 @@ class _VenueIdentityV2State extends State<VenueIdentityV2> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                _buildFollowButton(isFollowing, isLoading, context),
+                if (!isOwnProfile) ...[
+                  const SizedBox(width: 12),
+                  _buildFollowButton(isFollowing, isLoading, context),
+                ],
               ],
             ),
             const SizedBox(height: 8),

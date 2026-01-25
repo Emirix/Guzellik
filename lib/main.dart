@@ -39,7 +39,9 @@ import 'presentation/providers/admin_location_provider.dart';
 import 'presentation/providers/admin_cover_photo_provider.dart';
 import 'presentation/providers/credit_provider.dart';
 import 'presentation/providers/business_onboarding_provider.dart';
+import 'presentation/providers/customer_provider.dart';
 import 'presentation/providers/app_onboarding_provider.dart';
+
 import 'data/services/onboarding_preferences.dart';
 import 'data/repositories/business_repository.dart';
 import 'data/repositories/venue_category_repository.dart';
@@ -162,7 +164,9 @@ class GuzellikApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdminWorkingHoursProvider()),
         ChangeNotifierProvider(create: (_) => AdminLocationProvider()),
         ChangeNotifierProvider(create: (_) => AdminCoverPhotoProvider()),
+        ChangeNotifierProvider(create: (_) => CustomerProvider()),
         ChangeNotifierProvider(create: (_) => CreditProvider()),
+
         ChangeNotifierProvider(
           create: (_) => BusinessOnboardingProvider(
             BusinessRepository(),

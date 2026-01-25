@@ -7,6 +7,7 @@ import '../../providers/business_provider.dart';
 import '../../providers/credit_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../widgets/common/business_bottom_nav.dart';
+import '../../widgets/common/guzellik_haritam_header.dart';
 import '../../../data/models/credit_package.dart';
 
 /// Store screen for business features marketplace
@@ -40,134 +41,118 @@ class _StoreScreenState extends State<StoreScreen> {
       backgroundColor: isDark
           ? AppColors.backgroundDark
           : AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          'Mağaza',
-          style: TextStyle(
-            color: isDark ? Colors.white : const Color(0xFF1B0E11),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new,
-            color: isDark ? Colors.white : const Color(0xFF1B0E11),
-            size: 18,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.history,
-              color: isDark ? Colors.white : const Color(0xFF1B0E11),
-            ),
-            onPressed: () {
-              context.push('/business/store/history');
-            },
-          ),
-        ],
-      ),
       bottomNavigationBar: const BusinessBottomNav(),
-      body: Consumer2<CreditProvider, BusinessProvider>(
-        builder: (context, creditProvider, businessProvider, _) {
-          final subProvider = context.watch<SubscriptionProvider>();
-          final subscription = subProvider.subscription;
+      body: Column(
+        children: [
+          GuzellikHaritamHeader(
+            backgroundColor: isDark
+                ? AppColors.backgroundDark
+                : AppColors.backgroundLight,
+          ),
+          Expanded(
+            child: Consumer2<CreditProvider, BusinessProvider>(
+              builder: (context, creditProvider, businessProvider, _) {
+                final subProvider = context.watch<SubscriptionProvider>();
+                final subscription = subProvider.subscription;
 
-          if (creditProvider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
-          }
+                if (creditProvider.isLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  );
+                }
 
-          final venueId = businessProvider.businessVenue?.id;
-          if (venueId == null) {
-            return const Center(child: Text('İşletme bilgisi bulunamadı'));
-          }
+                final venueId = businessProvider.businessVenue?.id;
+                if (venueId == null) {
+                  return const Center(
+                    child: Text('İşletme bilgisi bulunamadı'),
+                  );
+                }
 
-          return RefreshIndicator(
-            onRefresh: () => creditProvider.loadCreditData(venueId),
-            color: AppColors.primary,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Balance Card
-                  _buildBalanceCard(
-                    creditProvider.balance,
-                    subscription?.displayName ?? 'STANDART',
-                  ),
-
-                  // Showcase Section
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(20, 24, 20, 16),
-                    child: Text(
-                      'Kredilerinizle işletmenizi büyütün',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1B0E11),
-                      ),
-                    ),
-                  ),
-                  _buildShowcaseGrid(),
-
-                  // Packages Section
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                return RefreshIndicator(
+                  onRefresh: () => creditProvider.loadCreditData(venueId),
+                  color: AppColors.primary,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Kredi Paketi Satın Al',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1B0E11),
+                        // Balance Card
+                        _buildBalanceCard(
+                          creditProvider.balance,
+                          subscription?.displayName ?? 'STANDART',
+                        ),
+
+                        // Showcase Section
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(20, 24, 20, 16),
+                          child: Text(
+                            'Kredilerinizle işletmenizi büyütün',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1B0E11),
+                            ),
                           ),
                         ),
-                        Text(
-                          'TÜMÜNÜ GÖR',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.primary,
-                            letterSpacing: 0.5,
+                        _buildShowcaseGrid(),
+
+                        // Packages Section
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Kredi Paketi Satın Al',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1B0E11),
+                                ),
+                              ),
+                              Text(
+                                'TÜMÜNÜ GÖR',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                  color: AppColors.primary,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                        _buildPackageList(
+                          creditProvider.packages,
+                          venueId,
+                          creditProvider,
+                        ),
+
+                        // Info Footer
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 40,
+                            horizontal: 40,
+                          ),
+                          child: Text(
+                            'Krediler iade edilemez ve 12 ay süresince geçerlidir.\nSorularınız için destek ekibi ile iletişime geçin.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF9A4C5F),
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
-                  _buildPackageList(
-                    creditProvider.packages,
-                    venueId,
-                    creditProvider,
-                  ),
-
-                  // Info Footer
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 40, horizontal: 40),
-                    child: Text(
-                      'Krediler iade edilemez ve 12 ay süresince geçerlidir.\nSorularınız için destek ekibi ile iletişime geçin.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF9A4C5F),
-                        height: 1.5,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
