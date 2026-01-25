@@ -9,7 +9,7 @@ import '../../widgets/venue/v2/venue_overview_v2.dart';
 import '../../widgets/venue/venue_tab_switcher.dart';
 import '../../widgets/venue/components/booking_bottom_bar.dart';
 import '../../widgets/venue/tabs/services_tab.dart';
-import '../../widgets/venue/tabs/experts_tab.dart';
+import '../../widgets/venue/tabs/photos_tab.dart';
 import '../../widgets/venue/tabs/reviews_tab.dart';
 import '../../widgets/common/ad_banner_widget.dart';
 import '../../../data/models/venue.dart';
@@ -357,16 +357,13 @@ class _VenueDetailsScreenState extends State<VenueDetailsScreen>
                         specialists: provider.specialists,
                         campaigns: provider.campaigns,
                         venueFeatures: provider.venueFeatures,
-                        onSeeAll: () => _tabController.animateTo(2),
+                        onSeeAll: () => _tabController.animateTo(3),
                       ),
+                      PhotosTab(venue: venue),
                       ServicesTab(venueId: venue.id),
                       venue.id.isNotEmpty
                           ? ReviewsTab(venueId: venue.id)
                           : const SizedBox(),
-                      ExpertsTab(
-                        venue: venue,
-                        specialists: provider.specialists,
-                      ),
                     ],
                   ),
                 ),

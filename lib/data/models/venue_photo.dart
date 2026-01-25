@@ -1,3 +1,4 @@
+// Updated VenuePhoto model with category support
 import '../../core/utils/image_utils.dart';
 
 enum PhotoCategory {
@@ -5,7 +6,10 @@ enum PhotoCategory {
   exterior,
   serviceResult,
   team,
-  equipment;
+  equipment,
+  products,
+  certificates,
+  serviceInProgress;
 
   String toJson() {
     switch (this) {
@@ -19,6 +23,12 @@ enum PhotoCategory {
         return 'team';
       case PhotoCategory.equipment:
         return 'equipment';
+      case PhotoCategory.products:
+        return 'products';
+      case PhotoCategory.certificates:
+        return 'certificates';
+      case PhotoCategory.serviceInProgress:
+        return 'service_in_progress';
     }
   }
 
@@ -34,6 +44,12 @@ enum PhotoCategory {
         return PhotoCategory.team;
       case 'equipment':
         return PhotoCategory.equipment;
+      case 'products':
+        return PhotoCategory.products;
+      case 'certificates':
+        return PhotoCategory.certificates;
+      case 'service_in_progress':
+        return PhotoCategory.serviceInProgress;
       default:
         return PhotoCategory.interior;
     }
@@ -51,6 +67,12 @@ enum PhotoCategory {
         return 'Ekip';
       case PhotoCategory.equipment:
         return 'Ekipman';
+      case PhotoCategory.products:
+        return 'Ürünler';
+      case PhotoCategory.certificates:
+        return 'Sertifikalar';
+      case PhotoCategory.serviceInProgress:
+        return 'Uygulama Anı';
     }
   }
 }
@@ -61,7 +83,9 @@ class VenuePhoto {
   final String url;
   final String? thumbnailUrl;
   final String? title;
-  final PhotoCategory category;
+  final PhotoCategory? category;
+  final String? categoryId;
+  final String? categoryName; // Added this
   final String? serviceId;
   final DateTime uploadedAt;
   final int sortOrder;
@@ -74,7 +98,9 @@ class VenuePhoto {
     required this.url,
     this.thumbnailUrl,
     this.title,
-    required this.category,
+    this.category,
+    this.categoryId,
+    this.categoryName,
     this.serviceId,
     required this.uploadedAt,
     this.sortOrder = 0,
@@ -83,6 +109,12 @@ class VenuePhoto {
   });
 
   factory VenuePhoto.fromJson(Map<String, dynamic> json) {
+    // Handle joined category name
+    String? joinedName;
+    if (json['photo_categories'] != null) {
+      joinedName = json['photo_categories']['name'] as String?;
+    }
+
     return VenuePhoto(
       id: json['id'] as String? ?? '',
       venueId: json['venue_id'] as String? ?? '',
@@ -91,7 +123,9 @@ class VenuePhoto {
       title: json['title'] as String?,
       category: json['category'] != null
           ? PhotoCategory.fromJson(json['category'] as String)
-          : PhotoCategory.interior,
+          : null,
+      categoryId: json['category_id'] as String?,
+      categoryName: joinedName,
       serviceId: json['service_id'] as String?,
       uploadedAt: json['uploaded_at'] != null
           ? DateTime.parse(json['uploaded_at'] as String)
@@ -109,7 +143,9 @@ class VenuePhoto {
       'url': url,
       'thumbnail_url': thumbnailUrl,
       'title': title,
-      'category': category.toJson(),
+      'category': category?.toJson(),
+      'category_id': categoryId,
+      'category_name': categoryName,
       'service_id': serviceId,
       'uploaded_at': uploadedAt.toIso8601String(),
       'sort_order': sortOrder,
@@ -125,6 +161,8 @@ class VenuePhoto {
     String? thumbnailUrl,
     String? title,
     PhotoCategory? category,
+    String? categoryId,
+    String? categoryName,
     String? serviceId,
     DateTime? uploadedAt,
     int? sortOrder,
@@ -138,6 +176,8 @@ class VenuePhoto {
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       title: title ?? this.title,
       category: category ?? this.category,
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
       serviceId: serviceId ?? this.serviceId,
       uploadedAt: uploadedAt ?? this.uploadedAt,
       sortOrder: sortOrder ?? this.sortOrder,

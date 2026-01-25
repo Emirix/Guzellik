@@ -214,14 +214,17 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Text(
-                        _currentPhoto.category.displayName,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 14,
+                      if (_currentPhoto.category != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16),
+                          child: Text(
+                            _currentPhoto.category!.displayName,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
                       Text(
                         _formatDate(_currentPhoto.uploadedAt),
                         style: TextStyle(

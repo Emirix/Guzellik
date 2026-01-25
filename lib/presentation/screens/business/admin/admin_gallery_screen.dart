@@ -8,7 +8,9 @@ import '../../../providers/admin_gallery_provider.dart';
 import '../../../providers/business_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/venue_photo.dart';
+import '../../../../data/models/photo_category_tag.dart';
 import '../../../../core/utils/image_utils.dart';
+import '../../../../core/utils/icon_utils.dart';
 import '../../../widgets/common/business_bottom_nav.dart';
 
 class AdminGalleryScreen extends StatefulWidget {
@@ -33,47 +35,185 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
     final businessProvider = context.read<BusinessProvider>();
     final venueId = businessProvider.currentVenue?.id;
     if (venueId != null) {
-      await context.read<AdminGalleryProvider>().fetchPhotos(venueId);
+      await Future.wait([
+        context.read<AdminGalleryProvider>().fetchPhotos(venueId),
+        context.read<AdminGalleryProvider>().fetchCategories(),
+      ]);
     }
   }
 
   Future<void> _pickImage() async {
-    // 1. Verileri al
     final provider = context.read<AdminGalleryProvider>();
     final businessProvider = context.read<BusinessProvider>();
     final venueId = businessProvider.currentVenue?.id;
 
-    if (!provider.canAddMore || venueId == null) return;
+    if (venueId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('İşletme bilgisi bulunamadı.')),
+      );
+      return;
+    }
 
-    // 2. Resim seç
+    if (!provider.canAddMore) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Maksimum 10 fotoğraf yükleyebilirsiniz.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     final XFile? image;
     try {
       image = await _picker.pickImage(source: ImageSource.gallery);
     } catch (e) {
       debugPrint('Galeri hatası: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Galeri açılırken hata oluştu: $e')),
+        );
+      }
       return;
     }
 
     if (image == null) return;
+    if (!mounted) return;
 
-    // 3. Yükle (Sessizce)
-    // SnackBar göstermiyoruz çünkü context hatası veriyor.
-    // Provider loading state'i güncelleyeceği için ekranda loading dönecektir.
+    if (provider.categories.isEmpty) {
+      try {
+        await provider.fetchCategories();
+      } catch (e) {
+        debugPrint('Kategori yükleme hatası: $e');
+      }
+    }
+
+    String? selectedCategoryId;
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (mounted) {
+      selectedCategoryId = await showModalBottomSheet<String>(
+        context: context,
+        useRootNavigator: true,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.only(top: 12, bottom: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.gray200,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      'Kategori Seçin',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Outfit',
+                        color: AppColors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Divider(height: 1),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _buildCategoryItem(
+                      context: context,
+                      title: 'Etiketsiz Devam Et',
+                      icon: Icons.not_interested,
+                      onTap: () => Navigator.pop(context, null),
+                      isNone: true,
+                    ),
+                    ...provider.categories.map((category) {
+                      return _buildCategoryItem(
+                        context: context,
+                        title: category.name,
+                        icon: IconUtils.getCategoryIcon(
+                          category.icon ?? category.slug,
+                        ),
+                        onTap: () => Navigator.pop(context, category.id),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     try {
       final File imageFile = File(image.path);
-      await provider.uploadPhoto(venueId, imageFile);
-
-      // Refresh business provider data
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(width: 16),
+                Text('Fotoğraf yükleniyor...'),
+              ],
+            ),
+            duration: Duration(minutes: 1),
+          ),
+        );
+      }
+
+      await provider.uploadPhoto(
+        venueId,
+        imageFile,
+        categoryId: selectedCategoryId,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Fotoğraf başarıyla yüklendi'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
         final userId = businessProvider.businessVenue?.ownerId;
         if (userId != null) {
           await businessProvider.refreshVenue(userId);
         }
       }
     } catch (e) {
-      debugPrint('Yükleme hatası: $e');
-      // Hata olsa bile kullanıcıya göstermeye çalışmıyoruz şu aşamada
-      // Çünkü context ölü olabiliyor.
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        _showErrorDialog('Fotoğraf yüklenirken bir hata oluştu: $e');
+      }
     }
   }
 
@@ -190,8 +330,18 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
                     itemCount: photos.length,
                     itemBuilder: (context, index) {
                       final photo = photos[index];
+                      String? categoryName;
+                      if (photo.categoryId != null) {
+                        try {
+                          categoryName = provider.categories
+                              .firstWhere((c) => c.id == photo.categoryId)
+                              .name;
+                        } catch (_) {}
+                      }
+
                       return _PhotoCard(
                         photo: photo,
+                        categoryName: categoryName,
                         onDelete: () => _deletePhoto(photo.id),
                         onSetHero: () => _setHero(photo.id),
                       );
@@ -330,7 +480,6 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
       try {
         await context.read<AdminGalleryProvider>().deletePhoto(photoId);
 
-        // Refresh business provider data
         if (mounted) {
           final businessProvider = context.read<BusinessProvider>();
           final userId = businessProvider.businessVenue?.ownerId;
@@ -352,7 +501,6 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
     try {
       await context.read<AdminGalleryProvider>().setAsHero(photoId);
 
-      // Refresh business provider venue data to update cover photo on dashboard
       if (mounted) {
         final businessProvider = context.read<BusinessProvider>();
         final userId = businessProvider.businessVenue?.ownerId;
@@ -372,21 +520,72 @@ class _AdminGalleryScreenState extends State<AdminGalleryScreen> {
       }
     }
   }
+
+  Widget _buildCategoryItem({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+    bool isNone = false,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.gray100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                size: 20,
+                color: isNone ? AppColors.gray600 : AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: isNone ? AppColors.gray600 : AppColors.black,
+                  fontFamily: 'Inter',
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 20, color: AppColors.gray400),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _PhotoCard extends StatelessWidget {
   final VenuePhoto photo;
+  final String? categoryName;
   final VoidCallback onDelete;
   final VoidCallback onSetHero;
 
   const _PhotoCard({
     required this.photo,
+    this.categoryName,
     required this.onDelete,
     required this.onSetHero,
   });
 
   @override
   Widget build(BuildContext context) {
+    final displayLabel =
+        categoryName ??
+        photo.categoryName ??
+        (photo.category != null ? photo.category!.displayName : null);
+
     return Stack(
       children: [
         ClipRRect(
@@ -398,30 +597,61 @@ class _PhotoCard extends StatelessWidget {
             height: double.infinity,
           ),
         ),
-        if (photo.isHeroImage)
+        if (photo.isHeroImage || displayLabel != null)
           Positioned(
             top: 10,
             left: 10,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.stars, color: Colors.white, size: 12),
-                  SizedBox(width: 4),
-                  Text(
-                    'Kapak',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+            right: 10,
+            child: Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: [
+                if (photo.isHeroImage)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.stars, color: Colors.white, size: 12),
+                        SizedBox(width: 4),
+                        Text(
+                          'Kapak',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                if (displayLabel != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      displayLabel!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         Positioned(

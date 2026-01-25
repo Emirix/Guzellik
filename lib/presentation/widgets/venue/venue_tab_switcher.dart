@@ -80,9 +80,9 @@ class _VenueTabSwitcherDelegate extends SliverPersistentHeaderDelegate {
           ),
           tabs: const [
             Tab(text: 'Hakkında'),
+            Tab(text: 'Fotoğraflar'),
             Tab(text: 'Hizmetler'),
             Tab(text: 'Yorumlar'),
-            Tab(text: 'Uzmanlar'),
           ],
         ),
       ),

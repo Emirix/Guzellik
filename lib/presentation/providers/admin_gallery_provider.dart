@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../data/models/venue_photo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../data/models/venue_photo.dart';
+import '../../data/models/photo_category_tag.dart';
 import '../../data/services/storage_service.dart';
 
 class AdminGalleryProvider extends ChangeNotifier {
@@ -10,15 +11,33 @@ class AdminGalleryProvider extends ChangeNotifier {
   final _storageService = StorageService();
 
   List<VenuePhoto> _photos = [];
+  List<PhotoCategoryTag> _categories = [];
   bool _isLoading = false;
   String? _error;
   double _uploadProgress = 0;
 
   List<VenuePhoto> get photos => _photos;
+  List<PhotoCategoryTag> get categories => _categories;
   bool get isLoading => _isLoading;
   String? get error => _error;
   double get uploadProgress => _uploadProgress;
   bool get canAddMore => _photos.length < 10;
+
+  Future<void> fetchCategories() async {
+    try {
+      final response = await _supabase
+          .from('photo_categories')
+          .select('id, name, slug, icon, description')
+          .order('name', ascending: true);
+
+      _categories = (response as List)
+          .map((json) => PhotoCategoryTag.fromJson(json))
+          .toList();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching categories: $e');
+    }
+  }
 
   Future<void> fetchPhotos(String venueId) async {
     _isLoading = true;
@@ -43,7 +62,11 @@ class AdminGalleryProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> uploadPhoto(String venueId, File imageFile) async {
+  Future<void> uploadPhoto(
+    String venueId,
+    File imageFile, {
+    String? categoryId,
+  }) async {
     if (!canAddMore) {
       throw Exception('Maksimum 10 fotoğraf yükleyebilirsiniz.');
     }
@@ -67,12 +90,23 @@ class AdminGalleryProvider extends ChangeNotifier {
 
       final isFirst = _photos.isEmpty;
 
+      // Find category slug if categoryId is provided to maintain legacy 'category' field
+      String? categorySlug;
+      if (categoryId != null) {
+        try {
+          categorySlug = _categories.firstWhere((c) => c.id == categoryId).slug;
+        } catch (_) {
+          // ignore
+        }
+      }
+
       await _supabase.from('venue_photos').insert({
         'venue_id': venueId,
         'url': imageUrl,
         'sort_order': newSortOrder,
         'is_hero_image': isFirst,
-        'category': 'interior', // Default
+        'category': categorySlug ?? 'interior', // Legacy field
+        'category_id': categoryId, // New field
       });
 
       await fetchPhotos(venueId);
