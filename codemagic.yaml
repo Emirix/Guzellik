@@ -13,6 +13,7 @@ workflows:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
         # APP_ID: App Store Connect -> Uygulamanız -> Uygulama Bilgileri -> Apple Kimliği (10 haneli rakam)
+        # Örn: 6741234567. Burayı kendi ID'nizle güncellemeyi unutmayın!
         APP_ID: 6758340475 
       flutter: 3.10.4
       xcode: latest
@@ -34,8 +35,13 @@ workflows:
       
       - name: Apple Sertifikalarını Getir (Signing)
         script: | 
-          # Bu komut sertifikaları Apple'dan otomatik çeker
-          app-store-connect fetch-signing-files "com.emx.guzellikharitam" --type IOS_APP_STORE --create
+          # Sertifikaları değişkenleri kullanarak Apple'dan çeker
+          app-store-connect fetch-signing-files "com.emx.guzellikharitam" \
+            --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
+            --key-id $APP_STORE_CONNECT_KEY_IDENTIFIER \
+            --private-key $APP_STORE_CONNECT_PRIVATE_KEY \
+            --type IOS_APP_STORE \
+            --create
           keychain add-certificates
       
       - name: Flutter iOS Build
@@ -54,6 +60,9 @@ workflows:
 
     publishing:
       app_store_connect:
-        auth: integration
+        # Panel entegrasyonu hatasını aşmak için değişkenleri buraya doğrudan tanımlıyoruz
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        key_identifier: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        private_key: $APP_STORE_CONNECT_PRIVATE_KEY
         # Uygulama başarıyla yüklendiğinde TestFlight'a gönderir
         submit_to_testflight: true
