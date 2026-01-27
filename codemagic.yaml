@@ -6,18 +6,25 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       groups:
-        # Codemagic panelinde 'apple_credentials' grubunu oluşturmuş olmalısınız.
         - apple_credentials
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        # BURAYI GÜNCELLEYİN: App Store Connect'teki 10 haneli Apple ID'niz
+        # BURAYI GÜNCELLEYİN: Kendi Apple ID'niz
         APP_ID: 6758340475 
-      flutter: 3.10.4
+      # DÜZELTME: Sürümü tırnak içinde ve kanal belirterek yazıyoruz
+      flutter: 3.10.4 
       xcode: latest
       cocoapods: default
 
     scripts:
+      - name: Flutter SDK Versiyon Kontrolü
+        script: |
+          # SDK sürümünün doğruluğunu garanti altına alalım
+          flutter channel stable
+          flutter upgrade 3.10.4
+          flutter --version
+          
       - name: Bağımlılıklar ve Kod Üretimi (Build Runner)
         script: | 
           flutter pub get
@@ -33,7 +40,6 @@ workflows:
       
       - name: Apple Sertifikalarını Getir (Signing)
         script: | 
-          # Sertifikaları Apple sunucularından çeker
           app-store-connect fetch-signing-files "com.emx.guzellikharitam" \
             --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
             --key-id $APP_STORE_CONNECT_KEY_IDENTIFIER \
@@ -56,9 +62,7 @@ workflows:
 
     publishing:
       app_store_connect:
-        # Codemagic'in zorunlu tuttuğu 3 anahtar:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        # Uygulama başarıyla yüklendiğinde TestFlight'a gönderir
         submit_to_testflight: true
