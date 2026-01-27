@@ -1,51 +1,62 @@
+# Güzellik Haritam - Codemagic Build Configuration
 workflows:
-  ios-simulator-build:
-    name: iOS Simulator Build
-    max_build_duration: 120
+  ios-release:
+    name: Güzellik Haritam iOS Release
+    max_build_duration: 60
     instance_type: mac_mini_m2
     environment:
-      flutter: stable
+      groups:
+        # Codemagic panelinde "Environment Variables" kısmında 
+        # 'apple_credentials' isimli bir grup oluşturup şu değişkenleri ekleyin:
+        # - APP_STORE_CONNECT_ISSUER_ID
+        # - APP_STORE_CONNECT_KEY_IDENTIFIER
+        # - APP_STORE_CONNECT_PRIVATE_KEY (p8 dosyasının içeriği)
+        # - CERTIFICATE_PRIVATE_KEY (Sertifika oluştururken kullandığınız private key)
+        - apple_credentials
+      vars:
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        APP_ID: 6758340475 # App Store Connect'teki "Apple ID" (App Information kısmından alın)
+      flutter: 3.10.4 # Projenizdeki SDK sürümü
       xcode: latest
       cocoapods: default
-    
+
     scripts:
-      # Flutter SDK'yı hazırla
-      - name: Flutter sürümünü kontrol et
-        script: |
-          flutter --version
-          flutter doctor -v
-      
-      # Bağımlılıkları yükle
-      - name: Flutter bağımlılıklarını yükle
-        script: |
+      - name: Dependencies ve Code Generation
+        script: | 
           flutter pub get
+          # Freezed ve JsonSerializable dosyalarını oluşturur
+          flutter pub run build_runner build --delete-conflicting-outputs
       
-      # iOS dizinine geç ve CocoaPods kurulumu
-      - name: CocoaPods bağımlılıklarını yükle
-        script: |
-          cd ios && pod install --repo-update
+      - name: Pods yükleme
+        script: | 
+          cd ios && pod install
       
-      # iOS Simulator için build
-      - name: iOS Simulator için build al
-        script: |
-          flutter build ios --simulator --debug
+      - name: Otomatik Kod İmzalama (Signing)
+        script: | 
+          # Bu komut Codemagic'in Apple ile konuşup sertifikaları halletmesini sağlar
+          keychain initialize
+          app-store-connect fetch-signing-files "com.emx.guzellikharitam" --type IOS_APP_STORE --create
+          keychain add-certificates
       
-      # .app dosyasını hazırla
-      - name: Simulator .app dosyasını kopyala
-        script: |
-          cd build/ios/iphonesimulator
-          mkdir -p $CM_BUILD_OUTPUT_DIR
-          cp -r Runner.app $CM_BUILD_OUTPUT_DIR/
-    
+      - name: Flutter Build iOS (.ipa)
+        script: | 
+          # Version numarasını build sayısıyla otomatik artırır
+          flutter build ios --release --build-number=$BUILD_NUMBER --no-codesign
+      
+      - name: Xcode Archive ve Export
+        script: | 
+          # Kod imzalama ve IPA dosyasını paketleme
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+
     artifacts:
-      - build/ios/iphonesimulator/Runner.app
-      - $CM_BUILD_OUTPUT_DIR/*.app
-      - flutter_drive.log
-    
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
     publishing:
-      email:
-        recipients:
-          - emirtanir55@gmail.com  # E-posta adresinizi buraya yazın
-        notify:
-          success: true
-          failure: true
+      app_store_connect:
+        auth: integration
+        # Uygulama yüklendikten sonra doğrudan TestFlight'a düşer
+        submit_to_testflight: true
+        # Apple'ın harici test incelemesine otomatik gönderilmesini istiyorsanız true yapın
+        submit_to_app_review: false
