@@ -5,9 +5,11 @@ import '../../../../core/utils/avatar_utils.dart';
 import '../../../../presentation/providers/customer_provider.dart';
 import '../../../../data/models/customer.dart';
 import '../../../widgets/common/business_bottom_nav.dart';
+import '../../../widgets/common/guzellik_haritam_header.dart';
 import '../../../../presentation/providers/app_state_provider.dart';
 import '../../../widgets/business/customer_form_sheet.dart';
 import '../../../widgets/business/customer_detail_sheet.dart';
+import '../../../widgets/business/customer_shimmer_loading.dart';
 
 class AdminCustomersScreen extends StatefulWidget {
   const AdminCustomersScreen({super.key});
@@ -57,14 +59,21 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildSearchBar(),
-            Expanded(child: _buildCustomerList()),
-          ],
-        ),
+      body: Column(
+        children: [
+          const GuzellikHaritamHeader(
+            backgroundColor: AppColors.backgroundLight,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                _buildHeader(),
+                _buildSearchBar(),
+                Expanded(child: _buildCustomerList()),
+              ],
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddCustomerSheet,
@@ -78,7 +87,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -156,7 +165,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     return Consumer<CustomerProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const CustomerShimmerLoading();
         }
 
         final filteredCustomers = provider.searchCustomers(_searchQuery);

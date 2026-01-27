@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../providers/app_state_provider.dart';
 import '../../widgets/common/business_bottom_nav.dart';
 import '../../widgets/common/guzellik_haritam_header.dart';
 import '../../providers/auth_provider.dart';
@@ -34,6 +35,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       await businessProvider.loadBusinessData(userId);
       if (mounted) {
         await context.read<SubscriptionProvider>().loadSubscription(userId);
+        context.read<AppStateProvider>().setBottomNavIndex(3);
       }
     }
   }
@@ -283,9 +285,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           _buildListItem(
             context,
             icon: Icons.workspace_premium,
-            title: 'Üyelik ve Mağaza',
-            subtitle: 'Paket Yükselt ve Kredi Satın Al',
-            onTap: () => context.push('/business/store'),
+            title: 'Abonelik Yönetimi',
+            subtitle: 'Paket Detayları ve Üyelik Durumu',
+            onTap: () => context.push('/business/subscription'),
           ),
 
           _buildListItem(

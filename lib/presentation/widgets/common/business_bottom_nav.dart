@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/app_state_provider.dart';
-import '../../providers/business_provider.dart';
 
 /// Business bottom navigation bar
-/// Shows 3 tabs: Profilim, Abonelik, Mağaza
+/// Shows 4 tabs: Randevular, Müşteriler, Abonelik, Profilim
 class BusinessBottomNav extends StatelessWidget {
   const BusinessBottomNav({super.key});
 
@@ -25,9 +24,9 @@ class BusinessBottomNav extends StatelessWidget {
             children: <Widget>[
               _buildNavItem(
                 context,
-                icon: Icons.person_outline,
-                activeIcon: Icons.person,
-                label: 'Profilim',
+                icon: Icons.calendar_today_outlined,
+                activeIcon: Icons.calendar_today,
+                label: 'Randevular',
                 isSelected: selectedIndex == 0,
                 onTap: () => _handleTap(context, appState, 0),
               ),
@@ -49,9 +48,9 @@ class BusinessBottomNav extends StatelessWidget {
               ),
               _buildNavItem(
                 context,
-                icon: Icons.store_outlined,
-                activeIcon: Icons.store,
-                label: 'Mağaza',
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
+                label: 'Profilim',
                 isSelected: selectedIndex == 3,
                 onTap: () => _handleTap(context, appState, 3),
               ),
@@ -108,14 +107,8 @@ class BusinessBottomNav extends StatelessWidget {
     // Navigate based on index using GoRouter
     switch (index) {
       case 0:
-        // Profile - Show venue details for business users
-        final businessProvider = context.read<BusinessProvider>();
-        if (businessProvider.isBusinessMode &&
-            businessProvider.businessVenue != null) {
-          context.go('/venue/${businessProvider.businessVenue!.id}');
-        } else {
-          context.go('/profile');
-        }
+        // Appointments
+        context.go('/business/appointments');
         break;
       case 1:
         // Customers
@@ -126,8 +119,8 @@ class BusinessBottomNav extends StatelessWidget {
         context.go('/business/subscription');
         break;
       case 3:
-        // Store
-        context.go('/business/store');
+        // Profile
+        context.go('/profile');
         break;
     }
   }

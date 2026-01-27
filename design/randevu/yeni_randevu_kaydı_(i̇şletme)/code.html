@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ee2b5b",
+                        "background-light": "#fcf8f9",
+                        "background-dark": "#221015",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b0d11] dark:text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col max-w-[480px] mx-auto bg-background-light dark:bg-background-dark overflow-x-hidden pb-32">
+<!-- TopAppBar -->
+<div class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="text-[#1b0d11] dark:text-white cursor-pointer">
+<span class="material-symbols-outlined">close</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Yeni Randevu Kaydı</h2>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center rounded-full size-10 bg-primary/10 text-primary">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</div>
+<!-- Progress Indicator (Subtle) -->
+<div class="px-4 py-2">
+<div class="h-1 w-full bg-[#f3e7ea] dark:bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/4"></div>
+</div>
+</div>
+<!-- Section: Client Selection -->
+<section>
+<h3 class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-6">Müşteri Seçimi</h3>
+<div class="px-4 py-3">
+<label class="flex flex-col min-w-40 h-14 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full border border-primary/20 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm">
+<div class="text-primary flex items-center justify-center pl-4" data-icon="search">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#1b0d11] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-[#9a4c5f] px-4 pl-2 text-base font-normal leading-normal" placeholder="İsim veya telefon ile ara..."/>
+</div>
+</label>
+</div>
+<div class="flex px-4 py-1 justify-start">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-primary/10 text-primary gap-2 text-sm font-bold border border-primary/20">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+<span class="truncate">Yeni Müşteri Oluştur</span>
+</button>
+</div>
+</section>
+<!-- Section: Service Selection -->
+<section>
+<h3 class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-6">Hizmet Seçimi</h3>
+<div class="px-4 space-y-3">
+<div class="relative group">
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-white/5 border border-primary/10 cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">spa</span>
+</div>
+<div>
+<p class="font-bold text-sm">Cilt Bakımı &amp; Analiz</p>
+<p class="text-xs text-[#9a4c5f] dark:text-white/60">60 dk • 1.250 TL</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#9a4c5f]">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Date & Time -->
+<section>
+<div class="flex items-center justify-between px-4 pt-6 pb-2">
+<h3 class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Tarih ve Saat</h3>
+<span class="text-primary text-sm font-bold">Eylül 2024</span>
+</div>
+<!-- Calendar Strip -->
+<div class="flex overflow-x-auto px-4 gap-3 hide-scrollbar py-2">
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl bg-white dark:bg-white/5 border border-primary/10">
+<span class="text-[10px] font-bold text-[#9a4c5f] uppercase">Pzt</span>
+<span class="text-lg font-bold">11</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl bg-primary text-white shadow-lg shadow-primary/30">
+<span class="text-[10px] font-bold uppercase opacity-80">Sal</span>
+<span class="text-lg font-bold">12</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl bg-white dark:bg-white/5 border border-primary/10">
+<span class="text-[10px] font-bold text-[#9a4c5f] uppercase">Çar</span>
+<span class="text-lg font-bold">13</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl bg-white dark:bg-white/5 border border-primary/10">
+<span class="text-[10px] font-bold text-[#9a4c5f] uppercase">Per</span>
+<span class="text-lg font-bold">14</span>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded-2xl bg-white dark:bg-white/5 border border-primary/10">
+<span class="text-[10px] font-bold text-[#9a4c5f] uppercase">Cum</span>
+<span class="text-lg font-bold">15</span>
+</div>
+</div>
+<!-- Time Slots -->
+<div class="grid grid-cols-4 gap-2 px-4 py-4">
+<button class="py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-bold">09:00</button>
+<button class="py-2 rounded-full border border-transparent bg-white dark:bg-white/5 text-[#1b0d11] dark:text-white text-xs font-bold">09:15</button>
+<button class="py-2 rounded-full border border-transparent bg-white dark:bg-white/5 text-[#1b0d11] dark:text-white text-xs font-bold">09:30</button>
+<button class="py-2 rounded-full border border-transparent bg-white dark:bg-white/5 text-[#1b0d11] dark:text-white text-xs font-bold">09:45</button>
+<button class="py-2 rounded-full border border-transparent bg-primary text-white text-xs font-bold ring-2 ring-primary ring-offset-2 ring-offset-background-light">10:00</button>
+<button class="py-2 rounded-full border border-transparent bg-white dark:bg-white/5 text-[#1b0d11] dark:text-white text-xs font-bold">10:15</button>
+<button class="py-2 rounded-full border border-transparent bg-white dark:bg-white/5 text-[#1b0d11] dark:text-white text-xs font-bold">10:30</button>
+<button class="py-2 rounded-full border border-transparent bg-white dark:bg-white/5 text-[#1b0d11] dark:text-white text-xs font-bold">10:45</button>
+</div>
+</section>
+<!-- Section: Specialist Selection -->
+<section>
+<h3 class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-6">Uzman Seçimi</h3>
+<div class="flex overflow-x-auto px-4 gap-6 hide-scrollbar py-2">
+<div class="flex flex-col items-center gap-2">
+<div class="relative size-16 rounded-full p-1 border-2 border-primary">
+<img alt="" class="size-full rounded-full object-cover" data-alt="Female beauty therapist headshot portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu0uVQftsy9ysq2aQg1B_PTA6KyoEDcH9du6tZ6umD_M1m9XDvORlHped2Tv-FYim2N9jQ9zH7-alYDM4rNwN01QqV6tgTe5kIZA9tbVE73A4R_q3ptgHUYKCk7vtxi7V6GE84Q52nSK6kmjvsFrP6XLtAlF6_7NuDb5xn5oEVUNQCH_tz-Oj3lxkepFKcgcMq8wpSAQ9MPwCFraBxV1oHeNC0dlD1buX3wuQL89fEcx8m4_otlHNvbj7Axb7vcgd8Y7IfK4oOog"/>
+<div class="absolute bottom-0 right-0 size-5 bg-green-500 rounded-full border-2 border-white dark:border-background-dark"></div>
+</div>
+<span class="text-xs font-bold">Elif Y.</span>
+</div>
+<div class="flex flex-col items-center gap-2 grayscale">
+<div class="relative size-16 rounded-full p-1 border-2 border-transparent">
+<img alt="" class="size-full rounded-full object-cover" data-alt="Professional female staff member smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOO0yLLGWQcWO1NYIKmtZE2W7oSNeLnQLrIbC1AkJBqDYHYJH5kq0tWMgybAG-u-UMBgxVpdcuydfYXD97acA4NFhEGYVWl-1itTWD8aH-TRoNAPzqHtrqmarDbpMLmpO_-r6np6zYqx6qpFbZV6AnizfHYGmKpRpa97TCZzujchxbAbWq4NoZKjDqfDYCBu_DXxan_Gmhau3zVy0eWMQ-ipHYX7wM_Sy5lnNqU_lVMDap2k8tvvY9RqNKdV1SK-m08bPqHrmQQg"/>
+<div class="absolute bottom-0 right-0 size-5 bg-gray-400 rounded-full border-2 border-white dark:border-background-dark"></div>
+</div>
+<span class="text-xs font-medium text-[#9a4c5f]">Merve A.</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative size-16 rounded-full p-1 border-2 border-transparent">
+<img alt="" class="size-full rounded-full object-cover" data-alt="Portrait of a smiling business professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyvmNrKyrfXUCoKXuLOm7XgGG2iUVdcZE7NrygnAhfoXljQHbPjiuxFj01gnR3TcS-IpNN_uL4x1tdz8n7rCVmyqAwStkNn1EGf7p88OZV-6Afv0qUXvR-ow3vZxyXc2-qyQi-UQBo2Lk7hmlrzuPhrGx6ClSheJJLLQ1zDgzOBaUL-OKCSs4t8YvyAz1OsvKX6ONQ-FvsmEa1uicg899XxVZy5v6mKkmZrAbkF3CLDsTBgGF0n-U860FuxMA0YqLYldztyhs8Zw"/>
+<div class="absolute bottom-0 right-0 size-5 bg-green-500 rounded-full border-2 border-white dark:border-background-dark"></div>
+</div>
+<span class="text-xs font-medium text-[#9a4c5f]">Selma K.</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative size-16 rounded-full p-1 border-2 border-transparent">
+<div class="size-full rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">group</span>
+</div>
+</div>
+<span class="text-xs font-medium text-[#9a4c5f]">Herhangi</span>
+</div>
+</div>
+</section>
+<!-- Section: Notes -->
+<section class="px-4 py-6">
+<h3 class="text-[#1b0d11] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] pb-2">Notlar</h3>
+<textarea class="form-textarea w-full rounded-2xl border-none bg-white dark:bg-white/5 p-4 text-sm placeholder:text-[#9a4c5f]/50 focus:ring-1 focus:ring-primary min-h-[100px]" placeholder="Randevu ile ilgili özel bir not ekleyin..."></textarea>
+</section>
+<!-- Action Button Container -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-light dark:from-background-dark via-background-light dark:via-background-dark to-transparent max-w-[480px] mx-auto">
+<button class="w-full flex items-center justify-center bg-primary text-white font-bold py-4 rounded-full shadow-lg shadow-primary/40 active:scale-[0.98] transition-transform">
+                Randevu Kaydet
+            </button>
+</div>
+</div>
+</body></html>

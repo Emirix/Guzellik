@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/auth_provider.dart';
 import '../providers/business_provider.dart';
+import '../providers/app_state_provider.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats.dart';
 import '../widgets/profile/profile_menu_item.dart';
@@ -38,19 +39,33 @@ Future<void> _openAdminPanel(BuildContext context, String? venueId) async {
 }
 
 /// Profile screen - Redesigned based on design/profilim.php
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final bool isEmbedded;
 
   const ProfileScreen({super.key, this.isEmbedded = false});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Set bottom nav index to 3 (Profilim) if in business mode
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final businessProvider = context.read<BusinessProvider>();
+      if (businessProvider.isBusinessMode && !widget.isEmbedded) {
+        context.read<AppStateProvider>().setBottomNavIndex(3);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final businessProvider = context.watch<BusinessProvider>();
-    // Check if we are in business mode AND not in the home screen shell
-    // If we are in the home index stack, the shell provides the nav
-    // If we are navigated to directly (e.g. from business nav), we need to provide it
     final bool showBusinessNav = businessProvider.isBusinessMode;
-    final bool embedded = isEmbedded;
+    final bool embedded = widget.isEmbedded;
 
     // If in business mode, show venue details as "Profile"
     if (showBusinessNav && businessProvider.businessVenue?.id != null) {

@@ -16,8 +16,6 @@ import '../../presentation/screens/onboarding_screen.dart';
 import '../../presentation/screens/venue/venue_details_screen.dart';
 import '../../presentation/screens/location_onboarding_screen.dart';
 import '../../presentation/screens/business/subscription_screen.dart';
-import '../../presentation/screens/business/store_screen.dart';
-import '../../presentation/screens/business/transaction_history_screen.dart';
 import '../../presentation/screens/business/admin_dashboard_screen.dart';
 import '../../presentation/screens/business/business_onboarding_screen.dart';
 import '../../presentation/screens/business/business_info_form_screen.dart';
@@ -30,6 +28,8 @@ import '../../presentation/screens/business/admin/admin_location_screen.dart';
 import '../../presentation/screens/business/admin/admin_faq_screen.dart';
 import '../../presentation/screens/business/admin/admin_customers_screen.dart';
 import '../../presentation/screens/business/admin/admin_cover_photo_screen.dart';
+import '../../presentation/screens/business/admin/admin_appointments_screen.dart';
+import '../../presentation/screens/business/admin/appointment_detail_screen.dart';
 
 import '../../presentation/screens/business/admin/admin_features_screen.dart';
 import '../../presentation/screens/business/business_reviews_screen.dart';
@@ -171,7 +171,7 @@ class AppRouter {
 
           if (isOwnVenue) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.read<AppStateProvider>().setBottomNavIndex(0);
+              context.read<AppStateProvider>().setBottomNavIndex(3);
             });
           }
 
@@ -229,41 +229,21 @@ class AppRouter {
           );
         },
       ),
-      GoRoute(
-        path: '/business/store',
-        name: 'business-store',
-        builder: (context, state) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.read<AppStateProvider>().setBottomNavIndex(3);
-          });
-          return const AuthGuard(
-            requiredFor: 'Mağaza',
-            redirectPath: '/business/store',
-            child: StoreScreen(),
-          );
-        },
-        routes: [
-          GoRoute(
-            path: 'history',
-            name: 'business-store-history',
-            builder: (context, state) => const AuthGuard(
-              requiredFor: 'İşlem Geçmişi',
-              redirectPath: '/business/store/history',
-              child: TransactionHistoryScreen(),
-            ),
-          ),
-        ],
-      ),
 
       // Admin Routes (Business Management)
       GoRoute(
         path: '/business/admin',
         name: 'business-admin',
-        builder: (context, state) => const AuthGuard(
-          requiredFor: 'Yönetim',
-          redirectPath: '/business/admin',
-          child: AdminDashboardScreen(),
-        ),
+        builder: (context, state) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<AppStateProvider>().setBottomNavIndex(3);
+          });
+          return const AuthGuard(
+            requiredFor: 'Yönetim',
+            redirectPath: '/business/admin',
+            child: AdminDashboardScreen(),
+          );
+        },
       ),
       // TODO: Add sub-routes for services, gallery, specialists, campaigns
       GoRoute(
@@ -399,6 +379,36 @@ class AppRouter {
             ),
           );
         },
+      ),
+
+      // Appointments Routes
+      GoRoute(
+        path: '/business/appointments',
+        name: 'admin-appointments',
+        builder: (context, state) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<AppStateProvider>().setBottomNavIndex(0);
+          });
+          return const AuthGuard(
+            requiredFor: 'Randevu Yönetimi',
+            redirectPath: '/business/appointments',
+            child: AdminAppointmentsScreen(),
+          );
+        },
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: 'admin-appointment-detail',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return AuthGuard(
+                requiredFor: 'Randevu Detayı',
+                redirectPath: '/business/appointments/$id',
+                child: AppointmentDetailScreen(appointmentId: id),
+              );
+            },
+          ),
+        ],
       ),
     ],
 
