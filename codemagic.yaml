@@ -6,14 +6,12 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       groups:
-        # Codemagic panelinde "Environment Variables" kısmında 
-        # 'apple_credentials' isimli bir grup oluşturup değişkenleri eklemiş olmalısınız.
+        # Codemagic panelinde 'apple_credentials' grubunu oluşturmuş olmalısınız.
         - apple_credentials
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        # APP_ID: App Store Connect -> Uygulamanız -> Uygulama Bilgileri -> Apple Kimliği (10 haneli rakam)
-        # Örn: 6741234567. Burayı kendi ID'nizle güncellemeyi unutmayın!
+        # BURAYI GÜNCELLEYİN: App Store Connect'teki 10 haneli Apple ID'niz
         APP_ID: 6758340475 
       flutter: 3.10.4
       xcode: latest
@@ -35,7 +33,7 @@ workflows:
       
       - name: Apple Sertifikalarını Getir (Signing)
         script: | 
-          # Sertifikaları değişkenleri kullanarak Apple'dan çeker
+          # Sertifikaları Apple sunucularından çeker
           app-store-connect fetch-signing-files "com.emx.guzellikharitam" \
             --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
             --key-id $APP_STORE_CONNECT_KEY_IDENTIFIER \
@@ -46,12 +44,10 @@ workflows:
       
       - name: Flutter iOS Build
         script: | 
-          # .ipa oluşturmak için ön hazırlık build'i
           flutter build ios --release --build-number=$BUILD_NUMBER --no-codesign
       
       - name: Xcode Arşivleme ve IPA Oluşturma
         script: | 
-          # Uygulamayı imzalar ve gönderilebilir IPA dosyasını paketler
           xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
 
     artifacts:
@@ -60,9 +56,9 @@ workflows:
 
     publishing:
       app_store_connect:
-        # Panel entegrasyonu hatasını aşmak için değişkenleri buraya doğrudan tanımlıyoruz
+        # Codemagic'in zorunlu tuttuğu 3 anahtar:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        key_identifier: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        private_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
         # Uygulama başarıyla yüklendiğinde TestFlight'a gönderir
         submit_to_testflight: true
