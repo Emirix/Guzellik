@@ -45,6 +45,17 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.803888389890-feerfm10tbdsdpliel40a5cpen82kcef</string>
+				</array>
+			</dict>
+		</array>
 		<key>io.flutter.embedded_views_preview</key>
 		<true/>
 		<key>NSLocationWhenInUseUsageDescription</key>
