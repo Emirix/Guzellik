@@ -51,6 +51,8 @@
 		<string>Yakınınızdaki güzellik merkezlerini harita üzerinde görebilmek için konum izni gereklidir.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
 		<string>Size en yakın fırsatları sunabilmek için konumunuza ihtiyaç duyuyoruz.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Yakınınızdaki güzellik merkezlerini bulmak ve size özel fırsatlar sunmak için konumunuza her zaman veya uygulama kullanılırken ihtiyaç duyuyoruz.</string>
 		<key>NSSpeechRecognitionUsageDescription</key>
 		<string>Sesli arama özelliğini kullanabilmek için ses tanıma izni gereklidir.</string>
 		<key>NSMicrophoneUsageDescription</key>
