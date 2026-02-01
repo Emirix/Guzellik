@@ -1,0 +1,48 @@
+PRIVACY POLICY
+Last Updated: February 01, 2026
+
+This Privacy Policy describes how Güzellik Haritam ("we", "us", or "our") collects, uses, and shares your personal information when you use our mobile application (the "App").
+
+1. INFORMATION WE COLLECT
+
+a. Personal Information:
+* Account Information: When you register, we may collect your name, email address, and profile picture (via Google Sign-In or manual registration).
+* Location Data: With your permission, we collect precise location data to show nearby beauty venues on a map and provide location-based offers.
+* Media Assets: If you choose to upload a profile picture or share venue photos, we access your camera and photo library.
+
+b. Usage and Technical Data:
+* Device Information: We collect information about your mobile device (ID, model, OS version).
+* Analytics: We use Google Analytics for Firebase to understand App usage patterns and improve user experience.
+* Crash Logs: We use Firebase Crashlytics to monitor App stability and fix bugs.
+
+2. HOW WE USE YOUR INFORMATION
+* To provide and maintain the App's core services.
+* To personalize your experience (e.g., showing venues near you).
+* To process appointments and manage your favorite venues.
+* To send push notifications regarding appointments or marketing offers (with your consent).
+* To display relevant advertisements via Google AdMob.
+
+3. THIRD-PARTY SERVICES
+We use the following third-party service providers who may collect data according to their own privacy policies:
+* Supabase: Database and Authentication.
+* Firebase (Google): Analytics, Cloud Messaging, and Crashlytics.
+* Google Maps API: For location and mapping services.
+* Google AdMob: For displaying advertisements.
+
+4. DATA SECURITY
+We implement industry-standard security measures provided by Supabase and Firebase to protect your data. However, no method of transmission over the internet is 100% secure.
+
+5. YOUR RIGHTS AND CHOICES
+* Location Services: You can enable or disable location access at any time through your device settings.
+* Push Notifications: You can opt-out of notifications via the App or device settings.
+* Account Deletion: You may request to delete your account and associated data by contacting us or using the in-app deletion feature.
+
+6. CHILDREN'S PRIVACY
+Our App is not intended for children under the age of 13. We do not knowingly collect personal information from children.
+
+7. CHANGES TO THIS POLICY
+We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.
+
+8. CONTACT US
+If you have any questions about this Privacy Policy, please contact us at:
+Email: support@guzellikharitam.com
