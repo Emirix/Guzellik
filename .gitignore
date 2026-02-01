@@ -55,6 +55,7 @@ android/key.properties
 # Temporary and Debug files
 change_*.json
 *.json
+!Contents.json
 !theme.json
 !pubspec.json
 !package.json
