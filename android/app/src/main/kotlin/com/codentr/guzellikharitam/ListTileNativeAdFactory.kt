@@ -1,4 +1,4 @@
-package com.emx.guzellikharitam
+package com.codentr.guzellikharitam
 
 import android.content.Context
 import android.view.LayoutInflater

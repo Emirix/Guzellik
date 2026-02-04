@@ -1,4 +1,4 @@
-package com.emx.guzellikharitam
+package com.codentr.guzellikharitam
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
